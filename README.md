@@ -11,5 +11,5 @@
 | 언어       | Java 21                      |
 | 프레임워크  | Spring Boot 3.4.7       |
 
-## 📜 변경 사항 (Changelog)
+## 📜 변경 내역 (Changelog)
 최신 변경 내역은 [CHANGELOG.md](./CHANGELOG.md)에서 확인하세요.
