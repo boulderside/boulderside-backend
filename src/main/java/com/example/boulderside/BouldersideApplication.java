@@ -5,9 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class BouldersideApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(BouldersideApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(BouldersideApplication.class, args);
+	}
 
 }
