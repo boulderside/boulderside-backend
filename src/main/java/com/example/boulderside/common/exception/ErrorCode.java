@@ -1,4 +1,4 @@
-package com.example.boulderside.common.error;
+package com.example.boulderside.common.exception;
 
 import org.springframework.http.HttpStatus;
 
@@ -8,11 +8,14 @@ import lombok.Getter;
 public enum ErrorCode {
 	// Domain (D001~D099)
 	USER_NOT_FOUND("D001", "해당 사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+	BOULDER_NOT_FOUND("D002", "해당 바위를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 	USER_INACTIVE("D003", "비활성 상태의 사용자입니다.", HttpStatus.BAD_REQUEST),
-
+	ALREADY_LIKED("D004", "이미 좋아요를 누른 항목입니다.", HttpStatus.CONFLICT),
+	
 	// Validation (V001~V099)
 	VALIDATION_FAILED("V001", "입력 값 검증에 실패했습니다.", HttpStatus.BAD_REQUEST),
 	CONSTRAINT_VIOLATION("V002", "비즈니스 제약조건을 위반했습니다.", HttpStatus.BAD_REQUEST),
+	MISSING_REQUIRED_FIELD("V003", "필수 입력 값이 누락되었습니다.", HttpStatus.BAD_REQUEST),
 
 	// Persistence (P001~P099)
 	DB_CONSTRAINT_ERROR("P001", "데이터베이스 제약조건 위반입니다.", HttpStatus.CONFLICT),
