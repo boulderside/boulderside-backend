@@ -1,6 +1,9 @@
-package com.example.boulderside.domain.user;
+package com.example.boulderside.domain.user.entity;
 
 import com.example.boulderside.domain.BaseEntity;
+import com.example.boulderside.domain.user.enums.UserLevel;
+import com.example.boulderside.domain.user.enums.UserRole;
+import com.example.boulderside.domain.user.enums.UserSex;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

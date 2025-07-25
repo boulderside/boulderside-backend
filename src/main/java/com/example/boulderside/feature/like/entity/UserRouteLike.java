@@ -1,4 +1,4 @@
-package com.example.boulderside.feature.like;
+package com.example.boulderside.feature.like.entity;
 
 import com.example.boulderside.domain.BaseEntity;
 

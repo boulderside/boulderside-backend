@@ -1,4 +1,4 @@
-package com.example.boulderside.domain.boulder;
+package com.example.boulderside.domain.boulder.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,7 @@ public class Boulder extends BaseEntity {
 
 	/** 좋아요 수 */
 	@Column(name = "like_count", nullable = false)
-	private Long likeCount = 0L;
+	private Long likeCount;
 
 	/** 시/도 */
 	@Column(name = "province")

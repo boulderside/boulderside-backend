@@ -1,4 +1,4 @@
-package com.example.boulderside.domain.user;
+package com.example.boulderside.domain.user.entity;
 
 import java.time.LocalDateTime;
 
