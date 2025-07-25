@@ -2,7 +2,6 @@ package com.example.boulderside.feature.like.service;
 
 import org.springframework.stereotype.Service;
 
-import com.example.boulderside.common.exception.BusinessException;
 import com.example.boulderside.common.exception.ErrorCode;
 import com.example.boulderside.common.exception.ValidationException;
 import com.example.boulderside.feature.like.entity.UserBoulderLike;
@@ -16,19 +15,19 @@ public class UserBoulderLikeServiceImpl implements UserBoulderLikeService {
 	private final UserBoulderLikeRepository userBoulderLikeRepository;
 
 	@Override
-	public void save(UserBoulderLike userBoulderLike) {
-		if (userBoulderLike == null || userBoulderLike.getUserId() == null || userBoulderLike.getBoulderId() == null) {
+	public void toggle(UserBoulderLike userBoulderLike) {
+		Long userId = userBoulderLike.getUserId();
+		Long boulderId = userBoulderLike.getBoulderId();
+		if (userId == null || boulderId == null) {
 			throw new ValidationException(ErrorCode.MISSING_REQUIRED_FIELD);
 		}
 
-		boolean alreadyExists = userBoulderLikeRepository.existsByUserIdAndBoulderId(
-			userBoulderLike.getUserId(),
-			userBoulderLike.getBoulderId()
-		);
+		boolean alreadyExists = userBoulderLikeRepository.existsByUserIdAndBoulderId(userId, boulderId);
 
 		if (alreadyExists) {
-			throw new BusinessException(ErrorCode.ALREADY_LIKED);
+			userBoulderLikeRepository.deleteByUserIdAndBoulderId(userId, boulderId);
+		} else {
+			userBoulderLikeRepository.save(userBoulderLike);
 		}
-		userBoulderLikeRepository.save(userBoulderLike);
 	}
 }

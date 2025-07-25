@@ -29,6 +29,6 @@ public class LikeUseCase {
 			.boulderId(boulder.getId())
 			.build();
 
-		userBoulderLikeService.save(userBoulderLike);
+		userBoulderLikeService.toggle(userBoulderLike);
 	}
 }
