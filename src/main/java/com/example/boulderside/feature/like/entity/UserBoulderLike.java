@@ -1,4 +1,4 @@
-package com.example.boulderside.feature.completion;
+package com.example.boulderside.feature.like.entity;
 
 import com.example.boulderside.domain.BaseEntity;
 
@@ -18,15 +18,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_route_completions")
-public class UserRouteCompletion extends BaseEntity {
+@Table(name = "user_boulder_likes")
+public class UserBoulderLike extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	/** 연관 루트 ID (FK) */
-	@Column(name = "route_id", nullable = false)
-	private Long routeId;
+	/** 연관 바위 ID (FK) */
+	@Column(name = "boulder_id", nullable = false)
+	private Long boulderId;
 
 	/** 연관 사용자 ID (FK) */
 	@Column(name = "user_id", nullable = false)

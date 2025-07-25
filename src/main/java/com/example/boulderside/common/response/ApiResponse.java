@@ -1,4 +1,4 @@
-package com.example.boulderside.controller.dto.response;
+package com.example.boulderside.common.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

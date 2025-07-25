@@ -1,16 +1,10 @@
-package com.example.boulderside.controller;
+package com.example.boulderside.common.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.example.boulderside.common.error.ErrorCode;
-import com.example.boulderside.common.exception.ApplicationException;
-import com.example.boulderside.common.exception.DatabaseException;
-import com.example.boulderside.common.exception.DomainException;
-import com.example.boulderside.common.exception.ExternalApiException;
-import com.example.boulderside.common.exception.ValidationException;
-import com.example.boulderside.controller.dto.response.ErrorResponse;
+import com.example.boulderside.common.response.ErrorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,8 +21,8 @@ public class GlobalExceptionHandler {
 			.body(body);
 	}
 
-	@ExceptionHandler(ApplicationException.class)
-	public ResponseEntity<ErrorResponse> handleApplicationException(ApplicationException ex) {
+	@ExceptionHandler(BusinessException.class)
+	public ResponseEntity<ErrorResponse> handleApplicationException(BusinessException ex) {
 		ErrorCode errorCode = ex.getErrorCode();
 		ErrorResponse errorResponse = new ErrorResponse(errorCode.getCode(), errorCode.getErrorMessage());
 		log.error("ApplicationException caught in GlobalExceptionHandler", ex);

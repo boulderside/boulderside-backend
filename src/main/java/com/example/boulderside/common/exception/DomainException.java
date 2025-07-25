@@ -1,7 +1,5 @@
 package com.example.boulderside.common.exception;
 
-import com.example.boulderside.common.error.ErrorCode;
-
 import lombok.Getter;
 
 @Getter
