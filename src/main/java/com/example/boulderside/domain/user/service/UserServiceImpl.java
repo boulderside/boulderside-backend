@@ -2,9 +2,15 @@ package com.example.boulderside.domain.user.service;
 
 import org.springframework.stereotype.Service;
 
+import com.example.boulderside.domain.user.entity.User;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+	@Override
+	public User getUserById(Long userId) {
+		return null;
+	}
 }
