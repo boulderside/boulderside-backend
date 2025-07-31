@@ -50,6 +50,7 @@ public class SecurityConfig {
 			// 명시한 url만 인가 없이 허용
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/").permitAll()
+				.requestMatchers("/admin/**").hasRole("ADMIN")
 				.anyRequest().authenticated());
 
 		http.exceptionHandling(exception -> exception
