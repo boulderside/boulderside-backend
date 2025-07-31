@@ -11,7 +11,8 @@ public enum ErrorCode {
 	BOULDER_NOT_FOUND("D002", "해당 바위를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 	USER_INACTIVE("D003", "비활성 상태의 사용자입니다.", HttpStatus.BAD_REQUEST),
 	ALREADY_LIKED("D004", "이미 좋아요를 누른 항목입니다.", HttpStatus.CONFLICT),
-	
+	REGION_NOT_FOUND("D005", "해당 지역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+
 	// Validation (V001~V099)
 	VALIDATION_FAILED("V001", "입력 값 검증에 실패했습니다.", HttpStatus.BAD_REQUEST),
 	CONSTRAINT_VIOLATION("V002", "비즈니스 제약조건을 위반했습니다.", HttpStatus.BAD_REQUEST),
