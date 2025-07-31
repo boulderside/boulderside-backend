@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,8 +13,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.boulderside.common.security.TokenProvider;
 import com.example.boulderside.common.security.exception.CustomEntryPoint;
-import com.example.boulderside.common.security.exception.JwtAuthenticationException;
-import com.example.boulderside.common.security.exception.SecurityErrorCode;
 import com.example.boulderside.domain.user.enums.UserRole;
 
 import jakarta.servlet.FilterChain;
@@ -60,10 +57,10 @@ public class JWTFilter extends OncePerRequestFilter {
 		String authorizationHeader = request.getHeader("Authorization");
 		// 헤더에 토큰이 없는 경우에도 필터 통과하기
 		if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-			AuthenticationException exception = new JwtAuthenticationException(SecurityErrorCode.ACCESS_DENIED);
-			customEntryPoint.commence(request, response,
-				new JwtAuthenticationException(SecurityErrorCode.ACCESS_DENIED));
-
+			// AuthenticationException exception = new JwtAuthenticationException(SecurityErrorCode.ACCESS_DENIED);
+			// customEntryPoint.commence(request, response,
+			// 	new JwtAuthenticationException(SecurityErrorCode.ACCESS_DENIED));
+			filterChain.doFilter(request, response);
 			return;
 		}
 
