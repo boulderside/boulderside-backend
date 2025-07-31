@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,8 +13,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.boulderside.common.security.TokenProvider;
 import com.example.boulderside.common.security.exception.CustomEntryPoint;
-import com.example.boulderside.common.security.exception.JwtAuthenticationException;
-import com.example.boulderside.common.security.exception.SecurityErrorCode;
 import com.example.boulderside.domain.user.enums.UserRole;
 
 import jakarta.servlet.FilterChain;
@@ -32,11 +29,6 @@ public class JWTFilter extends OncePerRequestFilter {
 		this.customEntryPoint = customEntryPoint;
 	}
 
-	private static final List<String> WHITE_LIST = List.of(
-		"/users/login",
-		"/users/sign-up"
-	);
-
 	// OPTIONS는 CORS의 요청이기 때문에 굳이 JWT 인청 필터를 거칠 필요가 없음.
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -51,27 +43,18 @@ public class JWTFilter extends OncePerRequestFilter {
 		FilterChain filterChain) throws ServletException, IOException {
 		String requestURI = request.getRequestURI();
 
-		// 화이트리스트에 포함된 URI는 해당 필터 통과하기
-		if (WHITE_LIST.stream().anyMatch(requestURI::equals)) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-
 		String authorizationHeader = request.getHeader("Authorization");
 		// 헤더에 토큰이 없는 경우에도 필터 통과하기
 		if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-			AuthenticationException exception = new JwtAuthenticationException(SecurityErrorCode.ACCESS_DENIED);
-			customEntryPoint.commence(request, response,
-				new JwtAuthenticationException(SecurityErrorCode.ACCESS_DENIED));
-
+			filterChain.doFilter(request, response);
 			return;
 		}
 
 		try {
 			String token = authorizationHeader.substring(7);
-
 			boolean isExpired = tokenProvider.isExpired(token);
-			if (isExpired) { //TODO: 토큰이 만료된 경우로 RefreshToken을 요청 로직 추가하기
+			if (isExpired) {
+				//TODO: 토큰이 만료된 경우로 RefreshToken을 요청 로직 추가하기
 				return;
 			}
 
