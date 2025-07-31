@@ -1,7 +1,7 @@
 package com.example.boulderside.domain.user.entity;
 
+import com.example.boulderside.common.enums.Level;
 import com.example.boulderside.domain.BaseEntity;
-import com.example.boulderside.domain.user.enums.UserLevel;
 import com.example.boulderside.domain.user.enums.UserRole;
 import com.example.boulderside.domain.user.enums.UserSex;
 
@@ -42,7 +42,7 @@ public class User extends BaseEntity {
 	private UserSex userSex;
 
 	@Enumerated(EnumType.STRING)
-	private UserLevel userLevel;
+	private Level userLevel;
 
 	@Column(length = 2048)
 	private String profileImageUrl;
