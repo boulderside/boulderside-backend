@@ -1,0 +1,41 @@
+package com.example.boulderside.common.aop;
+
+import java.util.Collection;
+
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Aspect
+@Component
+@Slf4j
+public class AuthInfoLoggingAspect {
+	@Around("execution(* com.example.boulderside..*Controller.*(..))")
+	public Object logAuthenticationInfo(ProceedingJoinPoint joinPoint) throws Throwable {
+		String methodSignature = joinPoint.getSignature().toShortString();
+
+		for (Object arg : joinPoint.getArgs()) {
+			if (arg instanceof Authentication auth) {
+				Long userId = (Long)auth.getPrincipal();
+				Collection<? extends GrantedAuthority> roles = auth.getAuthorities();
+
+				String ip = null;
+				Object details = auth.getDetails();
+				if (details instanceof WebAuthenticationDetails webDetails) {
+					ip = webDetails.getRemoteAddress();
+				}
+
+				log.info("method: {}, userId: {} roles: {} ip: {}", methodSignature, userId, roles, ip);
+				break;
+			}
+		}
+		return joinPoint.proceed();
+	}
+
+}
