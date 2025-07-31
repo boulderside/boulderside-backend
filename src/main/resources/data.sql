@@ -8,8 +8,7 @@ TRUNCATE TABLE users;
 TRUNCATE TABLE boulders;
 
 -- regions table 초기화
-DELETE
-FROM regions;
+TRUNCATE TABLE regions;
 
 INSERT INTO users (nickname, phone, user_role,
                    user_sex,
