@@ -1,18 +1,12 @@
 package com.example.boulderside.domain.boulder.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.example.boulderside.domain.BaseEntity;
 
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +23,10 @@ public class Boulder extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	/** 연관 지역 ID (FK) */
+	@Column(name = "region_id", nullable = false)
+	private Long regionId;
 
 	/** 바위 이름 */
 	@Column(name = "name", nullable = false)
@@ -50,21 +48,12 @@ public class Boulder extends BaseEntity {
 	@Column(name = "like_count", nullable = false)
 	private Long likeCount;
 
-	/** 시/도 */
-	@Column(name = "province")
-	private String province;
-
-	/** 시/군/구 */
-	@Column(name = "city")
-	private String city;
-
-	/** 바위 이미지 URL 목록 */
-	@ElementCollection
-	@CollectionTable(
-		name = "boulder_images",
-		joinColumns = @JoinColumn(name = "boulder_id")
-	)
-	@Column(name = "image_url", length = 2048)
-	private List<String> imageUrls = new ArrayList<>();
+	public void update(String name, String description, Double latitude, Double longitude, Long regionId) {
+		this.name = name;
+		this.description = description;
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.regionId = regionId;
+	}
 }
 

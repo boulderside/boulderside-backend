@@ -1,16 +1,10 @@
 package com.example.boulderside.domain.point;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,13 +41,4 @@ public class Point {
 	/** 추가 설명 */
 	@Column(name = "note")
 	private String note;
-
-	/** 포인트 이미지 URL 목록 */
-	@ElementCollection
-	@CollectionTable(
-		name = "point_images",
-		joinColumns = @JoinColumn(name = "point_id")
-	)
-	@Column(name = "image_url", length = 2048)
-	private List<String> imageUrls = new ArrayList<>();
 }
