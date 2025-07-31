@@ -9,7 +9,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.example.boulderside.domain.user.enums.UserRole;
+import com.example.boulderside.domain.aggregate.user.enums.UserRole;
 
 import io.jsonwebtoken.Jwts;
 import jakarta.annotation.PostConstruct;

@@ -13,7 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.boulderside.common.security.TokenProvider;
 import com.example.boulderside.common.security.exception.CustomEntryPoint;
-import com.example.boulderside.domain.user.enums.UserRole;
+import com.example.boulderside.domain.aggregate.user.enums.UserRole;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

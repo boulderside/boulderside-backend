@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.boulderside.application.boulder.dto.BoulderWithRegion;
-import com.example.boulderside.domain.boulder.entity.Boulder;
+import com.example.boulderside.domain.aggregate.boulder.entity.Boulder;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

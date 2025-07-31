@@ -3,7 +3,7 @@ package com.example.boulderside.common.security;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import com.example.boulderside.domain.user.enums.UserRole;
+import com.example.boulderside.domain.aggregate.user.enums.UserRole;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

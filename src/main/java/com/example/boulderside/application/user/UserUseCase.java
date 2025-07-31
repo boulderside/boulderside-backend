@@ -3,8 +3,8 @@ package com.example.boulderside.application.user;
 import org.springframework.stereotype.Service;
 
 import com.example.boulderside.application.user.dto.response.UserInfoResponse;
-import com.example.boulderside.domain.user.entity.User;
-import com.example.boulderside.domain.user.service.UserService;
+import com.example.boulderside.domain.aggregate.user.entity.User;
+import com.example.boulderside.domain.aggregate.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 

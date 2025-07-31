@@ -3,12 +3,12 @@ package com.example.boulderside.application.like;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.boulderside.domain.boulder.entity.Boulder;
-import com.example.boulderside.domain.boulder.service.BoulderService;
-import com.example.boulderside.domain.user.entity.User;
-import com.example.boulderside.domain.user.service.UserService;
-import com.example.boulderside.feature.like.entity.UserBoulderLike;
-import com.example.boulderside.feature.like.service.UserBoulderLikeService;
+import com.example.boulderside.domain.aggregate.boulder.entity.Boulder;
+import com.example.boulderside.domain.aggregate.boulder.service.BoulderService;
+import com.example.boulderside.domain.aggregate.user.entity.User;
+import com.example.boulderside.domain.aggregate.user.service.UserService;
+import com.example.boulderside.domain.association.like.entity.UserBoulderLike;
+import com.example.boulderside.domain.association.like.service.UserBoulderLikeService;
 
 import lombok.RequiredArgsConstructor;
 

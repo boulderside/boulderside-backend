@@ -9,11 +9,11 @@ import com.example.boulderside.controller.boulder.request.CreateBoulderRequest;
 import com.example.boulderside.controller.boulder.request.UpdateBoulderRequest;
 import com.example.boulderside.controller.boulder.response.BoulderPageResponse;
 import com.example.boulderside.controller.boulder.response.BoulderResponse;
-import com.example.boulderside.domain.boulder.entity.Boulder;
-import com.example.boulderside.domain.boulder.service.BoulderQueryService;
-import com.example.boulderside.domain.boulder.service.BoulderService;
-import com.example.boulderside.domain.region.entity.Region;
-import com.example.boulderside.domain.region.service.RegionService;
+import com.example.boulderside.domain.aggregate.boulder.entity.Boulder;
+import com.example.boulderside.domain.aggregate.boulder.service.BoulderQueryService;
+import com.example.boulderside.domain.aggregate.boulder.service.BoulderService;
+import com.example.boulderside.domain.aggregate.region.entity.Region;
+import com.example.boulderside.domain.aggregate.region.service.RegionService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,8 +44,8 @@ public class BoulderUseCase {
 			Math.min(size, boulderWithRegionListSize));
 	}
 
-	public BoulderResponse getBoulderById(Long id) {
-		BoulderWithRegion boulderWithRegion = boulderQueryService.getBoulderWithRegion(id);
+	public BoulderResponse getBoulderById(Long boulderId) {
+		BoulderWithRegion boulderWithRegion = boulderQueryService.getBoulderWithRegion(boulderId);
 		return BoulderResponse.from(boulderWithRegion);
 	}
 
@@ -65,8 +65,8 @@ public class BoulderUseCase {
 		return BoulderResponse.from(savedBoulder, region.getProvince(), region.getCity());
 	}
 
-	public BoulderResponse updateBoulder(Long id, UpdateBoulderRequest request) {
-		Boulder boulder = boulderService.getBoulderById(id);
+	public BoulderResponse updateBoulder(Long boulderId, UpdateBoulderRequest request) {
+		Boulder boulder = boulderService.getBoulderById(boulderId);
 		Region region = regionService.getRegionByProvinceAndCity(request.getProvince(), request.getCity());
 
 		boulder.update(
@@ -80,7 +80,7 @@ public class BoulderUseCase {
 		return BoulderResponse.from(boulder, region.getProvince(), region.getCity());
 	}
 
-	public void deleteBoulder(Long id) {
-		boulderService.deleteBoulder(id);
+	public void deleteBoulder(Long boulderId) {
+		boulderService.deleteBoulder(boulderId);
 	}
 }
