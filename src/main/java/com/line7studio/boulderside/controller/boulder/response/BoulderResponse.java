@@ -21,7 +21,6 @@ public class BoulderResponse {
 	private String description;
 	private Double latitude;
 	private Double longitude;
-	private Long likeCount;
 	private String province;
 	private String city;
 	private List<String> imageUrlList;
