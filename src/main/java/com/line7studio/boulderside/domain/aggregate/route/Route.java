@@ -4,6 +4,8 @@ import com.line7studio.boulderside.common.enums.Level;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,6 +35,7 @@ public class Route {
 	private String name;
 
 	/** 난이도 레벨 */
+	@Enumerated(EnumType.STRING)
 	@Column(name = "route_level")
 	private Level routeLevel;
 }

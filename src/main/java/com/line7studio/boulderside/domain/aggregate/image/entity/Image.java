@@ -4,6 +4,8 @@ import com.line7studio.boulderside.domain.aggregate.image.enums.TargetType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,6 +31,7 @@ public class Image {
 	private Long targetId;
 
 	/** 연관 대상 타입 */
+	@Enumerated(EnumType.STRING)
 	@Column(name = "target_type", nullable = false)
 	private TargetType targetType;
 
@@ -38,5 +41,5 @@ public class Image {
 
 	/** 이미지 인덱스 (순서) */
 	@Column(name = "order_index")
-	private String orderIndex;
+	private Integer orderIndex;
 }

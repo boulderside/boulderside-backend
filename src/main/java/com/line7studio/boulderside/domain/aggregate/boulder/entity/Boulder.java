@@ -29,7 +29,7 @@ public class Boulder extends BaseEntity {
 	private Long regionId;
 
 	/** 바위 이름 */
-	@Column(name = "name", nullable = false)
+	@Column(name = "name")
 	private String name;
 
 	/** 바위 설명 */
@@ -37,16 +37,12 @@ public class Boulder extends BaseEntity {
 	private String description;
 
 	/** 바위 위치 위도 */
-	@Column(name = "latitude", nullable = false)
+	@Column(name = "latitude")
 	private Double latitude;
 
 	/** 바위 위치 경도 */
-	@Column(name = "longitude", nullable = false)
+	@Column(name = "longitude")
 	private Double longitude;
-
-	/** 좋아요 수 */
-	@Column(name = "like_count", nullable = false)
-	private Long likeCount;
 
 	public void update(String name, String description, Double latitude, Double longitude, Long regionId) {
 		this.name = name;

@@ -57,7 +57,6 @@ public class BoulderUseCase {
 			.description(request.getDescription())
 			.latitude(request.getLatitude())
 			.longitude(request.getLongitude())
-			.likeCount(0L)
 			.regionId(region.getId())
 			.build();
 

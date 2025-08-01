@@ -27,8 +27,8 @@ public class Point {
 	private Long approachId;
 
 	/** 포인트 인덱스 */
-	@Column(name = "sequence")
-	private Integer sequence;
+	@Column(name = "order_index")
+	private Integer orderIndex;
 
 	/** 포인트 이름 */
 	@Column(name = "name")

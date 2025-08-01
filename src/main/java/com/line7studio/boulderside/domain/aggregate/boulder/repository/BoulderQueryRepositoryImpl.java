@@ -1,7 +1,7 @@
 package com.line7studio.boulderside.domain.aggregate.boulder.repository;
 
-import static com.line7studio.boulderside.domain.boulder.entity.QBoulder.*;
-import static com.line7studio.boulderside.domain.region.entity.QRegion.*;
+import static com.line7studio.boulderside.domain.aggregate.boulder.entity.QBoulder.*;
+import static com.line7studio.boulderside.domain.aggregate.region.entity.QRegion.*;
 
 import java.util.List;
 
@@ -34,7 +34,6 @@ public class BoulderQueryRepositoryImpl implements BoulderQueryRepository {
 				boulder.description,
 				boulder.latitude,
 				boulder.longitude,
-				boulder.likeCount,
 				boulder.createdAt,
 				boulder.updatedAt,
 				// Region
@@ -63,7 +62,6 @@ public class BoulderQueryRepositoryImpl implements BoulderQueryRepository {
 				boulder.description,
 				boulder.latitude,
 				boulder.longitude,
-				boulder.likeCount,
 				boulder.createdAt,
 				boulder.updatedAt,
 				// Region

@@ -23,11 +23,11 @@ public class Region {
 	private Long id;
 
 	/** 법정동코드 */
-	@Column(name = "official_district_code", nullable = false)
+	@Column(name = "official_district_code")
 	private String officialDistrictCode;
 
 	/** 시/도 */
-	@Column(name = "province", nullable = false)
+	@Column(name = "province")
 	private String province;
 
 	/** 시/군/구 */
