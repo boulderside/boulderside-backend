@@ -10,6 +10,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 
+import com.example.boulderside.common.security.details.CustomUserDetails;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Aspect
@@ -20,21 +22,28 @@ public class AuthInfoLoggingAspect {
 	public Object logAuthenticationInfo(ProceedingJoinPoint joinPoint) throws Throwable {
 		String methodSignature = joinPoint.getSignature().toShortString();
 
-		for (Object arg : joinPoint.getArgs()) {
-			if (arg instanceof Authentication auth) {
-				Long userId = (Long)auth.getPrincipal();
-				Collection<? extends GrantedAuthority> roles = auth.getAuthorities();
+		Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext()
+			.getAuthentication();
 
-				String ip = null;
-				Object details = auth.getDetails();
-				if (details instanceof WebAuthenticationDetails webDetails) {
-					ip = webDetails.getRemoteAddress();
-				}
+		if (auth != null && auth.isAuthenticated()) {
+			Object principal = auth.getPrincipal();
+			Long userId = null;
 
-				log.info("method: {}, userId: {} roles: {} ip: {}", methodSignature, userId, roles, ip);
-				break;
+			if (principal instanceof CustomUserDetails userDetails) {
+				userId = userDetails.getUserId();
 			}
+
+			Collection<? extends GrantedAuthority> roles = auth.getAuthorities();
+
+			String ip = null;
+			Object details = auth.getDetails();
+			if (details instanceof WebAuthenticationDetails webDetails) {
+				ip = webDetails.getRemoteAddress();
+			}
+
+			log.info("method: {}, userId: {}, roles: {}, ip: {}", methodSignature, userId, roles, ip);
 		}
+
 		return joinPoint.proceed();
 	}
 
