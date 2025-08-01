@@ -5,10 +5,10 @@ import org.springframework.security.core.AuthenticationException;
 import lombok.Getter;
 
 @Getter
-public class JwtAuthenticationException extends AuthenticationException {
+public class AuthenticationFailureException extends AuthenticationException {
 	private final SecurityErrorCode errorCode;
 
-	public JwtAuthenticationException(SecurityErrorCode errorCode) {
+	public AuthenticationFailureException(SecurityErrorCode errorCode) {
 		super(errorCode.getMessage());
 		this.errorCode = errorCode;
 	}

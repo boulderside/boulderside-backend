@@ -6,8 +6,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import com.line7studio.boulderside.common.response.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.line7studio.boulderside.common.response.ErrorResponse;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,8 +26,15 @@ public class CustomEntryPoint implements AuthenticationEntryPoint {
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType("application/json");
 
-		ErrorResponse errorResponse = new ErrorResponse(SecurityErrorCode.ACCESS_DENIED.getCode(),
-			SecurityErrorCode.ACCESS_DENIED.getMessage());
+		SecurityErrorCode errorCode;
+		if (authException instanceof AuthenticationFailureException authEx) {
+			errorCode = authEx.getErrorCode();
+		} else {
+			errorCode = SecurityErrorCode.UNKNOWN_AUTHENTICATION_ERROR;
+		}
+
+		ErrorResponse errorResponse = new ErrorResponse(errorCode.getCode(),
+			errorCode.getMessage());
 
 		String jsonResponse = objectMapper.writeValueAsString(errorResponse);
 		response.getWriter().write(jsonResponse);
