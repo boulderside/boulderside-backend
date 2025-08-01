@@ -33,12 +33,12 @@ INSERT INTO boulders (id, region_id, name, description,
                       latitude, longitude, created_at, updated_at)
 VALUES (1, 1, 'Sunrise Crag', '해돋이 보기 좋은 바위, 초보자도 접근 용이', 37.579617, 126.977041, NOW(), NOW()),
        (2, 2, 'Shadow Peak', '그림자가 길게 드리워지는 고독한 암석', 35.179554, 129.075642, NOW(), NOW()),
-       (3, 1, 'Mossy Boulder', '이끼로 덮인 습한 바위, 촉감이 부드러움', 37.566535, 126.977969, NOW(), NOW()),
-       (4, 3, 'Eagle\'s Perch', '독수리가 날아오르는 전망 좋은 암석', 36.350411, 127.384547, NOW(), NOW()),
-       (5, 4, 'Whispering Stone', '바람 소리가 울리는 신비한 바위', 35.872218, 128.602528, NOW(), NOW()),
-       (6, 2, 'Red Cliff', '붉은 색을 띤 절벽형 바위, 사진 찍기 좋음', 35.159545, 126.852601, NOW(), NOW()),
-       (7, 3, 'Twin Rocks', '쌍둥이처럼 생긴 두 개의 바위가 붙어 있는 장소', 36.487224, 127.289098, NOW(), NOW()),
-       (8, 4, 'Hidden Hollow', '작은 계곡 안에 숨어있는 아늑한 바위', 35.907757, 127.766922, NOW(), NOW());
+       (3, 3, 'Mossy Boulder', '이끼로 덮인 습한 바위, 촉감이 부드러움', 37.566535, 126.977969, NOW(), NOW()),
+       (4, 4, 'Eagle\'s Perch', '독수리가 날아오르는 전망 좋은 암석', 36.350411, 127.384547, NOW(), NOW()),
+       (5, 5, 'Whispering Stone', '바람 소리가 울리는 신비한 바위', 35.872218, 128.602528, NOW(), NOW()),
+       (6, 6, 'Red Cliff', '붉은 색을 띤 절벽형 바위, 사진 찍기 좋음', 35.159545, 126.852601, NOW(), NOW()),
+       (7, 7, 'Twin Rocks', '쌍둥이처럼 생긴 두 개의 바위가 붙어 있는 장소', 36.487224, 127.289098, NOW(), NOW()),
+       (8, 8, 'Hidden Hollow', '작은 계곡 안에 숨어있는 아늑한 바위', 35.907757, 127.766922, NOW(), NOW());
 
 INSERT INTO regions (official_district_code, province, city, region_code)
 VALUES ('1100000000', '서울특별시', NULL, '11B10101'),
