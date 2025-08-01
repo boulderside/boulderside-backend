@@ -9,25 +9,33 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.example.boulderside.common.security.TokenProvider;
+import com.example.boulderside.common.security.details.CustomUserDetails;
 import com.example.boulderside.common.security.exception.CustomEntryPoint;
+import com.example.boulderside.common.security.provider.TokenProvider;
+import com.example.boulderside.domain.user.entity.User;
 import com.example.boulderside.domain.user.enums.UserRole;
+import com.example.boulderside.domain.user.repository.UserRepository;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
+@Component
+@RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 	private final TokenProvider tokenProvider;
 	private final CustomEntryPoint customEntryPoint;
+	private final UserRepository userRepository;
 
-	public JWTFilter(TokenProvider tokenProvider, CustomEntryPoint customEntryPoint) {
-		this.tokenProvider = tokenProvider;
-		this.customEntryPoint = customEntryPoint;
-	}
+	// public JWTFilter(TokenProvider tokenProvider, CustomEntryPoint customEntryPoint) {
+	// 	this.tokenProvider = tokenProvider;
+	// 	this.customEntryPoint = customEntryPoint;
+	// }
 
 	// OPTIONS는 CORS의 요청이기 때문에 굳이 JWT 인청 필터를 거칠 필요가 없음.
 	@Override
@@ -41,7 +49,6 @@ public class JWTFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
-		String requestURI = request.getRequestURI();
 
 		String authorizationHeader = request.getHeader("Authorization");
 		// 헤더에 토큰이 없는 경우에도 필터 통과하기
@@ -59,10 +66,13 @@ public class JWTFilter extends OncePerRequestFilter {
 			}
 
 			Long userId = tokenProvider.getUserId(token);
+			User user = userRepository.findById(userId).orElseThrow();
+			CustomUserDetails customUserDetails = CustomUserDetails.from(user);
+
 			UserRole role = tokenProvider.getRole(token);
 			List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role.name()));
 			AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-				userId,
+				customUserDetails,
 				null,
 				authorities
 			);
