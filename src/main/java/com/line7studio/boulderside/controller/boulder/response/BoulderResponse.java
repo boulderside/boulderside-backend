@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.line7studio.boulderside.application.boulder.dto.BoulderWithRegion;
+import com.line7studio.boulderside.common.dto.ImageInfo;
 import com.line7studio.boulderside.domain.aggregate.boulder.entity.Boulder;
 
 import lombok.AllArgsConstructor;
@@ -24,11 +25,11 @@ public class BoulderResponse {
 	private Long likeCount;
 	private String province;
 	private String city;
-	private List<String> imageUrlList;
+	private List<ImageInfo> imageInfoList;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	public static BoulderResponse from(Boulder boulder, String province, String city) {
+	public static BoulderResponse from(Boulder boulder, String province, String city, List<ImageInfo> imageInfoList) {
 		return BoulderResponse.builder()
 			.id(boulder.getId())
 			.name(boulder.getName())
@@ -37,12 +38,13 @@ public class BoulderResponse {
 			.longitude(boulder.getLongitude())
 			.province(province)
 			.city(city)
+			.imageInfoList(imageInfoList)
 			.createdAt(boulder.getCreatedAt())
 			.updatedAt(boulder.getUpdatedAt())
 			.build();
 	}
 
-	public static BoulderResponse from(BoulderWithRegion boulderWithRegion) {
+	public static BoulderResponse of(BoulderWithRegion boulderWithRegion, List<ImageInfo> imageInfoList) {
 		return BoulderResponse.builder()
 			.id(boulderWithRegion.getId())
 			.name(boulderWithRegion.getName())
@@ -51,6 +53,7 @@ public class BoulderResponse {
 			.longitude(boulderWithRegion.getLongitude())
 			.province(boulderWithRegion.getProvince())
 			.city(boulderWithRegion.getCity())
+			.imageInfoList(imageInfoList)
 			.createdAt(boulderWithRegion.getCreatedAt())
 			.updatedAt(boulderWithRegion.getUpdatedAt())
 			.build();
