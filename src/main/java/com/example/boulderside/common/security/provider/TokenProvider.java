@@ -1,4 +1,4 @@
-package com.example.boulderside.common.security;
+package com.example.boulderside.common.security.provider;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
