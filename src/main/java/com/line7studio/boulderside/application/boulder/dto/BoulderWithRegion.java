@@ -18,7 +18,6 @@ public class BoulderWithRegion {
 	private String description;
 	private Double latitude;
 	private Double longitude;
-	private Long likeCount;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
