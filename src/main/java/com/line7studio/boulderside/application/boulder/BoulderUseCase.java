@@ -117,7 +117,7 @@ public class BoulderUseCase {
 				.toList();
 		}
 
-		return BoulderResponse.from(savedBoulder, region.getProvince(), region.getCity(), imageInfoList);
+		return BoulderResponse.of(savedBoulder, region.getProvince(), region.getCity(), imageInfoList);
 	}
 
 	public BoulderResponse updateBoulder(Long boulderId, UpdateBoulderRequest request) {
@@ -154,7 +154,7 @@ public class BoulderUseCase {
 				.toList();
 		}
 
-		return BoulderResponse.from(boulder, region.getProvince(), region.getCity(), imageInfoList);
+		return BoulderResponse.of(boulder, region.getProvince(), region.getCity(), imageInfoList);
 	}
 
 	public void deleteBoulder(Long boulderId) {

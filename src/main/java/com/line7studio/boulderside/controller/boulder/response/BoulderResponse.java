@@ -29,7 +29,7 @@ public class BoulderResponse {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	public static BoulderResponse from(Boulder boulder, String province, String city, List<ImageInfo> imageInfoList) {
+	public static BoulderResponse of(Boulder boulder, String province, String city, List<ImageInfo> imageInfoList) {
 		return BoulderResponse.builder()
 			.id(boulder.getId())
 			.name(boulder.getName())
