@@ -6,17 +6,21 @@ import lombok.Getter;
 
 @Getter
 public enum SecurityErrorCode {
+	UNKNOWN_AUTHENTICATION_ERROR("S000", "인증 처리 중 알 수 없는 오류가 발생했습니다.", HttpStatus.UNAUTHORIZED),
+
 	// Authentication (S001 ~ S049)
-	AUTHENTICATION_FAILED("S001", "인증에 실패했습니다.", HttpStatus.UNAUTHORIZED),
+	INVALID_USERNAME("S001", "아이디가 존재하지 않습니다.", HttpStatus.UNAUTHORIZED),
+	INVALID_PASSWORD("S002", "비밀번호가 올바르지 않습니다.", HttpStatus.UNAUTHORIZED),
+	AUTHENTICATION_PAYLOAD_INVALID("S003", "인증 처리 중 알 수 없는 오류가 발생했습니다.", HttpStatus.BAD_REQUEST),
 
-	ACCESS_TOKEN_EXPIRED("S002", "Access Token이 만료되었습니다.", HttpStatus.UNAUTHORIZED),
-	ACCESS_TOKEN_MISSING("S003", "Access Token이 존재하지 않습니다.", HttpStatus.UNAUTHORIZED),
-	ACCESS_TOKEN_INVALID("S004", "유효하지 않은 Access Token입니다.", HttpStatus.UNAUTHORIZED),
+	ACCESS_TOKEN_EXPIRED("S010", "Access Token이 만료되었습니다.", HttpStatus.UNAUTHORIZED),
+	ACCESS_TOKEN_MISSING("S011", "Access Token이 존재하지 않습니다.", HttpStatus.UNAUTHORIZED),
+	ACCESS_TOKEN_INVALID("S012", "유효하지 않은 Access Token입니다.", HttpStatus.UNAUTHORIZED),
 
-	REFRESH_TOKEN_EXPIRED("S005", "Refresh Token이 만료되었습니다.", HttpStatus.UNAUTHORIZED),
-	REFRESH_TOKEN_INVALID("S006", "유효하지 않은 Refresh Token입니다.", HttpStatus.UNAUTHORIZED),
-	REFRESH_TOKEN_MISSING("S007", "Refresh Token이 존재하지 않습니다.", HttpStatus.UNAUTHORIZED),
-	REFRESH_TOKEN_MISMATCH("S008", "요청한 Refresh Token이 서버의 값과 일치하지 않습니다.", HttpStatus.UNAUTHORIZED),
+	REFRESH_TOKEN_EXPIRED("S020", "Refresh Token이 만료되었습니다.", HttpStatus.UNAUTHORIZED),
+	REFRESH_TOKEN_INVALID("S021", "유효하지 않은 Refresh Token입니다.", HttpStatus.UNAUTHORIZED),
+	REFRESH_TOKEN_MISSING("S022", "Refresh Token이 존재하지 않습니다.", HttpStatus.UNAUTHORIZED),
+	REFRESH_TOKEN_MISMATCH("S023", "요청한 Refresh Token이 서버의 값과 일치하지 않습니다.", HttpStatus.UNAUTHORIZED),
 
 	// Authorization (S050 ~ S099)
 	ACCESS_DENIED("S050", "요청한 리소스에 대한 권한이 없습니다.", HttpStatus.FORBIDDEN),
