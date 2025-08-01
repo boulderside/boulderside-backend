@@ -30,5 +30,5 @@ public class UpdateBoulderRequest {
 
 	private String city;
 
-	private List<String> imageUrls;
+	private List<String> imageUrlList;
 }

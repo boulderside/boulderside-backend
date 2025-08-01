@@ -40,6 +40,22 @@ VALUES (1, 1, 'Sunrise Crag', '해돋이 보기 좋은 바위, 초보자도 접�
        (7, 7, 'Twin Rocks', '쌍둥이처럼 생긴 두 개의 바위가 붙어 있는 장소', 36.487224, 127.289098, NOW(), NOW()),
        (8, 8, 'Hidden Hollow', '작은 계곡 안에 숨어있는 아늑한 바위', 35.907757, 127.766922, NOW(), NOW());
 
+-- boulder 별 이미지 (target_type = 'BOULDER')
+INSERT INTO images (target_id, target_type, image_url, order_index)
+VALUES (1, 'BOULDER', 'https://cdn.example.com/boulders/1/sunrise_1.jpg', 0),
+       (1, 'BOULDER', 'https://cdn.example.com/boulders/1/sunrise_2.jpg', 1),
+       (2, 'BOULDER', 'https://cdn.example.com/boulders/2/shadow_1.jpg', 0),
+       (2, 'BOULDER', 'https://cdn.example.com/boulders/2/shadow_2.jpg', 1),
+       (2, 'BOULDER', 'https://cdn.example.com/boulders/2/shadow_3.jpg', 2),
+       (3, 'BOULDER', 'https://cdn.example.com/boulders/3/mossy_1.jpg', 0),
+       (4, 'BOULDER', 'https://cdn.example.com/boulders/4/eagle_1.jpg', 0),
+       (4, 'BOULDER', 'https://cdn.example.com/boulders/4/eagle_2.jpg', 1),
+       (5, 'BOULDER', 'https://cdn.example.com/boulders/5/whisper_1.jpg', 0),
+       (6, 'BOULDER', 'https://cdn.example.com/boulders/6/redcliff_1.jpg', 0),
+       (6, 'BOULDER', 'https://cdn.example.com/boulders/6/redcliff_2.jpg', 1),
+       (7, 'BOULDER', 'https://cdn.example.com/boulders/7/twinrocks_1.jpg', 0),
+       (8, 'BOULDER', 'https://cdn.example.com/boulders/8/hiddenhollow_1.jpg', 0);
+
 INSERT INTO regions (official_district_code, province, city, region_code)
 VALUES ('1100000000', '서울특별시', NULL, '11B10101'),
        ('1111000000', '서울특별시', '종로구', '11B10101'),

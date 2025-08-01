@@ -30,5 +30,5 @@ public class CreateBoulderRequest {
 
 	private String city;
 
-	private List<String> imageUrls;
+	private List<String> imageUrlList;
 }
