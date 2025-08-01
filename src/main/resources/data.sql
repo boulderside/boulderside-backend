@@ -8,6 +8,7 @@ INSERT INTO users (nickname,
                    profile_image_url,
                    name,
                    email,
+                   password,
                    created_at,
                    updated_at)
 VALUES ('bouldertiger', -- nickname
@@ -17,7 +18,8 @@ VALUES ('bouldertiger', -- nickname
         'V0', -- user_level (enum 문자열)
         'https://example.com/profile.jpg', -- profileImageUrl
         '김볼더', -- name
-        'bouldertiger11@example.com', -- email
+        'boulder',
+        '1234',-- email
         NOW(), -- created_at
         NOW() -- updated_at
        );
