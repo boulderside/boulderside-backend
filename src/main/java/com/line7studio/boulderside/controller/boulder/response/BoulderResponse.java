@@ -49,7 +49,6 @@ public class BoulderResponse {
 			.description(boulderWithRegion.getDescription())
 			.latitude(boulderWithRegion.getLatitude())
 			.longitude(boulderWithRegion.getLongitude())
-			.likeCount(boulderWithRegion.getLikeCount())
 			.province(boulderWithRegion.getProvince())
 			.city(boulderWithRegion.getCity())
 			.createdAt(boulderWithRegion.getCreatedAt())
