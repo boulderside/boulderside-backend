@@ -12,7 +12,7 @@ import com.line7studio.boulderside.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
 	private final UserUseCase userUseCase;

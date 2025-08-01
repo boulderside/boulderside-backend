@@ -11,7 +11,7 @@ import com.line7studio.boulderside.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/like")
+@RequestMapping("/like")
 @RequiredArgsConstructor
 public class LikeController {
 	private final LikeUseCase likeUseCase;
