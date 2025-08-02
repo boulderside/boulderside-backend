@@ -15,7 +15,7 @@ public class UserBoulderLikeServiceImpl implements UserBoulderLikeService {
 	private final UserBoulderLikeRepository userBoulderLikeRepository;
 
 	@Override
-	public void toggle(UserBoulderLike userBoulderLike) {
+	public boolean toggle(UserBoulderLike userBoulderLike) {
 		Long userId = userBoulderLike.getUserId();
 		Long boulderId = userBoulderLike.getBoulderId();
 		if (userId == null || boulderId == null) {
@@ -26,8 +26,10 @@ public class UserBoulderLikeServiceImpl implements UserBoulderLikeService {
 
 		if (alreadyExists) {
 			userBoulderLikeRepository.deleteByUserIdAndBoulderId(userId, boulderId);
+			return false;
 		} else {
 			userBoulderLikeRepository.save(userBoulderLike);
+			return true;
 		}
 	}
 

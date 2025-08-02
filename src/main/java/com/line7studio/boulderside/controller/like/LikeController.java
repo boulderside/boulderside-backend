@@ -11,6 +11,7 @@ import com.line7studio.boulderside.application.like.LikeUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.controller.like.request.LikeRequest;
+import com.line7studio.boulderside.controller.like.response.LikeResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +23,9 @@ public class LikeController {
 	private final LikeUseCase likeUseCase;
 
 	@PostMapping("/toggle")
-	public ResponseEntity<ApiResponse<Void>> toggleLike(@Valid @RequestBody LikeRequest request,
+	public ResponseEntity<ApiResponse<LikeResponse>> toggleLike(@Valid @RequestBody LikeRequest request,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		likeUseCase.toggleBoulderLike(userDetails.getUserId(), request.getBoulderId());
-		return ResponseEntity.ok(ApiResponse.of());
+		LikeResponse response = likeUseCase.toggleBoulderLike(userDetails.getUserId(), request.getBoulderId());
+		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 }

@@ -3,7 +3,7 @@ package com.line7studio.boulderside.domain.association.like.service;
 import com.line7studio.boulderside.domain.association.like.entity.UserBoulderLike;
 
 public interface UserBoulderLikeService {
-	void toggle(UserBoulderLike userBoulderLike);
+	boolean toggle(UserBoulderLike userBoulderLike);
 
 	long getCountByBoulderId(Long boulderId);
 
