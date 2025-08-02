@@ -7,5 +7,5 @@ import com.line7studio.boulderside.application.boulder.dto.BoulderWithRegion;
 public interface BoulderQueryRepository {
 	List<BoulderWithRegion> findBouldersWithRegionAndCursor(Long cursor, int size);
 
-	BoulderWithRegion findBouldersWithRegionById(Long boulderId);
+	BoulderWithRegion findBouldersWithRegionByBoulderId(Long boulderId);
 }
