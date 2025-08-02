@@ -10,9 +10,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.line7studio.boulderside.domain.aggregate.user.entity.User;
 import com.line7studio.boulderside.domain.aggregate.user.enums.UserRole;
 
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder(access = AccessLevel.PRIVATE)
 public class CustomUserDetails implements UserDetails {
 	private final Long userId;
 	private final String email;
@@ -20,17 +23,14 @@ public class CustomUserDetails implements UserDetails {
 	private final String nickname;
 	private final UserRole userRole;
 
-	private CustomUserDetails(Long userId, String email, String password, String nickname, UserRole userRole) {
-		this.userId = userId;
-		this.email = email;
-		this.password = password;
-		this.nickname = nickname;
-		this.userRole = userRole;
-	}
-
 	public static CustomUserDetails from(User user) {
-		return new CustomUserDetails(user.getId(), user.getEmail(), user.getPassword(), user.getNickname(),
-			user.getUserRole());
+		return CustomUserDetails.builder()
+			.userId(user.getId())
+			.email(user.getEmail())
+			.password(user.getPassword())
+			.nickname(user.getNickname())
+			.userRole(user.getUserRole())
+			.build();
 	}
 
 	@Override
