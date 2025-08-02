@@ -10,6 +10,8 @@ TRUNCATE TABLE boulders;
 -- regions table 초기화
 TRUNCATE TABLE regions;
 
+TRUNCATE TABLE images;
+
 INSERT INTO users (nickname, phone, user_role,
                    user_sex,
                    user_level,
