@@ -19,7 +19,7 @@ public class UserBoulderLikeServiceImpl implements UserBoulderLikeService {
 		Long userId = userBoulderLike.getUserId();
 		Long boulderId = userBoulderLike.getBoulderId();
 		if (userId == null || boulderId == null) {
-			throw new ValidationException(ErrorCode.MISSING_REQUIRED_FIELD);
+			throw new ValidationException(ErrorCode.VALIDATION_FAILED);
 		}
 
 		boolean alreadyExists = userBoulderLikeRepository.existsByUserIdAndBoulderId(userId, boulderId);
@@ -29,5 +29,21 @@ public class UserBoulderLikeServiceImpl implements UserBoulderLikeService {
 		} else {
 			userBoulderLikeRepository.save(userBoulderLike);
 		}
+	}
+
+	@Override
+	public long getCountByBoulderId(Long boulderId) {
+		if (boulderId == null) {
+			throw new ValidationException(ErrorCode.VALIDATION_FAILED);
+		}
+		return userBoulderLikeRepository.countByBoulderId(boulderId);
+	}
+
+	@Override
+	public void deleteAllByBoulderId(Long boulderId) {
+		if (boulderId == null) {
+			throw new ValidationException(ErrorCode.VALIDATION_FAILED);
+		}
+		userBoulderLikeRepository.deleteAllByBoulderId(boulderId);
 	}
 }

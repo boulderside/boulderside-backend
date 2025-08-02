@@ -4,4 +4,8 @@ import com.line7studio.boulderside.domain.association.like.entity.UserBoulderLik
 
 public interface UserBoulderLikeService {
 	void toggle(UserBoulderLike userBoulderLike);
+
+	long getCountByBoulderId(Long boulderId);
+
+	void deleteAllByBoulderId(Long boulderId);
 }
