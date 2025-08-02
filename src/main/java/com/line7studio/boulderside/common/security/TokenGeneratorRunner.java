@@ -3,6 +3,7 @@ package com.line7studio.boulderside.common.security;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import com.line7studio.boulderside.common.security.provider.TokenProvider;
 import com.line7studio.boulderside.domain.aggregate.user.enums.UserRole;
 
 import lombok.RequiredArgsConstructor;

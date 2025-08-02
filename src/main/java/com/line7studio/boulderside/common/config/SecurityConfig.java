@@ -4,20 +4,22 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.ExceptionTranslationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.line7studio.boulderside.common.security.TokenProvider;
 import com.line7studio.boulderside.common.security.exception.CustomDeniedHandler;
 import com.line7studio.boulderside.common.security.exception.CustomEntryPoint;
 import com.line7studio.boulderside.common.security.filter.JWTFilter;
+import com.line7studio.boulderside.common.security.filter.LoginFilter;
+import com.line7studio.boulderside.common.security.provider.TokenProvider;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,9 +28,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 	private final TokenProvider tokenProvider;
+	private final AuthenticationConfiguration authenticationConfiguration;
 
 	private final CustomDeniedHandler customDeniedHandler;
 	private final CustomEntryPoint customEntryPoint;
+
+	private final JWTFilter jwtFilter;
 
 	@Bean
 	public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -50,14 +55,19 @@ public class SecurityConfig {
 			// 명시한 url만 인가 없이 허용
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/").permitAll()
+				.requestMatchers("/admin/**").hasRole("ADMIN")
 				.anyRequest().authenticated());
 
 		http.exceptionHandling(exception -> exception
 			.authenticationEntryPoint(customEntryPoint)
 			.accessDeniedHandler(customDeniedHandler));
 
-		//http.addFilterBefore(new JWTFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
-		http.addFilterBefore(new JWTFilter(tokenProvider, customEntryPoint), ExceptionTranslationFilter.class);
+		LoginFilter loginFilter = new LoginFilter(authenticationConfiguration.getAuthenticationManager(),
+			tokenProvider, customEntryPoint);
+		loginFilter.setFilterProcessesUrl("/users/login");
+		http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
+
+		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 
