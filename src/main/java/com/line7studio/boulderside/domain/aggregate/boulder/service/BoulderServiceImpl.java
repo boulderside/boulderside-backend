@@ -26,7 +26,7 @@ public class BoulderServiceImpl implements BoulderService {
 	}
 
 	@Override
-	public void deleteBoulder(Long boulderId) {
+	public void deleteByBoulderId(Long boulderId) {
 		Boulder boulder = getBoulderById(boulderId);
 		boulderRepository.delete(boulder);
 	}

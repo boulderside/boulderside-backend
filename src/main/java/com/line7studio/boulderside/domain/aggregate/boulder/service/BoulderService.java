@@ -7,5 +7,5 @@ public interface BoulderService {
 
 	Boulder createBoulder(Boulder boulder);
 
-	void deleteBoulder(Long boulderId);
+	void deleteByBoulderId(Long boulderId);
 }

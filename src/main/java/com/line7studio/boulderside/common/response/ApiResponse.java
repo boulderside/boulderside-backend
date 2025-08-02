@@ -1,5 +1,7 @@
 package com.line7studio.boulderside.common.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,20 +11,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
 	private T data;
-	private boolean success;
+	private Boolean success;
 
-	public static <T> ApiResponse<T> of() {
+	public static <T> ApiResponse<T> success() {
 		return ApiResponse.<T>builder()
 			.success(true)
-			.data(null)
 			.build();
 	}
 
 	public static <T> ApiResponse<T> of(T data) {
 		return ApiResponse.<T>builder()
-			.success(true)
 			.data(data)
 			.build();
 	}

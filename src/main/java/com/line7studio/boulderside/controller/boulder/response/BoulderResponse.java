@@ -24,11 +24,13 @@ public class BoulderResponse {
 	private Double longitude;
 	private String province;
 	private String city;
+	private Long likeCount;
 	private List<ImageInfo> imageInfoList;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	public static BoulderResponse of(Boulder boulder, String province, String city, List<ImageInfo> imageInfoList) {
+	public static BoulderResponse of(Boulder boulder, String province, String city, List<ImageInfo> imageInfoList,
+		long likeCount) {
 		return BoulderResponse.builder()
 			.id(boulder.getId())
 			.name(boulder.getName())
@@ -38,6 +40,7 @@ public class BoulderResponse {
 			.province(province)
 			.city(city)
 			.imageInfoList(imageInfoList)
+			.likeCount(likeCount)
 			.createdAt(boulder.getCreatedAt())
 			.updatedAt(boulder.getUpdatedAt())
 			.build();
@@ -53,6 +56,24 @@ public class BoulderResponse {
 			.province(boulderWithRegion.getProvince())
 			.city(boulderWithRegion.getCity())
 			.imageInfoList(imageInfoList)
+			.likeCount(0L)
+			.createdAt(boulderWithRegion.getCreatedAt())
+			.updatedAt(boulderWithRegion.getUpdatedAt())
+			.build();
+	}
+
+	public static BoulderResponse of(BoulderWithRegion boulderWithRegion, List<ImageInfo> imageInfoList,
+		long likeCount) {
+		return BoulderResponse.builder()
+			.id(boulderWithRegion.getId())
+			.name(boulderWithRegion.getName())
+			.description(boulderWithRegion.getDescription())
+			.latitude(boulderWithRegion.getLatitude())
+			.longitude(boulderWithRegion.getLongitude())
+			.province(boulderWithRegion.getProvince())
+			.city(boulderWithRegion.getCity())
+			.imageInfoList(imageInfoList)
+			.likeCount(likeCount)
 			.createdAt(boulderWithRegion.getCreatedAt())
 			.updatedAt(boulderWithRegion.getUpdatedAt())
 			.build();
