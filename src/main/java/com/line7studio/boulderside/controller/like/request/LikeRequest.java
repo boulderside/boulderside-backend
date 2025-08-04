@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LikeRequest {
 
-	@NotNull(message = "바위 ID는 필수입니다")
+	@NotNull(message = "바위 ID는 필수입니다.")
 	private Long boulderId;
 }
