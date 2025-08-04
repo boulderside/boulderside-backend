@@ -27,7 +27,11 @@ public enum ErrorCode {
 	EXTERNAL_API_ERROR("A001", "외부 API 호출에 실패했습니다.", HttpStatus.SERVICE_UNAVAILABLE),
 	EMAIL_SEND_FAILED("A002", "이메일 전송에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 	PHONE_VERIFICATION_FAILED("A003", "휴대폰 번호 인증에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-	UNKNOWN_ERROR("A999", "알 수 없는 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+	UNKNOWN_ERROR("A999", "알 수 없는 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+
+	// External (E001~E099)
+	LATITUDE_OUT_OF_RANGE("E001", "위도의 범위를 벗어났습니다.", HttpStatus.BAD_REQUEST),
+	LONGITUDE_OUT_OF_RANGE("E002", "경도의 범위를 벗어났습니다.", HttpStatus.BAD_REQUEST);
 
 	private final String code;
 	private final String errorMessage;
