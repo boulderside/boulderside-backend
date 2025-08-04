@@ -7,5 +7,9 @@ import com.line7studio.boulderside.domain.association.like.entity.UserBoulderLik
 public interface UserBoulderLikeRepository extends JpaRepository<UserBoulderLike, Long> {
 	boolean existsByUserIdAndBoulderId(Long userId, Long boulderId);
 
-	boolean deleteByUserIdAndBoulderId(Long userId, Long boulderId);
+	void deleteByUserIdAndBoulderId(Long userId, Long boulderId);
+
+	long countByBoulderId(Long boulderId);
+
+	void deleteAllByBoulderId(Long boulderId);
 }

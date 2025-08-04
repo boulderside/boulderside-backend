@@ -25,6 +25,7 @@ import com.line7studio.boulderside.domain.aggregate.image.enums.TargetType;
 import com.line7studio.boulderside.domain.aggregate.image.service.ImageService;
 import com.line7studio.boulderside.domain.aggregate.region.entity.Region;
 import com.line7studio.boulderside.domain.aggregate.region.service.RegionService;
+import com.line7studio.boulderside.domain.association.like.service.UserBoulderLikeService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +37,7 @@ public class BoulderUseCase {
 	private final RegionService regionService;
 	private final BoulderService boulderService;
 	private final BoulderQueryService boulderQueryService;
+	private final UserBoulderLikeService userBoulderLikeService;
 
 	public BoulderPageResponse getBoulderPage(Long cursor, int size) {
 		List<BoulderWithRegion> boulderWithRegionList = boulderQueryService.getBoulderWithRegionList(cursor, size);
@@ -61,7 +63,8 @@ public class BoulderUseCase {
 		List<BoulderResponse> boulderResponseList = boulderWithRegionPage.stream()
 			.map(b -> {
 				List<ImageInfo> imgs = boulderImageInfoMap.getOrDefault(b.getId(), Collections.emptyList());
-				return BoulderResponse.of(b, imgs);
+				long likeCount = userBoulderLikeService.getCountByBoulderId(b.getId());
+				return BoulderResponse.of(b, imgs, likeCount);
 			})
 			.toList();
 
@@ -81,7 +84,9 @@ public class BoulderUseCase {
 			.sorted(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)))
 			.toList();
 
-		return BoulderResponse.of(boulderWithRegion, imageInfoList);
+		long likeCount = userBoulderLikeService.getCountByBoulderId(boulderId);
+
+		return BoulderResponse.of(boulderWithRegion, imageInfoList, likeCount);
 	}
 
 	public BoulderResponse createBoulder(CreateBoulderRequest request) {
@@ -117,7 +122,7 @@ public class BoulderUseCase {
 				.toList();
 		}
 
-		return BoulderResponse.of(savedBoulder, region.getProvince(), region.getCity(), imageInfoList);
+		return BoulderResponse.of(savedBoulder, region.getProvince(), region.getCity(), imageInfoList, 0L);
 	}
 
 	public BoulderResponse updateBoulder(Long boulderId, UpdateBoulderRequest request) {
@@ -131,6 +136,8 @@ public class BoulderUseCase {
 			request.getLatitude(),
 			request.getLongitude()
 		);
+
+		long likeCount = userBoulderLikeService.getCountByBoulderId(boulderId);
 
 		imageService.deleteImagesByTargetTypeAndTargetId(TargetType.BOULDER, boulderId);
 
@@ -154,10 +161,12 @@ public class BoulderUseCase {
 				.toList();
 		}
 
-		return BoulderResponse.of(boulder, region.getProvince(), region.getCity(), imageInfoList);
+		return BoulderResponse.of(boulder, region.getProvince(), region.getCity(), imageInfoList, likeCount);
 	}
 
 	public void deleteBoulder(Long boulderId) {
-		boulderService.deleteBoulder(boulderId);
+		imageService.deleteImagesByTargetTypeAndTargetId(TargetType.BOULDER, boulderId);
+		userBoulderLikeService.deleteAllByBoulderId(boulderId);
+		boulderService.deleteByBoulderId(boulderId);
 	}
 }

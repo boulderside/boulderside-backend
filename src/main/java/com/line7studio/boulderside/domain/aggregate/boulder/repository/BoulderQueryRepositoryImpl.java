@@ -52,7 +52,7 @@ public class BoulderQueryRepositoryImpl implements BoulderQueryRepository {
 	}
 
 	@Override
-	public BoulderWithRegion findBouldersWithRegionById(Long boulderId) {
+	public BoulderWithRegion findBouldersWithRegionByBoulderId(Long boulderId) {
 		return jpaQueryFactory
 			.select(Projections.constructor(
 				BoulderWithRegion.class,
@@ -73,6 +73,7 @@ public class BoulderQueryRepositoryImpl implements BoulderQueryRepository {
 			))
 			.from(boulder)
 			.join(region).on(boulder.regionId.eq(region.id))
+			.where(boulder.id.eq(boulderId))
 			.fetchOne();
 	}
 }

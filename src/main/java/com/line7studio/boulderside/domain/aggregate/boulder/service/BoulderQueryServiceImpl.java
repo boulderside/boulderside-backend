@@ -21,6 +21,6 @@ public class BoulderQueryServiceImpl implements BoulderQueryService {
 
 	@Override
 	public BoulderWithRegion getBoulderWithRegion(Long boulderId) {
-		return boulderQueryRepository.findBouldersWithRegionById(boulderId);
+		return boulderQueryRepository.findBouldersWithRegionByBoulderId(boulderId);
 	}
 }

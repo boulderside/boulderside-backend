@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.config;
+package com.line7studio.boulderside.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -59,6 +59,6 @@ public class BoulderController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ApiResponse<Void>> deleteBoulder(@PathVariable Long id) {
 		boulderUseCase.deleteBoulder(id);
-		return ResponseEntity.ok(ApiResponse.of());
+		return ResponseEntity.ok(ApiResponse.success());
 	}
 }
