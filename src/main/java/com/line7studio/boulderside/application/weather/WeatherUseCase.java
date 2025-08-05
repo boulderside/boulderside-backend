@@ -1,7 +1,6 @@
 package com.line7studio.boulderside.application.weather;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -27,7 +26,7 @@ public class WeatherUseCase {
 
 		return oneCallResponse.getDaily().stream()
 			.map(this::transformToWeatherSummary)
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	private DailyWeatherInfoDto transformToWeatherSummary(OneCallResponse.DailyWeather daily) {
