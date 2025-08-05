@@ -2,6 +2,7 @@ package com.line7studio.boulderside.domain.aggregate.boulder.service;
 
 import java.util.List;
 
+import com.line7studio.boulderside.domain.aggregate.boulder.enums.BoulderSortType;
 import org.springframework.stereotype.Service;
 
 import com.line7studio.boulderside.application.boulder.dto.BoulderWithRegion;
@@ -15,8 +16,8 @@ public class BoulderQueryServiceImpl implements BoulderQueryService {
 	private final BoulderQueryRepository boulderQueryRepository;
 
 	@Override
-	public List<BoulderWithRegion> getBoulderWithRegionList(Long cursor, int size) {
-		return boulderQueryRepository.findBouldersWithRegionAndCursor(cursor, size);
+	public List<BoulderWithRegion> getBoulderWithRegionList(BoulderSortType sortType, Long cursor, Long cursorLikeCount, int size) {
+		return boulderQueryRepository.findBouldersWithRegionAndCursor(sortType, cursor, cursorLikeCount, size);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.line7studio.boulderside.controller.boulder;
 
+import com.line7studio.boulderside.domain.aggregate.boulder.enums.BoulderSortType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,9 +31,11 @@ public class BoulderController {
 
 	@GetMapping
 	public ResponseEntity<ApiResponse<BoulderPageResponse>> getBoulderPage(
+		@RequestParam(defaultValue = "LATEST") BoulderSortType sortType,
 		@RequestParam(required = false) Long cursor,
-		@RequestParam(defaultValue = "5") int size) {
-		BoulderPageResponse boulderPageResponse = boulderUseCase.getBoulderPage(cursor, size);
+		@RequestParam(required = false) Long cursorLikeCount,
+		@RequestParam(defaultValue = "10") int size) {
+		BoulderPageResponse boulderPageResponse = boulderUseCase.getBoulderPage(sortType, cursor, cursorLikeCount, size);
 		return ResponseEntity.ok(ApiResponse.of(boulderPageResponse));
 	}
 

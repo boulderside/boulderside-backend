@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.line7studio.boulderside.domain.aggregate.boulder.enums.BoulderSortType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,8 +40,8 @@ public class BoulderUseCase {
 	private final BoulderQueryService boulderQueryService;
 	private final UserBoulderLikeService userBoulderLikeService;
 
-	public BoulderPageResponse getBoulderPage(Long cursor, int size) {
-		List<BoulderWithRegion> boulderWithRegionList = boulderQueryService.getBoulderWithRegionList(cursor, size);
+	public BoulderPageResponse getBoulderPage(BoulderSortType sortType, Long cursor, Long cursorLikeCount, int size) {
+		List<BoulderWithRegion> boulderWithRegionList = boulderQueryService.getBoulderWithRegionList(sortType, cursor, cursorLikeCount, size);
 		List<Long> boulderIdList = boulderWithRegionList.stream().map(BoulderWithRegion::getId).toList();
 		List<Image> imageList = imageService.getImageListByTargetTypeAndTargetIdList(TargetType.BOULDER, boulderIdList);
 
@@ -68,11 +69,14 @@ public class BoulderUseCase {
 			})
 			.toList();
 
-		Long nextCursor = hasNext
-			? boulderResponseList.getLast().getId()
-			: null;
+		Long nextCursor = null;
+		Long nextCursorLikeCount = null;
+		if(hasNext){
+			nextCursor = boulderResponseList.getLast().getId();
+			nextCursorLikeCount = boulderResponseList.getLast().getLikeCount();
+		}
 
-		return BoulderPageResponse.of(boulderResponseList, nextCursor, hasNext,
+		return BoulderPageResponse.of(boulderResponseList, nextCursor, nextCursorLikeCount, hasNext,
 			Math.min(size, boulderWithRegionListSize));
 	}
 
