@@ -33,8 +33,9 @@ public class BoulderController {
 	public ResponseEntity<ApiResponse<BoulderPageResponse>> getBoulderPage(
 		@RequestParam(defaultValue = "LATEST") BoulderSortType sortType,
 		@RequestParam(required = false) Long cursor,
+		@RequestParam(required = false) Long cursorLikeCount,
 		@RequestParam(defaultValue = "10") int size) {
-		BoulderPageResponse boulderPageResponse = boulderUseCase.getBoulderPage(sortType, cursor, size);
+		BoulderPageResponse boulderPageResponse = boulderUseCase.getBoulderPage(sortType, cursor, cursorLikeCount, size);
 		return ResponseEntity.ok(ApiResponse.of(boulderPageResponse));
 	}
 

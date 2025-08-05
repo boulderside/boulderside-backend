@@ -16,8 +16,8 @@ public class BoulderQueryServiceImpl implements BoulderQueryService {
 	private final BoulderQueryRepository boulderQueryRepository;
 
 	@Override
-	public List<BoulderWithRegion> getBoulderWithRegionList(BoulderSortType sortType, Long cursor, int size) {
-		return boulderQueryRepository.findBouldersWithRegionAndCursor(sortType, cursor, size);
+	public List<BoulderWithRegion> getBoulderWithRegionList(BoulderSortType sortType, Long cursor, Long cursorLikeCount, int size) {
+		return boulderQueryRepository.findBouldersWithRegionAndCursor(sortType, cursor, cursorLikeCount, size);
 	}
 
 	@Override

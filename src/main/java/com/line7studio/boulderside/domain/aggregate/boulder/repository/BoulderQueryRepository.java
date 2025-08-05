@@ -6,7 +6,7 @@ import com.line7studio.boulderside.application.boulder.dto.BoulderWithRegion;
 import com.line7studio.boulderside.domain.aggregate.boulder.enums.BoulderSortType;
 
 public interface BoulderQueryRepository {
-	List<BoulderWithRegion> findBouldersWithRegionAndCursor(BoulderSortType sortType, Long cursor, int size);
+	List<BoulderWithRegion> findBouldersWithRegionAndCursor(BoulderSortType sortType, Long cursor, Long cursorLikeCount, int size);
 
 	BoulderWithRegion findBouldersWithRegionByBoulderId(Long boulderId);
 }
