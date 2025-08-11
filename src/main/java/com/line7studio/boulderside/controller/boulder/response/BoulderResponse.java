@@ -25,6 +25,7 @@ public class BoulderResponse {
 	private String province;
 	private String city;
 	private Long likeCount;
+	private boolean liked;
 	private List<ImageInfo> imageInfoList;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
@@ -63,7 +64,7 @@ public class BoulderResponse {
 	}
 
 	public static BoulderResponse of(BoulderWithRegion boulderWithRegion, List<ImageInfo> imageInfoList,
-		long likeCount) {
+		long likeCount, boolean isLiked) {
 		return BoulderResponse.builder()
 			.id(boulderWithRegion.getId())
 			.name(boulderWithRegion.getName())
@@ -74,6 +75,7 @@ public class BoulderResponse {
 			.city(boulderWithRegion.getCity())
 			.imageInfoList(imageInfoList)
 			.likeCount(likeCount)
+			.liked(isLiked)
 			.createdAt(boulderWithRegion.getCreatedAt())
 			.updatedAt(boulderWithRegion.getUpdatedAt())
 			.build();

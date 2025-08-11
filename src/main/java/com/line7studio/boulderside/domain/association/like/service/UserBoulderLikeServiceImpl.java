@@ -42,6 +42,11 @@ public class UserBoulderLikeServiceImpl implements UserBoulderLikeService {
 	}
 
 	@Override
+	public boolean getIsLikedByUserId(Long boulderId, Long userId) {
+		return userBoulderLikeRepository.existsByUserIdAndBoulderId(userId, boulderId);
+	}
+
+	@Override
 	public void deleteAllByBoulderId(Long boulderId) {
 		if (boulderId == null) {
 			throw new ValidationException(ErrorCode.VALIDATION_FAILED);

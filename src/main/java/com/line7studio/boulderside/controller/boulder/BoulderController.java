@@ -1,8 +1,10 @@
 package com.line7studio.boulderside.controller.boulder;
 
+import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.domain.aggregate.boulder.enums.BoulderSortType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,17 +33,20 @@ public class BoulderController {
 
 	@GetMapping
 	public ResponseEntity<ApiResponse<BoulderPageResponse>> getBoulderPage(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestParam(defaultValue = "LATEST") BoulderSortType sortType,
 		@RequestParam(required = false) Long cursor,
 		@RequestParam(required = false) Long cursorLikeCount,
 		@RequestParam(defaultValue = "10") int size) {
-		BoulderPageResponse boulderPageResponse = boulderUseCase.getBoulderPage(sortType, cursor, cursorLikeCount, size);
+		BoulderPageResponse boulderPageResponse = boulderUseCase.getBoulderPage(userDetails.getUserId(), sortType, cursor, cursorLikeCount, size);
 		return ResponseEntity.ok(ApiResponse.of(boulderPageResponse));
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ApiResponse<BoulderResponse>> getBoulder(@PathVariable Long id) {
-		BoulderResponse boulder = boulderUseCase.getBoulderById(id);
+	public ResponseEntity<ApiResponse<BoulderResponse>> getBoulder(
+			@AuthenticationPrincipal CustomUserDetails userDetails,
+			@PathVariable Long id) {
+		BoulderResponse boulder = boulderUseCase.getBoulderById(userDetails.getUserId(), id);
 		return ResponseEntity.ok(ApiResponse.of(boulder));
 	}
 
