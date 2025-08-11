@@ -40,7 +40,7 @@ public class BoulderUseCase {
 	private final BoulderQueryService boulderQueryService;
 	private final UserBoulderLikeService userBoulderLikeService;
 
-	public BoulderPageResponse getBoulderPage(BoulderSortType sortType, Long cursor, Long cursorLikeCount, int size) {
+	public BoulderPageResponse getBoulderPage(Long userId, BoulderSortType sortType, Long cursor, Long cursorLikeCount, int size) {
 		List<BoulderWithRegion> boulderWithRegionList = boulderQueryService.getBoulderWithRegionList(sortType, cursor, cursorLikeCount, size);
 		List<Long> boulderIdList = boulderWithRegionList.stream().map(BoulderWithRegion::getId).toList();
 		List<Image> imageList = imageService.getImageListByTargetTypeAndTargetIdList(TargetType.BOULDER, boulderIdList);
@@ -65,7 +65,8 @@ public class BoulderUseCase {
 			.map(b -> {
 				List<ImageInfo> imgs = boulderImageInfoMap.getOrDefault(b.getId(), Collections.emptyList());
 				long likeCount = userBoulderLikeService.getCountByBoulderId(b.getId());
-				return BoulderResponse.of(b, imgs, likeCount);
+				boolean liked = userBoulderLikeService.getIsLikedByUserId(b.getId(), userId);
+				return BoulderResponse.of(b, imgs, likeCount, liked);
 			})
 			.toList();
 
@@ -80,7 +81,7 @@ public class BoulderUseCase {
 			Math.min(size, boulderWithRegionListSize));
 	}
 
-	public BoulderResponse getBoulderById(Long boulderId) {
+	public BoulderResponse getBoulderById(Long userId, Long boulderId) {
 		BoulderWithRegion boulderWithRegion = boulderQueryService.getBoulderWithRegion(boulderId);
 		List<Image> imageList = imageService.getImageListByTargetTypeAndTargetId(TargetType.BOULDER, boulderId);
 		List<ImageInfo> imageInfoList = imageList.stream()
@@ -89,8 +90,9 @@ public class BoulderUseCase {
 			.toList();
 
 		long likeCount = userBoulderLikeService.getCountByBoulderId(boulderId);
+		boolean liked = userBoulderLikeService.getIsLikedByUserId(boulderId, userId);
 
-		return BoulderResponse.of(boulderWithRegion, imageInfoList, likeCount);
+		return BoulderResponse.of(boulderWithRegion, imageInfoList, likeCount, liked);
 	}
 
 	public BoulderResponse createBoulder(CreateBoulderRequest request) {

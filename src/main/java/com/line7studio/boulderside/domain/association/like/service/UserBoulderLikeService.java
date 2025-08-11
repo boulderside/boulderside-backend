@@ -7,5 +7,7 @@ public interface UserBoulderLikeService {
 
 	long getCountByBoulderId(Long boulderId);
 
+	boolean getIsLikedByUserId(Long boulderId, Long userId);
+
 	void deleteAllByBoulderId(Long boulderId);
 }
