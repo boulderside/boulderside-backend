@@ -1,9 +1,9 @@
 package com.line7studio.boulderside.application.weather.dto;
 
-import java.time.LocalDate;
-
 import lombok.Builder;
 import lombok.Getter;
+
+import java.time.LocalDate;
 
 @Getter
 @Builder
@@ -21,7 +21,7 @@ public class DailyWeatherInfoDto {
 	private Double rainVolume;
 	private Double rainProbability;
 	private String weatherIcon;
-	private String weatherId;
+	private int weatherId;
 	private String weatherMain;
 	private String weatherDescription;
 }
