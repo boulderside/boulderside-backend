@@ -1,83 +1,94 @@
 package com.line7studio.boulderside.application.weather;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.line7studio.boulderside.application.weather.dto.DailyWeatherInfoDto;
-import com.line7studio.boulderside.common.util.TimeUtil;
+import com.line7studio.boulderside.domain.aggregate.boulder.entity.Boulder;
+import com.line7studio.boulderside.domain.aggregate.boulder.service.BoulderService;
+import com.line7studio.boulderside.domain.aggregate.weather.entity.Weather;
+import com.line7studio.boulderside.domain.aggregate.weather.mapper.WeatherMapper;
+import com.line7studio.boulderside.domain.aggregate.weather.service.WeatherService;
 import com.line7studio.boulderside.external.weather.client.OpenWeatherClient;
 import com.line7studio.boulderside.external.weather.dto.OneCallResponse;
-
+import com.line7studio.boulderside.external.weather.mapper.WeatherApiMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class WeatherUseCase {
 	private final OpenWeatherClient openWeatherClient;
 
-	public List<DailyWeatherInfoDto> getWeatherInfo(double latitude, double longitude) {
-		OneCallResponse oneCallResponse = openWeatherClient.getOneCallWeather(latitude, longitude);
+	private final BoulderService boulderService;
+    private final WeatherService weatherService;
+	
+	private final Executor weatherExecutor = Executors.newFixedThreadPool(5);
 
-		if (oneCallResponse.getDaily() == null) {
-			return List.of();
-		}
+    /**
+     * 바위에 대한 날씨 정보를 db에서 조회
+     */
+    public List<DailyWeatherInfoDto> getWeatherInfo(Long boulderId) {
+        List<Weather> weatherList = weatherService.getAllWeatherByBoulderId(boulderId);
 
-		return oneCallResponse.getDaily().stream()
-			.map(this::transformToWeatherSummary)
-			.toList();
+        return weatherList.stream()
+                .map(WeatherMapper::toDto)
+                .toList();
+    }
+	
+	/**
+	 * 모든 바위 위치에 대한 날씨 정보를 외부 api를 통해 호출한 후 db에 저장
+	 */
+	public void fetchAndSaveAllWeatherData() {
+		long startTime = System.currentTimeMillis();
+
+        // 모든 바위 조회
+        List<Boulder> boulderList = boulderService.getAllBoulders();
+
+        // 날씨 정보 조회 (API - 병렬처리)
+        List<CompletableFuture<List<Weather>>> futureList = new ArrayList<>();
+
+        for (Boulder boulder : boulderList) {
+            CompletableFuture<List<Weather>> future = CompletableFuture
+                .supplyAsync(() -> fetchWeatherForBoulder(boulder), weatherExecutor)
+                    .orTimeout(10, TimeUnit.SECONDS)
+                .exceptionally(ex -> List.of());
+            futureList.add(future);
+        }
+
+        // 날씨 정보 조회 API 호출이 완료되면 적재 (비동기)
+        List<Weather> allWeatherList = futureList.stream()
+                .map(CompletableFuture::join)
+                .flatMap(List::stream)
+                .toList();
+
+        // 기존 날씨 정보 전체 삭제
+        weatherService.deleteAll();
+
+        // 새로운 날씨 정보 전체 저장
+        weatherService.saveAll(allWeatherList);
+
+        // 작업 소요 시간 로그
+        long endTime = System.currentTimeMillis();
+        log.info("날씨 정보 조회 스케쥴러 소요시간 : {} ms", endTime - startTime);
 	}
 
-	private DailyWeatherInfoDto transformToWeatherSummary(OneCallResponse.DailyWeather daily) {
-		String summary = StringUtils.hasText(daily.getSummary())
-			? daily.getSummary()
-			: (daily.getWeather() != null && !daily.getWeather().isEmpty()
-			? daily.getWeather().getFirst().getDescription()
-			: "");
+	private List<Weather> fetchWeatherForBoulder(Boulder boulder) {
+        OneCallResponse oneCallResponse = openWeatherClient.getOneCallWeather(
+                boulder.getLatitude(), boulder.getLongitude());
 
-		String weatherIcon = daily.getWeather() != null && !daily.getWeather().isEmpty()
-			? daily.getWeather().getFirst().getIcon()
-			: "";
+        List<DailyWeatherInfoDto> dailyWeatherInfoDtoList = oneCallResponse.getDaily().stream()
+                .map(WeatherApiMapper::toDto)
+                .toList();
 
-		String weatherId = daily.getWeather() != null && !daily.getWeather().isEmpty()
-			? String.valueOf(daily.getWeather().getFirst().getId())
-			: "";
-
-		String weatherMain = daily.getWeather() != null && !daily.getWeather().isEmpty()
-			? String.valueOf(daily.getWeather().getFirst().getMain())
-			: "";
-
-		String weatherDescription = daily.getWeather() != null && !daily.getWeather().isEmpty()
-			? String.valueOf(daily.getWeather().getFirst().getDescription())
-			: "";
-
-		OneCallResponse.Temp temp = daily.getTemp();
-
-		double morn = temp != null ? temp.getMorn() : 0.0;
-		double day = temp != null ? temp.getDay() : 0.0;
-		double eve = temp != null ? temp.getEve() : 0.0;
-		double night = temp != null ? temp.getNight() : 0.0;
-		double min = temp != null ? temp.getMin() : 0.0;
-		double max = temp != null ? temp.getMax() : 0.0;
-
-		return DailyWeatherInfoDto.builder()
-			.date(TimeUtil.toSeoulLocalDate(daily.getDt()))
-			.summary(summary)
-			.tempMorn(morn)
-			.tempDay(day)
-			.tempEve(eve)
-			.tempNight(night)
-			.tempMin(min)
-			.tempMax(max)
-			.humidity(daily.getHumidity())
-			.windSpeed(daily.getWindSpeed())
-			.rainVolume(daily.getRain() != null ? daily.getRain() : 0.0)
-			.rainProbability(daily.getPop())
-			.weatherId(weatherId)
-			.weatherMain(weatherMain)
-			.weatherDescription(weatherDescription)
-			.weatherIcon(String.format("https://openweathermap.org/img/wn/%s@2x.png", weatherIcon))
-			.build();
+        return dailyWeatherInfoDtoList.stream()
+            .map(dto -> WeatherMapper.toEntity(dto, boulder.getId()))
+            .toList();
 	}
 }
