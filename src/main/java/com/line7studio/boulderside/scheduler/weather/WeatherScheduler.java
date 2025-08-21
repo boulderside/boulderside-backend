@@ -16,10 +16,9 @@ public class WeatherScheduler {
     private final WeatherUseCase weatherUseCase;
 
     /**
-     * 매일 오전 00:00, 오전 06:30 (Asia/Seoul)에 모든 바위 위치의 날씨 데이터를 가져와서 저장
+     * 매일 3시간마다 모든 바위 위치의 날씨 데이터를 가져와서 저장
      */
-    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")   // 자정
-    @Scheduled(cron = "0 30 6 * * *", zone = "Asia/Seoul")  // 06:30
+    @Scheduled(cron = "0 0 */3 * * *", zone = "Asia/Seoul")
     @SchedulerLock(name = "weatherDataFetch", lockAtMostFor = "10m", lockAtLeastFor = "1m")
     public void fetchWeatherData() {
         log.info("날씨 정보 업데이트 스케쥴러 실행");
