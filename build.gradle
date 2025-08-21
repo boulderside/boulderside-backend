@@ -60,8 +60,16 @@ dependencies {
     // validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    // webclient
+    // webclient (API 호출)
     implementation "org.springframework.boot:spring-boot-starter-webflux"
+
+    // ShedLock (스케쥴러)
+    implementation 'net.javacrumbs.shedlock:shedlock-spring:5.16.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.16.0'
+
+    // Spring Retry (API 재호출)
+    implementation 'org.springframework.retry:spring-retry'
+    implementation 'org.springframework:spring-aspects'
 }
 
 tasks.named('test') {

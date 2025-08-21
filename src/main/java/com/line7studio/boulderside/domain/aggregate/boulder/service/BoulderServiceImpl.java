@@ -9,6 +9,8 @@ import com.line7studio.boulderside.domain.aggregate.boulder.repository.BoulderRe
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BoulderServiceImpl implements BoulderService {
@@ -30,4 +32,9 @@ public class BoulderServiceImpl implements BoulderService {
 		Boulder boulder = getBoulderById(boulderId);
 		boulderRepository.delete(boulder);
 	}
+
+    @Override
+    public List<Boulder> getAllBoulders() {
+        return boulderRepository.findAll();
+    }
 }
