@@ -27,6 +27,11 @@ public enum ErrorCode {
 	EXTERNAL_API_ERROR("A001", "외부 API 호출에 실패했습니다.", HttpStatus.SERVICE_UNAVAILABLE),
 	EMAIL_SEND_FAILED("A002", "이메일 전송에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 	PHONE_VERIFICATION_FAILED("A003", "휴대폰 번호 인증에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+	AES_ENCRYPTION_ERROR("A004", "데이터 암호화에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+	AES_DECRYPTION_ERROR("A005", "데이터 복호화에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+	ACCOUNT_ALREADY_EXISTS("A006", "이미 존재하는 계정입니다.", HttpStatus.CONFLICT),
+	PHONE_SEND_FAILED("A007", "휴대폰 인증번호 전송에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+	REDIS_STORE_FAILED("A008", "인증 정보를 저장하지 못했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 	UNKNOWN_ERROR("A999", "알 수 없는 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 
 	// External (E001~E099)
