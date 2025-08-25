@@ -14,6 +14,29 @@ TRUNCATE TABLE images;
 
 TRUNCATE TABLE posts;
 
+TRUNCATE TABLE comments;
+
+INSERT INTO comments (id, user_id, domain_id, comment_domain_type, content, created_at, updated_at) VALUES
+    (1, 1, 1, 'POST', '첫 번째 게시글의 첫 댓글입니다.', NOW(), NOW()),
+    (2, 1, 1, 'POST', '좋은 글 잘 읽었습니다.', NOW(), NOW()),
+    (3, 1, 2, 'POST', '동의합니다!', NOW(), NOW()),
+    (4, 1, 2, 'POST', '두 번째 게시글의 첫 댓글', NOW(), NOW()),
+    (5, 1, 2, 'POST', '추가 의견 남깁니다.', NOW(), NOW()),
+    (6, 1, 2, 'POST', '게시글 내용이 유익하네요.', NOW(), NOW()),
+    (7, 1, 2, 'POST', '궁금한 점이 있습니다.', NOW(), NOW()),
+    (8, 1, 2, 'POST', '좋은 정보 감사합니다.', NOW(), NOW()),
+    (9, 1, 2, 'POST', '정말 공감되는 내용입니다.', NOW(), NOW()),
+    (10, 1, 2, 'POST', '도움이 많이 되었어요.', NOW(), NOW()),
+    (11, 1, 2, 'POST', '혹시 출처가 있을까요?', NOW(), NOW()),
+    (12, 1, 2, 'POST', '깔끔한 정리 감사합니다.', NOW(), NOW()),
+    (13, 1, 2, 'POST', '관련해서 제 경험도 공유하고 싶네요.', NOW(), NOW()),
+    (14, 1, 2, 'POST', '좋은 시각 배워갑니다.', NOW(), NOW()),
+    (15, 1, 2, 'POST', '읽으면서 많은 생각이 들었습니다.', NOW(), NOW()),
+    (16, 1, 2, 'POST', '작성해주셔서 감사드려요!', NOW(), NOW()),
+    (17, 1, 2, 'POST', '더 자세히 알고 싶습니다.', NOW(), NOW()),
+    (18, 1, 2, 'POST', '다른 글도 기대하겠습니다.', NOW(), NOW());
+
+
 INSERT INTO users (nickname, phone, user_role,
                    user_sex,
                    user_level,
@@ -46,7 +69,7 @@ VALUES (1, 1, 'Sunrise Crag', '해돋이 보기 좋은 바위, 초보자도 접�
        (8, 8, 'Hidden Hollow', '작은 계곡 안에 숨어있는 아늑한 바위', 35.907757, 127.766922, NOW(), NOW());
 
 -- boulder 별 이미지 (target_type = 'BOULDER')
-INSERT INTO images (target_id, target_type, image_url, order_index)
+INSERT INTO images (target_id, image_domain_type, image_url, order_index)
 VALUES (1, 'BOULDER', 'https://cdn.example.com/boulders/1/sunrise_1.jpg', 0),
        (1, 'BOULDER', 'https://cdn.example.com/boulders/1/sunrise_2.jpg', 1),
        (2, 'BOULDER', 'https://cdn.example.com/boulders/2/shadow_1.jpg', 0),
