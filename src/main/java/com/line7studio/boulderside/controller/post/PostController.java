@@ -28,14 +28,17 @@ public class PostController {
 		@RequestParam(required = false) Long cursor,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam PostType postType,
-		@RequestParam(defaultValue = "LATEST_CREATED") PostSortType sortType) {
-		PostPageResponse postPageResponse = postUseCase.getPostPage(cursor, size, postType, sortType);
+		@RequestParam(defaultValue = "LATEST_CREATED") PostSortType sortType,
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
+		PostPageResponse postPageResponse = postUseCase.getPostPage(cursor, size, postType, sortType, userDetails.getUserId());
 		return ResponseEntity.ok(ApiResponse.of(postPageResponse));
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ApiResponse<PostResponse>> getPost(@PathVariable Long id) {
-		PostResponse post = postUseCase.getPostById(id);
+	public ResponseEntity<ApiResponse<PostResponse>> getPost(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        PostResponse post = postUseCase.getPostById(id, userDetails.getUserId());
 		return ResponseEntity.ok(ApiResponse.of(post));
 	}
 

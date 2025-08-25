@@ -16,8 +16,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostResponse {
-	private Long id;
-	private UserInfo userInfo;
+	private Long postId;
+    private Boolean isMine;
+    private UserInfo userInfo;
 	private String title;
 	private String content;
 	private PostType postType;
@@ -26,9 +27,10 @@ public class PostResponse {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	public static PostResponse of(Post post, UserInfo userInfo) {
+	public static PostResponse of(Post post, UserInfo userInfo, Boolean isMine) {
 		return PostResponse.builder()
-			.id(post.getId())
+			.postId(post.getId())
+            .isMine(isMine)
             .userInfo(userInfo)
             .title(post.getTitle())
             .content(post.getContent())

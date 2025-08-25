@@ -25,7 +25,7 @@ public class PostUseCase {
 	private final PostService postService;
     private final UserService userService;
 
-	public PostPageResponse getPostPage(Long cursor, int size, PostType postType, PostSortType sortType) {
+	public PostPageResponse getPostPage(Long cursor, int size, PostType postType, PostSortType sortType, Long userId) {
         // 게시글 조회
 		List<Post> postList = postService.getPostsWithCursor(cursor, size + 1, postType, sortType);
 		
@@ -52,7 +52,8 @@ public class PostUseCase {
                 .map(post -> {
                     User user = userMap.get(post.getUserId());
                     UserInfo userInfo = UserInfo.from(user);
-                    return PostResponse.of(post, userInfo);
+                    Boolean isMine = post.getUserId().equals(userId);
+                    return PostResponse.of(post, userInfo, isMine);
                 })
                 .toList();
 		
@@ -69,14 +70,16 @@ public class PostUseCase {
 	}
 
     @Transactional
-	public PostResponse getPostById(Long postId) {
-		Post post = postService.getPostById(postId);
+	public PostResponse getPostById(Long postId, Long userId) {
+        Post post = postService.getPostById(postId);
 		post.incrementViewCount();
 
         User user = userService.getUserById(post.getUserId());
         UserInfo userInfo = UserInfo.from(user);
 
-		return PostResponse.of(post, userInfo);
+        Boolean isMine = post.getUserId().equals(userId);
+
+		return PostResponse.of(post, userInfo, isMine);
 	}
 
     @Transactional
@@ -92,7 +95,7 @@ public class PostUseCase {
                 request.getMeetingDate()
         );
 
-		return PostResponse.of(savedPost, userInfo);
+		return PostResponse.of(savedPost, userInfo, true);
 	}
 
     @Transactional
@@ -109,7 +112,9 @@ public class PostUseCase {
                 user.getId()
         );
 
-		return PostResponse.of(post, userInfo);
+        Boolean isMine = post.getUserId().equals(userId);
+
+		return PostResponse.of(post, userInfo, isMine);
 	}
 
     @Transactional
