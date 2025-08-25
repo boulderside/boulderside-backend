@@ -15,6 +15,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.line7studio.boulderside.common.security.constants.SecurityWhitelist;
 import com.line7studio.boulderside.common.security.exception.CustomDeniedHandler;
 import com.line7studio.boulderside.common.security.exception.CustomEntryPoint;
 import com.line7studio.boulderside.common.security.filter.JWTFilter;
@@ -54,7 +55,8 @@ public class SecurityConfig {
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			// 명시한 url만 인가 없이 허용
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/").permitAll()
+				.requestMatchers(SecurityWhitelist.SWAGGER).permitAll()
+				.requestMatchers(SecurityWhitelist.PUBLIC).permitAll()
 				.requestMatchers("/admin/**").hasRole("ADMIN")
 				.anyRequest().authenticated());
 
