@@ -12,11 +12,14 @@ public enum ErrorCode {
 	USER_INACTIVE("D003", "비활성 상태의 사용자입니다.", HttpStatus.BAD_REQUEST),
 	ALREADY_LIKED("D004", "이미 좋아요를 누른 항목입니다.", HttpStatus.CONFLICT),
 	REGION_NOT_FOUND("D005", "해당 지역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    POST_NOT_FOUND("D006", "해당 게시글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    NO_PERMISSION("D007", "해당 작업에 대한 권한이 없습니다.", HttpStatus.FORBIDDEN),
 
 	// Validation (V001~V099)
 	VALIDATION_FAILED("V001", "입력 값 검증에 실패했습니다.", HttpStatus.BAD_REQUEST),
 	CONSTRAINT_VIOLATION("V002", "비즈니스 제약조건을 위반했습니다.", HttpStatus.BAD_REQUEST),
 	MISSING_REQUIRED_FIELD("V003", "필수 입력 값이 누락되었습니다.", HttpStatus.BAD_REQUEST),
+    NOT_SUPPORT_SORT_TYPE("V004", "지원하지 않는 정렬 타입입니다.", HttpStatus.BAD_REQUEST),
 
 	// Persistence (P001~P099)
 	DB_CONSTRAINT_ERROR("P001", "데이터베이스 제약조건 위반입니다.", HttpStatus.CONFLICT),
