@@ -13,7 +13,8 @@ public enum ErrorCode {
 	ALREADY_LIKED("D004", "이미 좋아요를 누른 항목입니다.", HttpStatus.CONFLICT),
 	REGION_NOT_FOUND("D005", "해당 지역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     POST_NOT_FOUND("D006", "해당 게시글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-    NO_PERMISSION("D007", "해당 작업에 대한 권한이 없습니다.", HttpStatus.FORBIDDEN),
+    COMMENT_NOT_FOUND("D007", "해당 댓글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    NO_PERMISSION("D008", "해당 작업에 대한 권한이 없습니다.", HttpStatus.FORBIDDEN),
 
 	// Validation (V001~V099)
 	VALIDATION_FAILED("V001", "입력 값 검증에 실패했습니다.", HttpStatus.BAD_REQUEST),
