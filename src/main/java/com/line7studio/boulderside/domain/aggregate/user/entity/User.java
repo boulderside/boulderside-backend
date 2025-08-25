@@ -34,6 +34,10 @@ public class User extends BaseEntity {
 	@Column(name = "nickname", nullable = false)
 	private String nickname;
 
+    /** 사용자 프로필 이미지 */
+    @Column(name = "profile_image_url")
+    private String profileImageUrl;
+
 	/** 휴대폰 번호 */
 	@Column(name = "phone")
 	private String phone;
