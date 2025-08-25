@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Objects;
 
 import static com.line7studio.boulderside.domain.aggregate.post.entity.QPost.post;
 
@@ -44,7 +45,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
             }
         }
 
-        OrderSpecifier<?> orderSpecifier = switch (postSortType) {
+        OrderSpecifier<?> orderSpecifier = switch (Objects.requireNonNull(postSortType)) {
             case LATEST_CREATED -> post.createdAt.desc();
             case MOST_VIEWED -> post.viewCount.desc();
             case NEAREST_MEETING_DATE -> post.meetingDate.asc();
