@@ -70,6 +70,12 @@ dependencies {
     // Spring Retry (API 재호출)
     implementation 'org.springframework.retry:spring-retry'
     implementation 'org.springframework:spring-aspects'
+
+    // Nurigo 에서 제공하는 SMS 발송 SDK
+    implementation 'net.nurigo:sdk:4.3.0'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {
