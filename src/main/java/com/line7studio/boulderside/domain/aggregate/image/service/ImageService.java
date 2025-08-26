@@ -1,16 +1,16 @@
 package com.line7studio.boulderside.domain.aggregate.image.service;
 
+import com.line7studio.boulderside.domain.aggregate.image.entity.Image;
+import com.line7studio.boulderside.domain.aggregate.image.enums.ImageDomainType;
+
 import java.util.List;
 
-import com.line7studio.boulderside.domain.aggregate.image.entity.Image;
-import com.line7studio.boulderside.domain.aggregate.image.enums.TargetType;
-
 public interface ImageService {
-	List<Image> getImageListByTargetTypeAndTargetIdList(TargetType targetType, List<Long> targetIdList);
+	List<Image> getImageListByImageDomainTypeAndTargetIdList(ImageDomainType imageDomainType, List<Long> targetIdList);
 
-	List<Image> getImageListByTargetTypeAndTargetId(TargetType targetType, Long targetId);
+	List<Image> getImageListByImageDomainTypeAndTargetId(ImageDomainType imageDomainType, Long targetId);
 
 	List<Image> createImages(List<Image> imageList);
 
-	void deleteImagesByTargetTypeAndTargetId(TargetType targetType, Long targetId);
+	void deleteImagesByImageDomainTypeAndTargetId(ImageDomainType imageDomainType, Long targetId);
 }

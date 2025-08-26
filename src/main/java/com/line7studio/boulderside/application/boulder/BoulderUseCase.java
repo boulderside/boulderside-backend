@@ -1,17 +1,5 @@
 package com.line7studio.boulderside.application.boulder;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import com.line7studio.boulderside.domain.aggregate.boulder.enums.BoulderSortType;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.line7studio.boulderside.application.boulder.dto.BoulderWithRegion;
 import com.line7studio.boulderside.common.dto.ImageInfo;
 import com.line7studio.boulderside.controller.boulder.request.CreateBoulderRequest;
@@ -19,16 +7,21 @@ import com.line7studio.boulderside.controller.boulder.request.UpdateBoulderReque
 import com.line7studio.boulderside.controller.boulder.response.BoulderPageResponse;
 import com.line7studio.boulderside.controller.boulder.response.BoulderResponse;
 import com.line7studio.boulderside.domain.aggregate.boulder.entity.Boulder;
+import com.line7studio.boulderside.domain.aggregate.boulder.enums.BoulderSortType;
 import com.line7studio.boulderside.domain.aggregate.boulder.service.BoulderQueryService;
 import com.line7studio.boulderside.domain.aggregate.boulder.service.BoulderService;
 import com.line7studio.boulderside.domain.aggregate.image.entity.Image;
-import com.line7studio.boulderside.domain.aggregate.image.enums.TargetType;
+import com.line7studio.boulderside.domain.aggregate.image.enums.ImageDomainType;
 import com.line7studio.boulderside.domain.aggregate.image.service.ImageService;
 import com.line7studio.boulderside.domain.aggregate.region.entity.Region;
 import com.line7studio.boulderside.domain.aggregate.region.service.RegionService;
 import com.line7studio.boulderside.domain.association.like.service.UserBoulderLikeService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +36,7 @@ public class BoulderUseCase {
 	public BoulderPageResponse getBoulderPage(Long userId, BoulderSortType sortType, Long cursor, Long cursorLikeCount, int size) {
 		List<BoulderWithRegion> boulderWithRegionList = boulderQueryService.getBoulderWithRegionList(sortType, cursor, cursorLikeCount, size);
 		List<Long> boulderIdList = boulderWithRegionList.stream().map(BoulderWithRegion::getId).toList();
-		List<Image> imageList = imageService.getImageListByTargetTypeAndTargetIdList(TargetType.BOULDER, boulderIdList);
+		List<Image> imageList = imageService.getImageListByImageDomainTypeAndTargetIdList(ImageDomainType.BOULDER, boulderIdList);
 
 		Map<Long, List<ImageInfo>> boulderImageInfoMap = imageList.stream()
 			.collect(Collectors.groupingBy(
@@ -83,7 +76,7 @@ public class BoulderUseCase {
 
 	public BoulderResponse getBoulderById(Long userId, Long boulderId) {
 		BoulderWithRegion boulderWithRegion = boulderQueryService.getBoulderWithRegion(boulderId);
-		List<Image> imageList = imageService.getImageListByTargetTypeAndTargetId(TargetType.BOULDER, boulderId);
+		List<Image> imageList = imageService.getImageListByImageDomainTypeAndTargetId(ImageDomainType.BOULDER, boulderId);
 		List<ImageInfo> imageInfoList = imageList.stream()
 			.map(ImageInfo::from)
 			.sorted(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)))
@@ -114,7 +107,7 @@ public class BoulderUseCase {
 			for (int i = 0; i < request.getImageUrlList().size(); i++) {
 				Image image = Image.builder()
 					.targetId(savedBoulder.getId())
-					.targetType(TargetType.BOULDER)
+					.imageDomainType(ImageDomainType.BOULDER)
 					.imageUrl(request.getImageUrlList().get(i))
 					.orderIndex(i)
 					.build();
@@ -145,7 +138,7 @@ public class BoulderUseCase {
 
 		long likeCount = userBoulderLikeService.getCountByBoulderId(boulderId);
 
-		imageService.deleteImagesByTargetTypeAndTargetId(TargetType.BOULDER, boulderId);
+		imageService.deleteImagesByImageDomainTypeAndTargetId(ImageDomainType.BOULDER, boulderId);
 
 		List<ImageInfo> imageInfoList = Collections.emptyList();
 		if (request.getImageUrlList() != null && !request.getImageUrlList().isEmpty()) {
@@ -153,7 +146,7 @@ public class BoulderUseCase {
 			for (int i = 0; i < request.getImageUrlList().size(); i++) {
 				Image image = Image.builder()
 					.targetId(boulderId)
-					.targetType(TargetType.BOULDER)
+					.imageDomainType(ImageDomainType.BOULDER)
 					.imageUrl(request.getImageUrlList().get(i))
 					.orderIndex(i)
 					.build();
@@ -171,7 +164,7 @@ public class BoulderUseCase {
 	}
 
 	public void deleteBoulder(Long boulderId) {
-		imageService.deleteImagesByTargetTypeAndTargetId(TargetType.BOULDER, boulderId);
+		imageService.deleteImagesByImageDomainTypeAndTargetId(ImageDomainType.BOULDER, boulderId);
 		userBoulderLikeService.deleteAllByBoulderId(boulderId);
 		boulderService.deleteByBoulderId(boulderId);
 	}

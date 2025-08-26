@@ -1,16 +1,15 @@
 package com.line7studio.boulderside.domain.aggregate.image.repository;
 
-import java.util.List;
-
+import com.line7studio.boulderside.domain.aggregate.image.entity.Image;
+import com.line7studio.boulderside.domain.aggregate.image.enums.ImageDomainType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.line7studio.boulderside.domain.aggregate.image.entity.Image;
-import com.line7studio.boulderside.domain.aggregate.image.enums.TargetType;
+import java.util.List;
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
-	List<Image> findByTargetTypeAndTargetIdIn(TargetType targetType, List<Long> targetIdList);
+	List<Image> findByImageDomainTypeAndTargetIdIn(ImageDomainType imageDomainType, List<Long> targetIdList);
 
-	List<Image> findByTargetTypeAndTargetId(TargetType targetType, Long targetId);
+	List<Image> findByImageDomainTypeAndTargetId(ImageDomainType imageDomainType, Long targetId);
 
-	void deleteByTargetTypeAndTargetId(TargetType targetType, Long targetId);
+	void deleteByImageDomainTypeAndTargetId(ImageDomainType imageDomainType, Long targetId);
 }
