@@ -1,6 +1,5 @@
 package com.line7studio.boulderside.application.boulder;
 
-import com.line7studio.boulderside.application.boulder.dto.BoulderWithRegion;
 import com.line7studio.boulderside.common.dto.ImageInfo;
 import com.line7studio.boulderside.controller.boulder.request.CreateBoulderRequest;
 import com.line7studio.boulderside.controller.boulder.request.UpdateBoulderRequest;
@@ -8,7 +7,6 @@ import com.line7studio.boulderside.controller.boulder.response.BoulderPageRespon
 import com.line7studio.boulderside.controller.boulder.response.BoulderResponse;
 import com.line7studio.boulderside.domain.aggregate.boulder.entity.Boulder;
 import com.line7studio.boulderside.domain.aggregate.boulder.enums.BoulderSortType;
-import com.line7studio.boulderside.domain.aggregate.boulder.service.BoulderQueryService;
 import com.line7studio.boulderside.domain.aggregate.boulder.service.BoulderService;
 import com.line7studio.boulderside.domain.aggregate.image.entity.Image;
 import com.line7studio.boulderside.domain.aggregate.image.enums.ImageDomainType;
@@ -21,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,17 +29,34 @@ public class BoulderUseCase {
 	private final ImageService imageService;
 	private final RegionService regionService;
 	private final BoulderService boulderService;
-	private final BoulderQueryService boulderQueryService;
 	private final UserBoulderLikeService userBoulderLikeService;
 
-	public BoulderPageResponse getBoulderPage(Long userId, BoulderSortType sortType, Long cursor, Long cursorLikeCount, int size) {
-		List<BoulderWithRegion> boulderWithRegionList = boulderQueryService.getBoulderWithRegionList(sortType, cursor, cursorLikeCount, size);
-		List<Long> boulderIdList = boulderWithRegionList.stream().map(BoulderWithRegion::getId).toList();
-		List<Image> imageList = imageService.getImageListByImageDomainTypeAndTargetIdList(ImageDomainType.BOULDER, boulderIdList);
+    @Transactional(readOnly = true)
+    public BoulderPageResponse getBoulderPage(Long userId, BoulderSortType sortType, Long cursor, String subCursor, int size) {
+		List<Boulder> boulderList = boulderService.getBouldersWithCursor(cursor, subCursor, size + 1, sortType);
 
+        boolean hasNext = boulderList.size() > size;
+        if (hasNext) {
+            boulderList = boulderList.subList(0, size);
+        }
+
+		List<Long> boulderIdList = boulderList.stream().map(Boulder::getId).toList();
+		
+		if (boulderList.isEmpty()) {
+			return BoulderPageResponse.of(Collections.emptyList(), null, null, false, 0);
+		}
+
+		Map<Long, Boolean> userLikeMap = userBoulderLikeService.getIsLikedByUserIdForBoulderList(boulderIdList, userId);
+
+		List<Long> regionIdList = boulderList.stream().map(Boulder::getRegionId).distinct().toList();
+		Map<Long, Region> regionMap = regionService.getRegionsByIds(regionIdList)
+			.stream()
+			.collect(Collectors.toMap(Region::getId, Function.identity()));
+
+		List<Image> imageList = imageService.getImageListByImageDomainTypeAndDomainIdList(ImageDomainType.BOULDER, boulderIdList);
 		Map<Long, List<ImageInfo>> boulderImageInfoMap = imageList.stream()
 			.collect(Collectors.groupingBy(
-				Image::getTargetId,
+				Image::getDomainId,
 				Collectors.mapping(ImageInfo::from,
 					Collectors.collectingAndThen(Collectors.toList(), list -> {
 						list.sort(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)));
@@ -48,46 +64,50 @@ public class BoulderUseCase {
 					}))
 			));
 
-		int boulderWithRegionListSize = boulderWithRegionList.size();
-
-		boolean hasNext = boulderWithRegionListSize > size;
-		List<BoulderWithRegion> boulderWithRegionPage = boulderWithRegionList.subList(0,
-			Math.min(size, boulderWithRegionListSize));
-
-		List<BoulderResponse> boulderResponseList = boulderWithRegionPage.stream()
-			.map(b -> {
-				List<ImageInfo> imgs = boulderImageInfoMap.getOrDefault(b.getId(), Collections.emptyList());
-				long likeCount = userBoulderLikeService.getCountByBoulderId(b.getId());
-				boolean liked = userBoulderLikeService.getIsLikedByUserId(b.getId(), userId);
-				return BoulderResponse.of(b, imgs, likeCount, liked);
+		List<BoulderResponse> boulderResponseList = boulderList.stream()
+			.map(boulder -> {
+				Region region = regionMap.get(boulder.getRegionId());
+				List<ImageInfo> images = boulderImageInfoMap.getOrDefault(boulder.getId(), Collections.emptyList());
+				long likeCount = boulder.getLikeCount();
+				boolean liked = userLikeMap.get(boulder.getId());
+				return BoulderResponse.of(boulder, region.getProvince(), region.getCity(), images, likeCount, liked);
 			})
 			.toList();
 
-		Long nextCursor = null;
-		Long nextCursorLikeCount = null;
-		if(hasNext){
-			nextCursor = boulderResponseList.getLast().getId();
-			nextCursorLikeCount = boulderResponseList.getLast().getLikeCount();
-		}
+        Long nextCursor = null;
+        String nextSubCursor = null;
+        if (hasNext && !boulderList.isEmpty()) {
+            Boulder lastBoulder = boulderList.getLast();
+            nextCursor = lastBoulder.getId();
+            nextSubCursor = getNextSubCursor(lastBoulder, sortType);
+        }
 
-		return BoulderPageResponse.of(boulderResponseList, nextCursor, nextCursorLikeCount, hasNext,
-			Math.min(size, boulderWithRegionListSize));
+		return BoulderPageResponse.of(boulderResponseList, nextCursor, nextSubCursor, hasNext, boulderList.size());
 	}
 
+	private String getNextSubCursor(Boulder boulder, BoulderSortType sortType) {
+		return switch (sortType) {
+            case LATEST_CREATED -> boulder.getCreatedAt().toString();
+			case MOST_LIKED -> boulder.getLikeCount().toString();
+		};
+	}
+
+    @Transactional
 	public BoulderResponse getBoulderById(Long userId, Long boulderId) {
-		BoulderWithRegion boulderWithRegion = boulderQueryService.getBoulderWithRegion(boulderId);
-		List<Image> imageList = imageService.getImageListByImageDomainTypeAndTargetId(ImageDomainType.BOULDER, boulderId);
+		Boulder boulder = boulderService.getBoulderById(boulderId);
+		Region region = regionService.getRegionById(boulder.getRegionId());
+		List<Image> imageList = imageService.getImageListByImageDomainTypeAndDomainId(ImageDomainType.BOULDER, boulderId);
 		List<ImageInfo> imageInfoList = imageList.stream()
 			.map(ImageInfo::from)
 			.sorted(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)))
 			.toList();
 
-		long likeCount = userBoulderLikeService.getCountByBoulderId(boulderId);
-		boolean liked = userBoulderLikeService.getIsLikedByUserId(boulderId, userId);
+		boolean liked = userBoulderLikeService.existsIsLikedByUserId(boulderId, userId);
 
-		return BoulderResponse.of(boulderWithRegion, imageInfoList, likeCount, liked);
+		return BoulderResponse.of(boulder, region.getProvince(), region.getCity(), imageInfoList, boulder.getLikeCount(), liked);
 	}
 
+    @Transactional
 	public BoulderResponse createBoulder(CreateBoulderRequest request) {
 		Region region = regionService.getRegionByProvinceAndCity(request.getProvince(), request.getCity());
 
@@ -97,6 +117,7 @@ public class BoulderUseCase {
 			.description(request.getDescription())
 			.latitude(request.getLatitude())
 			.longitude(request.getLongitude())
+			.likeCount(0L)
 			.build();
 
 		Boulder savedBoulder = boulderService.createBoulder(boulder);
@@ -106,8 +127,8 @@ public class BoulderUseCase {
 			List<Image> newImageList = new ArrayList<>();
 			for (int i = 0; i < request.getImageUrlList().size(); i++) {
 				Image image = Image.builder()
-					.targetId(savedBoulder.getId())
-					.imageDomainType(ImageDomainType.BOULDER)
+                    .imageDomainType(ImageDomainType.BOULDER)
+                    .domainId(savedBoulder.getId())
 					.imageUrl(request.getImageUrlList().get(i))
 					.orderIndex(i)
 					.build();
@@ -124,11 +145,12 @@ public class BoulderUseCase {
 		return BoulderResponse.of(savedBoulder, region.getProvince(), region.getCity(), imageInfoList, 0L);
 	}
 
+    @Transactional
 	public BoulderResponse updateBoulder(Long boulderId, UpdateBoulderRequest request) {
-		Boulder boulder = boulderService.getBoulderById(boulderId);
 		Region region = regionService.getRegionByProvinceAndCity(request.getProvince(), request.getCity());
 
-		boulder.update(
+		Boulder boulder = boulderService.updateBoulder(
+			boulderId,
 			region.getId(),
 			request.getName(),
 			request.getDescription(),
@@ -136,36 +158,35 @@ public class BoulderUseCase {
 			request.getLongitude()
 		);
 
-		long likeCount = userBoulderLikeService.getCountByBoulderId(boulderId);
-
-		imageService.deleteImagesByImageDomainTypeAndTargetId(ImageDomainType.BOULDER, boulderId);
+		imageService.deleteAllImagesByImageDomainTypeAndDomainId(ImageDomainType.BOULDER, boulderId);
 
 		List<ImageInfo> imageInfoList = Collections.emptyList();
 		if (request.getImageUrlList() != null && !request.getImageUrlList().isEmpty()) {
 			List<Image> newImageList = new ArrayList<>();
 			for (int i = 0; i < request.getImageUrlList().size(); i++) {
 				Image image = Image.builder()
-					.targetId(boulderId)
-					.imageDomainType(ImageDomainType.BOULDER)
+                    .imageDomainType(ImageDomainType.BOULDER)
+                    .domainId(boulderId)
 					.imageUrl(request.getImageUrlList().get(i))
 					.orderIndex(i)
 					.build();
 				newImageList.add(image);
 			}
 
-			List<Image> savedImages = imageService.createImages(newImageList);
-			imageInfoList = savedImages.stream()
+			List<Image> savedImageList = imageService.createImages(newImageList);
+			imageInfoList = savedImageList.stream()
 				.map(ImageInfo::from)
 				.sorted(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)))
 				.toList();
 		}
 
-		return BoulderResponse.of(boulder, region.getProvince(), region.getCity(), imageInfoList, likeCount);
+		return BoulderResponse.of(boulder, region.getProvince(), region.getCity(), imageInfoList, boulder.getLikeCount());
 	}
 
+    @Transactional
 	public void deleteBoulder(Long boulderId) {
-		imageService.deleteImagesByImageDomainTypeAndTargetId(ImageDomainType.BOULDER, boulderId);
-		userBoulderLikeService.deleteAllByBoulderId(boulderId);
+		imageService.deleteAllImagesByImageDomainTypeAndDomainId(ImageDomainType.BOULDER, boulderId);
+		userBoulderLikeService.deleteAllLikesByBoulderId(boulderId);
 		boulderService.deleteByBoulderId(boulderId);
 	}
 }
