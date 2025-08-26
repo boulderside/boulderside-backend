@@ -13,14 +13,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ImageInfo {
-	// Image
 	private ImageDomainType imageDomainType;
+    private Long domainId;
 	private String imageUrl;
 	private Integer orderIndex;
 
 	public static ImageInfo from(Image img) {
 		return ImageInfo.builder()
 			.imageDomainType(img.getImageDomainType())
+            .domainId(img.getDomainId())
 			.imageUrl(img.getImageUrl())
 			.orderIndex(img.getOrderIndex())
 			.build();
