@@ -12,6 +12,7 @@ import com.line7studio.boulderside.domain.aggregate.post.service.PostService;
 import com.line7studio.boulderside.domain.aggregate.user.entity.User;
 import com.line7studio.boulderside.domain.aggregate.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,13 +22,14 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PostUseCase {
 	private final PostService postService;
     private final UserService userService;
 
-	public PostPageResponse getPostPage(Long cursor, int size, PostType postType, PostSortType sortType, Long userId) {
+	public PostPageResponse getPostPage(Long cursor, String subCursor, int size, PostType postType, PostSortType sortType, Long userId) {
         // 게시글 조회
-		List<Post> postList = postService.getPostsWithCursor(cursor, size + 1, postType, sortType);
+		List<Post> postList = postService.getPostsWithCursor(cursor, subCursor, size + 1, postType, sortType);
 		
 		boolean hasNext = postList.size() > size;
 		if (hasNext) {
@@ -35,7 +37,13 @@ public class PostUseCase {
 		}
 
         // 다음 커서 위치 지정
-		Long nextCursor = hasNext && !postList.isEmpty() ? getNextCursor(postList.getLast(), sortType) : null;
+        Long nextCursor = null;
+        String nextSubCursor = null;
+        if (hasNext && !postList.isEmpty()) {
+            Post lastPost = postList.getLast();
+            nextCursor = lastPost.getId();
+            nextSubCursor = getNextSubCursor(lastPost, sortType);
+        }
 
         // 게시글 id 취합
         List<Long> userIdList = postList.stream()
@@ -56,16 +64,16 @@ public class PostUseCase {
                     return PostResponse.of(post, userInfo, isMine);
                 })
                 .toList();
-		
-		return PostPageResponse.of(postResponses, nextCursor, hasNext, size);
+
+		return PostPageResponse.of(postResponses, nextCursor, nextSubCursor, hasNext, postList.size());
 	}
 
-	private Long getNextCursor(Post post, PostSortType sortType) {
+	private String getNextSubCursor(Post post, PostSortType sortType) {
 		return switch (sortType) {
-            case LATEST_CREATED -> post.getId();
-			case MOST_VIEWED -> (long) post.getViewCount();
-            case NEAREST_MEETING_DATE -> post.getMeetingDate() != null ?
-				post.getMeetingDate().atStartOfDay().toEpochSecond(java.time.ZoneOffset.UTC) : null;
+            case LATEST_CREATED -> post.getCreatedAt().toString();
+			case MOST_VIEWED -> post.getViewCount().toString();
+            case NEAREST_MEETING_DATE -> post.getMeetingDate() != null ? 
+				post.getMeetingDate().toString() : null;
 		};
 	}
 

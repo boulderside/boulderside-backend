@@ -7,5 +7,5 @@ import com.line7studio.boulderside.domain.aggregate.post.enums.PostType;
 import java.util.List;
 
 public interface PostQueryRepository {
-    List<Post> findPostsWithCursor(Long cursor, int size, PostType postType, PostSortType postSortType);
+    List<Post> findPostsWithCursor(Long cursor, String subCursor, int size, PostType postType, PostSortType postSortType);
 }

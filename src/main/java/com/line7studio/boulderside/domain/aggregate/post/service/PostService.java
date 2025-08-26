@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface PostService {
 	Post getPostById(Long postId);
-	List<Post> getPostsWithCursor(Long cursor, int size, PostType postType, PostSortType sortType);
+	List<Post> getPostsWithCursor(Long cursor, String subCursor, int size, PostType postType, PostSortType sortType);
     Post createPost(Long userId, String title, String content,PostType postType, LocalDate meetingDate);
     Post updatePost(Long postId, String title, String content, PostType postType, LocalDate meetingDate, Long userId);
     void deletePost(Long postId, Long userId);
