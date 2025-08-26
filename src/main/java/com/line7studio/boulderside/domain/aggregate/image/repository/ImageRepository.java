@@ -7,9 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
-	List<Image> findByImageDomainTypeAndTargetIdIn(ImageDomainType imageDomainType, List<Long> targetIdList);
+	List<Image> findByImageDomainTypeAndDomainIdIn(ImageDomainType imageDomainType, List<Long> domainIdList);
 
-	List<Image> findByImageDomainTypeAndTargetId(ImageDomainType imageDomainType, Long targetId);
+	List<Image> findByImageDomainTypeAndDomainId(ImageDomainType imageDomainType, Long domainId);
 
-	void deleteByImageDomainTypeAndTargetId(ImageDomainType imageDomainType, Long targetId);
+	void deleteByImageDomainTypeAndDomainId(ImageDomainType imageDomainType, Long domainId);
 }
