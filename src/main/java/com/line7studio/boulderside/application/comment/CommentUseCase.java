@@ -24,6 +24,7 @@ public class CommentUseCase {
     private final CommentService commentService;
     private final UserService userService;
 
+    @Transactional(readOnly = true)
     public CommentPageResponse getCommentPage(Long cursor, int size, Long domainId, CommentDomainType commentDomainType, Long userId) {
         // 댓글 조회
         List<Comment> commentList = commentService.getCommentsWithCursor(cursor, size + 1, domainId, commentDomainType);
