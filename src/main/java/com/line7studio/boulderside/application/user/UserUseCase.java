@@ -9,12 +9,12 @@ import com.line7studio.boulderside.application.user.dto.response.UserInfoRespons
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.common.exception.ExternalApiException;
 import com.line7studio.boulderside.common.security.provider.AESProvider;
-import com.line7studio.boulderside.common.util.RedisKeyPrefix;
-import com.line7studio.boulderside.common.util.RedisUtil;
 import com.line7studio.boulderside.controller.user.response.LinkAccountResponse;
 import com.line7studio.boulderside.domain.aggregate.user.entity.User;
 import com.line7studio.boulderside.domain.aggregate.user.provider.PhoneAuthProvider;
 import com.line7studio.boulderside.domain.aggregate.user.service.UserService;
+import com.line7studio.boulderside.infrastructure.redis.RedisKeyPrefix;
+import com.line7studio.boulderside.infrastructure.redis.RedisProvider;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class UserUseCase {
 	private final UserService userService;
 	private final AESProvider aesProvider;
 	private final PhoneAuthProvider phoneAuthProvider;
-	private final RedisUtil redisUtil;
+	private final RedisProvider redisProvider;
 
 	public UserInfoResponse getUserInfo(Long id) {
 		User user = userService.getUserById(id);
@@ -42,13 +42,13 @@ public class UserUseCase {
 	public boolean verifyAuthCode(String phoneNumber, String code) {
 		String redisKey = RedisKeyPrefix.PHONE_AUTH.of(phoneNumber);
 
-		String storedCode = redisUtil.get(redisKey, String.class).orElse(null);
+		String storedCode = redisProvider.get(redisKey, String.class).orElse(null);
 
 		if (storedCode == null || !storedCode.equals(code)) {
 			return false;
 		}
 
-		redisUtil.delete(redisKey);
+		redisProvider.delete(redisKey);
 		return true;
 	}
 
@@ -65,7 +65,7 @@ public class UserUseCase {
 
 		String redisKey = RedisKeyPrefix.PHONE_AUTH.of(phoneNumber);
 		try {
-			redisUtil.set(redisKey, verificationCode, 3, TimeUnit.MINUTES);
+			redisProvider.set(redisKey, verificationCode, 3, TimeUnit.MINUTES);
 		} catch (Exception e) {
 			log.error("Redis 저장 실패 - key={}, value={}, reason={}", redisKey, verificationCode, e.getMessage(), e);
 			throw new ExternalApiException(ErrorCode.REDIS_STORE_FAILED);
