@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.common.util;
+package com.line7studio.boulderside.infrastructure.redis;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class RedisUtil {
+public class RedisProvider {
 	private final RedisTemplate<String, Object> redisTemplate;
 
 	public void set(String key, Object value, long timeout, TimeUnit unit) {

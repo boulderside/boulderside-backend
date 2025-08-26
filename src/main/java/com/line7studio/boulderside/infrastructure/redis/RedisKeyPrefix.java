@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.common.util;
+package com.line7studio.boulderside.infrastructure.redis;
 
 public enum RedisKeyPrefix {
 	// {도메인}:{서브도메인/용도}:{구체값} Key 네이밍 규칙
