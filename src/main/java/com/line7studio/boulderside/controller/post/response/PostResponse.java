@@ -22,7 +22,7 @@ public class PostResponse {
 	private String title;
 	private String content;
 	private PostType postType;
-	private Integer viewCount;
+	private Long viewCount;
 	private LocalDate meetingDate;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
