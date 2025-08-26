@@ -12,6 +12,7 @@ import com.line7studio.boulderside.domain.aggregate.post.enums.PostSortType;
 import com.line7studio.boulderside.domain.aggregate.post.enums.PostType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,17 +21,19 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/posts")
 @RequiredArgsConstructor
+@Slf4j
 public class PostController {
 	private final PostUseCase postUseCase;
 
 	@GetMapping
 	public ResponseEntity<ApiResponse<PostPageResponse>> getPostPage(
 		@RequestParam(required = false) Long cursor,
+        @RequestParam(required = false) String subCursor,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam PostType postType,
-		@RequestParam(defaultValue = "LATEST_CREATED") PostSortType sortType,
+		@RequestParam(defaultValue = "LATEST_CREATED") PostSortType postSortType,
         @AuthenticationPrincipal CustomUserDetails userDetails) {
-		PostPageResponse postPageResponse = postUseCase.getPostPage(cursor, size, postType, sortType, userDetails.getUserId());
+		PostPageResponse postPageResponse = postUseCase.getPostPage(cursor, subCursor, size, postType, postSortType, userDetails.getUserId());
 		return ResponseEntity.ok(ApiResponse.of(postPageResponse));
 	}
 

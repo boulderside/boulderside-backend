@@ -15,13 +15,13 @@ public class ImageServiceImpl implements ImageService {
 	private final ImageRepository imageRepository;
 
 	@Override
-	public List<Image> getImageListByImageDomainTypeAndTargetIdList(ImageDomainType imageDomainType, List<Long> targetIdList) {
-		return imageRepository.findByImageDomainTypeAndTargetIdIn(ImageDomainType.BOULDER, targetIdList);
+	public List<Image> getImageListByImageDomainTypeAndDomainIdList(ImageDomainType imageDomainType, List<Long> domainIdList) {
+		return imageRepository.findByImageDomainTypeAndDomainIdIn(ImageDomainType.BOULDER, domainIdList);
 	}
 
 	@Override
-	public List<Image> getImageListByImageDomainTypeAndTargetId(ImageDomainType imageDomainType, Long targetId) {
-		return imageRepository.findByImageDomainTypeAndTargetId(ImageDomainType.BOULDER, targetId);
+	public List<Image> getImageListByImageDomainTypeAndDomainId(ImageDomainType imageDomainType, Long domainId) {
+		return imageRepository.findByImageDomainTypeAndDomainId(ImageDomainType.BOULDER, domainId);
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
-	public void deleteImagesByImageDomainTypeAndTargetId(ImageDomainType imageDomainType, Long targetId) {
-		imageRepository.deleteByImageDomainTypeAndTargetId(ImageDomainType.BOULDER, targetId);
+	public void deleteAllImagesByImageDomainTypeAndDomainId(ImageDomainType imageDomainType, Long domainId) {
+		imageRepository.deleteByImageDomainTypeAndDomainId(ImageDomainType.BOULDER, domainId);
 	}
 }

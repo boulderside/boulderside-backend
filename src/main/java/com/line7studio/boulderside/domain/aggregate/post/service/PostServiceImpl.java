@@ -26,7 +26,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public List<Post> getPostsWithCursor(Long cursor, int size, PostType postType, PostSortType postSortType) {
+	public List<Post> getPostsWithCursor(Long cursor, String subCursor, int size, PostType postType, PostSortType postSortType) {
         if (postSortType == null) {
             throw new BusinessException(ErrorCode.NOT_SUPPORT_SORT_TYPE);
         }
@@ -35,7 +35,7 @@ public class PostServiceImpl implements PostService {
             throw new BusinessException(ErrorCode.NOT_SUPPORT_SORT_TYPE);
         }
 
-        return postQueryRepository.findPostsWithCursor(cursor, size, postType, postSortType);
+        return postQueryRepository.findPostsWithCursor(cursor, subCursor, size, postType, postSortType);
 	}
 
     @Override
@@ -47,7 +47,7 @@ public class PostServiceImpl implements PostService {
                 .title(title)
                 .content(content)
                 .postType(postType)
-                .viewCount(0)
+                .viewCount(0L)
                 .meetingDate(meetingDate)
                 .build();
 

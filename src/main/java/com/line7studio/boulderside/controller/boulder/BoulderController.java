@@ -34,19 +34,19 @@ public class BoulderController {
 	@GetMapping
 	public ResponseEntity<ApiResponse<BoulderPageResponse>> getBoulderPage(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestParam(defaultValue = "LATEST") BoulderSortType sortType,
+		@RequestParam(defaultValue = "LATEST_CREATED") BoulderSortType boulderSortType,
 		@RequestParam(required = false) Long cursor,
-		@RequestParam(required = false) Long cursorLikeCount,
-		@RequestParam(defaultValue = "10") int size) {
-		BoulderPageResponse boulderPageResponse = boulderUseCase.getBoulderPage(userDetails.getUserId(), sortType, cursor, cursorLikeCount, size);
+		@RequestParam(required = false) String subCursor,
+		@RequestParam(defaultValue = "5") int size) {
+		BoulderPageResponse boulderPageResponse = boulderUseCase.getBoulderPage(userDetails.getUserId(), boulderSortType, cursor, subCursor, size);
 		return ResponseEntity.ok(ApiResponse.of(boulderPageResponse));
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/{boulderId}")
 	public ResponseEntity<ApiResponse<BoulderResponse>> getBoulder(
 			@AuthenticationPrincipal CustomUserDetails userDetails,
-			@PathVariable Long id) {
-		BoulderResponse boulder = boulderUseCase.getBoulderById(userDetails.getUserId(), id);
+			@PathVariable Long boulderId) {
+		BoulderResponse boulder = boulderUseCase.getBoulderById(userDetails.getUserId(), boulderId);
 		return ResponseEntity.ok(ApiResponse.of(boulder));
 	}
 
@@ -57,16 +57,16 @@ public class BoulderController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(boulder));
 	}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<ApiResponse<BoulderResponse>> updateBoulder(@PathVariable Long id,
+	@PutMapping("/{boulderId}")
+	public ResponseEntity<ApiResponse<BoulderResponse>> updateBoulder(@PathVariable Long boulderId,
 		@Valid @RequestBody UpdateBoulderRequest request) {
-		BoulderResponse boulder = boulderUseCase.updateBoulder(id, request);
+		BoulderResponse boulder = boulderUseCase.updateBoulder(boulderId, request);
 		return ResponseEntity.ok(ApiResponse.of(boulder));
 	}
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<ApiResponse<Void>> deleteBoulder(@PathVariable Long id) {
-		boulderUseCase.deleteBoulder(id);
+	@DeleteMapping("/{boulderId}")
+	public ResponseEntity<ApiResponse<Void>> deleteBoulder(@PathVariable Long boulderId) {
+		boulderUseCase.deleteBoulder(boulderId);
 		return ResponseEntity.ok(ApiResponse.success());
 	}
 }

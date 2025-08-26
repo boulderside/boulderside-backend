@@ -1,13 +1,13 @@
 package com.line7studio.boulderside.domain.aggregate.boulder.service;
 
-import org.springframework.stereotype.Service;
-
 import com.line7studio.boulderside.common.exception.DomainException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.domain.aggregate.boulder.entity.Boulder;
+import com.line7studio.boulderside.domain.aggregate.boulder.enums.BoulderSortType;
+import com.line7studio.boulderside.domain.aggregate.boulder.repository.BoulderQueryRepository;
 import com.line7studio.boulderside.domain.aggregate.boulder.repository.BoulderRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -15,11 +15,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoulderServiceImpl implements BoulderService {
 	private final BoulderRepository boulderRepository;
+	private final BoulderQueryRepository boulderQueryRepository;
 
-	@Override
+    @Override
+    public List<Boulder> getAllBoulders() {
+        return boulderRepository.findAll();
+    }
+
+    @Override
 	public Boulder getBoulderById(Long boulderId) {
 		return boulderRepository.findById(boulderId)
 			.orElseThrow(() -> new DomainException(ErrorCode.BOULDER_NOT_FOUND));
+	}
+
+	@Override
+	public List<Boulder> getBouldersWithCursor(Long cursor, String subCursor, int size, BoulderSortType sortType) {
+		return boulderQueryRepository.findBouldersWithCursor(sortType, cursor, subCursor, size);
 	}
 
 	@Override
@@ -28,13 +39,15 @@ public class BoulderServiceImpl implements BoulderService {
 	}
 
 	@Override
+	public Boulder updateBoulder(Long boulderId, Long regionId, String name, String description, Double latitude, Double longitude) {
+		Boulder boulder = getBoulderById(boulderId);
+		boulder.update(regionId, name, description, latitude, longitude);
+		return boulder;
+	}
+
+	@Override
 	public void deleteByBoulderId(Long boulderId) {
 		Boulder boulder = getBoulderById(boulderId);
 		boulderRepository.delete(boulder);
 	}
-
-    @Override
-    public List<Boulder> getAllBoulders() {
-        return boulderRepository.findAll();
-    }
 }

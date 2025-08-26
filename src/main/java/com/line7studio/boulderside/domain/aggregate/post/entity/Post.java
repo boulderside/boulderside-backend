@@ -41,7 +41,7 @@ public class Post extends BaseEntity {
 
     /** 조회 수 */
     @Column(name = "view_count")
-    private Integer viewCount;
+    private Long viewCount;
 
     /** 동행 날짜 */
     @Column(name = "meeting_date")

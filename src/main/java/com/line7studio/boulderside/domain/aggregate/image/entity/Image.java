@@ -27,8 +27,8 @@ public class Image {
 	private Long id;
 
 	/** 연관 대상 ID (FK) */
-	@Column(name = "target_id", nullable = false)
-	private Long targetId;
+	@Column(name = "domain_id", nullable = false)
+	private Long domainId;
 
 	/** 연관 대상 타입 */
 	@Enumerated(EnumType.STRING)

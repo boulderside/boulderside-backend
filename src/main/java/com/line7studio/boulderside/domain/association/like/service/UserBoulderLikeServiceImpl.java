@@ -9,6 +9,11 @@ import com.line7studio.boulderside.domain.association.like.repository.UserBoulde
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class UserBoulderLikeServiceImpl implements UserBoulderLikeService {
@@ -42,12 +47,30 @@ public class UserBoulderLikeServiceImpl implements UserBoulderLikeService {
 	}
 
 	@Override
-	public boolean getIsLikedByUserId(Long boulderId, Long userId) {
+	public boolean existsIsLikedByUserId(Long boulderId, Long userId) {
 		return userBoulderLikeRepository.existsByUserIdAndBoulderId(userId, boulderId);
+	}
+	
+	@Override
+	public Map<Long, Boolean> getIsLikedByUserIdForBoulderList(List<Long> boulderIdList, Long userId) {
+		if (boulderIdList == null || boulderIdList.isEmpty() || userId == null) {
+			return Map.of();
+		}
+
+		List<UserBoulderLike> userBoulderLikeList = userBoulderLikeRepository.findByUserIdAndBoulderIdIn(userId, boulderIdList);
+		Set<Long> likedBoulderIdList = userBoulderLikeList.stream()
+			.map(UserBoulderLike::getBoulderId)
+			.collect(Collectors.toSet());
+
+		return boulderIdList.stream()
+			.collect(Collectors.toMap(
+				boulderId -> boulderId,
+                    likedBoulderIdList::contains
+			));
 	}
 
 	@Override
-	public void deleteAllByBoulderId(Long boulderId) {
+	public void deleteAllLikesByBoulderId(Long boulderId) {
 		if (boulderId == null) {
 			throw new ValidationException(ErrorCode.VALIDATION_FAILED);
 		}

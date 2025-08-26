@@ -59,18 +59,28 @@ VALUES ('bouldertiger', -- nickname
        );
 
 INSERT INTO boulders (id, region_id, name, description,
-                      latitude, longitude, created_at, updated_at)
-VALUES (1, 1, 'Sunrise Crag', '해돋이 보기 좋은 바위, 초보자도 접근 용이', 37.579617, 126.977041, NOW(), NOW()),
-       (2, 2, 'Shadow Peak', '그림자가 길게 드리워지는 고독한 암석', 35.179554, 129.075642, NOW(), NOW()),
-       (3, 3, 'Mossy Boulder', '이끼로 덮인 습한 바위, 촉감이 부드러움', 37.566535, 126.977969, NOW(), NOW()),
-       (4, 4, 'Eagle\'s Perch', '독수리가 날아오르는 전망 좋은 암석', 36.350411, 127.384547, NOW(), NOW()),
-       (5, 5, 'Whispering Stone', '바람 소리가 울리는 신비한 바위', 35.872218, 128.602528, NOW(), NOW()),
-       (6, 6, 'Red Cliff', '붉은 색을 띤 절벽형 바위, 사진 찍기 좋음', 35.159545, 126.852601, NOW(), NOW()),
-       (7, 7, 'Twin Rocks', '쌍둥이처럼 생긴 두 개의 바위가 붙어 있는 장소', 36.487224, 127.289098, NOW(), NOW()),
-       (8, 8, 'Hidden Hollow', '작은 계곡 안에 숨어있는 아늑한 바위', 35.907757, 127.766922, NOW(), NOW());
+                      latitude, longitude, like_count, created_at, updated_at)
+VALUES
+    (1, 1, 'Sunrise Crag', '해돋이 보기 좋은 바위, 초보자도 접근 용이',
+     37.579617, 126.977041, 12, '2025-08-15 07:15:32', '2025-08-15 07:15:32'),
+    (2, 2, 'Shadow Peak', '그림자가 길게 드리워지는 고독한 암석',
+     35.179554, 129.075642, 5, '2025-08-16 09:42:18', '2025-08-16 09:42:18'),
+    (3, 3, 'Mossy Boulder', '이끼로 덮인 습한 바위, 촉감이 부드러움',
+     37.566535, 126.977969, 8, '2025-08-17 14:27:05', '2025-08-17 14:27:05'),
+    (4, 4, 'Eagle''s Perch', '독수리가 날아오르는 전망 좋은 암석',
+     36.350411, 127.384547, 20, '2025-08-18 06:55:44', '2025-08-18 06:55:44'),
+    (5, 5, 'Whispering Stone', '바람 소리가 울리는 신비한 바위',
+     35.872218, 128.602528, 2, '2025-08-18 19:33:21', '2025-08-18 19:33:21'),
+    (6, 6, 'Red Cliff', '붉은 색을 띤 절벽형 바위, 사진 찍기 좋음',
+     35.159545, 126.852601, 15, '2025-08-19 10:08:59', '2025-08-19 10:08:59'),
+    (7, 7, 'Twin Rocks', '쌍둥이처럼 생긴 두 개의 바위가 붙어 있는 장소',
+     36.487224, 127.289098, 7, '2025-08-19 22:45:11', '2025-08-19 22:45:11'),
+    (8, 8, 'Hidden Hollow', '작은 계곡 안에 숨어있는 아늑한 바위',
+     35.907757, 127.766922, 0, '2025-08-20 08:17:46', '2025-08-20 08:17:46');
+
 
 -- boulder 별 이미지 (target_type = 'BOULDER')
-INSERT INTO images (target_id, image_domain_type, image_url, order_index)
+INSERT INTO images (domain_id, image_domain_type, image_url, order_index)
 VALUES (1, 'BOULDER', 'https://cdn.example.com/boulders/1/sunrise_1.jpg', 0),
        (1, 'BOULDER', 'https://cdn.example.com/boulders/1/sunrise_2.jpg', 1),
        (2, 'BOULDER', 'https://cdn.example.com/boulders/2/shadow_1.jpg', 0),
