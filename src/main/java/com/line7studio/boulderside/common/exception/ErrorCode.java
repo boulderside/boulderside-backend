@@ -32,6 +32,9 @@ public enum ErrorCode {
 	ACCOUNT_ALREADY_EXISTS("A006", "이미 존재하는 계정입니다.", HttpStatus.CONFLICT),
 	PHONE_SEND_FAILED("A007", "휴대폰 인증번호 전송에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 	REDIS_STORE_FAILED("A008", "인증 정보를 저장하지 못했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+	S3_UPLOAD_FAILED("A009", "S3 이미지 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+	S3_DELETE_FAILED("A010", "S3 이미지 삭제에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+	S3_INVALID_FILE_TYPE("A011", "지원하지 않는 파일 형식입니다.", HttpStatus.BAD_REQUEST),
 	UNKNOWN_ERROR("A999", "알 수 없는 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 
 	// External (E001~E099)
