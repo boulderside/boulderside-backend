@@ -26,6 +26,10 @@ public class Image {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	/** 업로드된 원본 파일명 */
+	@Column(name = "original_filename")
+	private String originalFileName;
+
 	/** 연관 대상 ID (FK) */
 	@Column(name = "domain_id", nullable = false)
 	private Long domainId;
