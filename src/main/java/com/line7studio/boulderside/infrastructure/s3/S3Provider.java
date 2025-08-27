@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3URI;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -18,9 +19,11 @@ import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.common.exception.ExternalApiException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class S3Provider {
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
@@ -28,12 +31,20 @@ public class S3Provider {
 	private final AmazonS3 amazonS3;
 
 	// S3 이미지 업로드
-	public S3ObjectInfo imageUpload(MultipartFile file, S3Folder folder) throws IOException {
+	public S3ObjectInfo imageUpload(MultipartFile file, S3FolderType folder) throws IOException {
 		String fileName = file.getOriginalFilename();
 
-		// 확장자 검증
+		// 확장자 검증(스푸핑 가능)
 		String ext = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
 		if (!List.of("png", "jpg", "jpeg").contains(ext)) {
+			throw new ExternalApiException(ErrorCode.S3_INVALID_FILE_TYPE);
+		}
+
+		// MIME 타입 검증
+		String contentType = file.getContentType();
+		List<String> allowedMimeTypes = List.of("image/png", "image/jpg", "image/jpeg");
+
+		if (contentType == null || !allowedMimeTypes.contains(contentType.toLowerCase())) {
 			throw new ExternalApiException(ErrorCode.S3_INVALID_FILE_TYPE);
 		}
 
@@ -52,36 +63,31 @@ public class S3Provider {
 		}
 
 		String s3Url = amazonS3.getUrl(bucket, s3FilePathName).toString();
-		return S3ObjectInfo.of(s3Url, s3FilePathName);
+		return S3ObjectInfo.of(s3Url);
 	}
 
 	// S3 이미지 삭제
 	public void deleteImageByUrl(String s3Url) {
+		String s3Key = extractKeyFromUrl(s3Url);
 		try {
-			String s3Key = extractKeyFromUrl(s3Url);
-			if (!amazonS3.doesObjectExist(bucket, s3Key)) {
-				throw new ExternalApiException(ErrorCode.S3_DELETE_FAILED);
-			}
+			log.info("[S3 DELETE] bucket={}, key={}, url={}", bucket, s3Key, s3Url);
 			amazonS3.deleteObject(bucket, s3Key);
 		} catch (Exception e) {
 			throw new ExternalApiException(ErrorCode.S3_DELETE_FAILED);
 		}
 	}
 
-	private String extractKeyFromUrl(String s3Url) {
+	private String extractKeyFromUrl(String url) {
 		try {
-			URI uri = new URI(s3Url);
-			String path = uri.getPath();
-
-			if (path.startsWith("/" + bucket + "/")) {
-				return path.substring(bucket.length() + 2);
+			if (url.contains("amazonaws.com")) {
+				AmazonS3URI s3URI = new AmazonS3URI(url);
+				return s3URI.getKey();
+			} else {
+				// CloudFront 등 커스텀 도메인
+				URI uri = new URI(url);
+				String path = uri.getPath();
+				return path.startsWith("/") ? path.substring(1) : path;
 			}
-
-			if (path.startsWith("/")) {
-				return path.substring(1);
-			}
-
-			return path;
 		} catch (Exception e) {
 			throw new ExternalApiException(ErrorCode.S3_DELETE_FAILED);
 		}
