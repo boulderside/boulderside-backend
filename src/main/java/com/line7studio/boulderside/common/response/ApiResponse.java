@@ -11,9 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-// TODO: 추후 논의 후 정리하기
-// @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonInclude(JsonInclude.Include.ALWAYS)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
 	private T data;
 	private Boolean success;
