@@ -63,7 +63,7 @@ public class S3Provider {
 		}
 
 		String s3Url = amazonS3.getUrl(bucket, s3FilePathName).toString();
-		return S3ObjectInfo.of(s3Url);
+		return S3ObjectInfo.of(s3Url, fileName);
 	}
 
 	// S3 이미지 삭제
