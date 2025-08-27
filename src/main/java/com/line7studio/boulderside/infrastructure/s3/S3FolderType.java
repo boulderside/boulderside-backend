@@ -1,11 +1,11 @@
 package com.line7studio.boulderside.infrastructure.s3;
 
-public enum S3Folder {
+public enum S3FolderType {
 	PROFILE("profile");
-	
+
 	private final String path;
 
-	S3Folder(String path) {
+	S3FolderType(String path) {
 		this.path = path;
 	}
 
