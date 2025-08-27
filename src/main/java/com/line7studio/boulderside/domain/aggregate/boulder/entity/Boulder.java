@@ -44,6 +44,10 @@ public class Boulder extends BaseEntity {
 	@Column(name = "longitude")
 	private Double longitude;
 
+    /** 좋아요 수 */
+    @Column(name = "like_count")
+    private Long likeCount;
+
 	public void update(Long regionId, String name, String description, Double latitude, Double longitude) {
 		this.regionId = regionId;
 		this.name = name;

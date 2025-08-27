@@ -1,22 +1,18 @@
 package com.line7studio.boulderside.domain.aggregate.boulder.repository;
 
-import static com.line7studio.boulderside.domain.aggregate.boulder.entity.QBoulder.*;
-import static com.line7studio.boulderside.domain.aggregate.region.entity.QRegion.*;
-import static com.line7studio.boulderside.domain.association.like.entity.QUserBoulderLike.*;
-
-import java.util.List;
-
+import com.line7studio.boulderside.domain.aggregate.boulder.entity.Boulder;
 import com.line7studio.boulderside.domain.aggregate.boulder.enums.BoulderSortType;
-import com.line7studio.boulderside.domain.association.like.entity.QUserBoulderLike;
-import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import com.line7studio.boulderside.application.boulder.dto.BoulderWithRegion;
-import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 
-import lombok.RequiredArgsConstructor;
+import static com.line7studio.boulderside.domain.aggregate.boulder.entity.QBoulder.boulder;
 
 @Repository
 @RequiredArgsConstructor
@@ -24,83 +20,35 @@ public class BoulderQueryRepositoryImpl implements BoulderQueryRepository {
 	private final JPAQueryFactory jpaQueryFactory;
 
 	@Override
-	public List<BoulderWithRegion> findBouldersWithRegionAndCursor(BoulderSortType sortType, Long cursor, Long cursorLikeCount, int size) {
-		JPQLQuery<BoulderWithRegion> query =  jpaQueryFactory
-				.select(Projections.constructor(
-						BoulderWithRegion.class,
-						// Boulder
-						boulder.id,
-						boulder.name,
-						boulder.description,
-						boulder.latitude,
-						boulder.longitude,
-						boulder.createdAt,
-						boulder.updatedAt,
-						// Region
-						region.id,
-						region.province,
-						region.city,
-						region.regionCode,
-						region.officialDistrictCode
-				))
-				.from(boulder)
-				.join(region).on(boulder.regionId.eq(region.id))
-				.leftJoin(userBoulderLike).on(userBoulderLike.boulderId.eq(boulder.id))
-				.groupBy(
-						boulder.id, boulder.name, boulder.description,
-						boulder.latitude, boulder.longitude,
-						boulder.createdAt, boulder.updatedAt,
-						region.id, region.province, region.city,
-						region.regionCode, region.officialDistrictCode
-				);
+	public List<Boulder> findBouldersWithCursor(BoulderSortType sortType, Long cursor, String subCursor, int size) {
+		BooleanBuilder builder = new BooleanBuilder();
 
-		// 정렬 및 커서 조건 처리
-		if (sortType == BoulderSortType.POPULAR) {
-			query.orderBy(userBoulderLike.count().desc(), boulder.id.desc());
-
-			if (cursorLikeCount != null && cursor != null) {
-				query.having(
-						userBoulderLike.count().lt(cursorLikeCount)
-								.or(userBoulderLike.count().eq(cursorLikeCount).and(boulder.id.lt(cursor)))
-				);
-			}
-		} else if (sortType == BoulderSortType.LATEST) {
-			query.orderBy(boulder.id.desc());
-
-			if (cursor != null) {
-				query.where(boulder.id.lt(cursor));
-			}
+		if (cursor != null && subCursor != null && sortType != null) {
+            if (sortType == BoulderSortType.LATEST_CREATED) {
+                LocalDateTime subCursorCreatedAt = LocalDateTime.parse(subCursor);
+                builder.and(
+                        boulder.createdAt.lt(subCursorCreatedAt)
+                                .or(boulder.createdAt.eq(subCursorCreatedAt).and(boulder.id.lt(cursor)))
+                );
+            } else if (sortType == BoulderSortType.MOST_LIKED) {
+                Long subCursorLikeCount = Long.parseLong(subCursor);
+                builder.and(
+                        boulder.likeCount.lt(subCursorLikeCount)
+                                .or(boulder.likeCount.eq(subCursorLikeCount).and(boulder.id.lt(cursor)))
+                );
+            }
 		}
 
-		return query
-				.limit(size + 1) // 다음 페이지 유무 확인용
-				.fetch();
+		OrderSpecifier<?>[] orderSpecifiers = switch (Objects.requireNonNull(sortType)) {
+			case LATEST_CREATED -> new OrderSpecifier[]{boulder.createdAt.desc(), boulder.id.desc()};
+			case MOST_LIKED -> new OrderSpecifier[]{boulder.likeCount.desc(), boulder.id.desc()};
+		};
 
-	}
-
-	@Override
-	public BoulderWithRegion findBouldersWithRegionByBoulderId(Long boulderId) {
 		return jpaQueryFactory
-			.select(Projections.constructor(
-				BoulderWithRegion.class,
-				// Boulder
-				boulder.id,
-				boulder.name,
-				boulder.description,
-				boulder.latitude,
-				boulder.longitude,
-				boulder.createdAt,
-				boulder.updatedAt,
-				// Region
-				region.id,
-				region.province,
-				region.city,
-				region.regionCode,
-				region.officialDistrictCode
-			))
-			.from(boulder)
-			.join(region).on(boulder.regionId.eq(region.id))
-			.where(boulder.id.eq(boulderId))
-			.fetchOne();
+				.selectFrom(boulder)
+				.where(builder)
+				.orderBy(orderSpecifiers)
+				.limit(size)
+				.fetch();
 	}
 }

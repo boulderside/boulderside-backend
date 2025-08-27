@@ -14,15 +14,15 @@ import lombok.NoArgsConstructor;
 public class BoulderPageResponse {
 	private List<BoulderResponse> content;
 	private Long nextCursor;
-	private Long nextLikeCount;
+	private String nextSubCursor;
 	private boolean hasNext;
 	private int size;
 
-	public static BoulderPageResponse of(List<BoulderResponse> content, Long nextCursor, Long nextCursorLikeCount, boolean hasNext, int size) {
+	public static BoulderPageResponse of(List<BoulderResponse> content, Long nextCursor, String nextSubCursor, boolean hasNext, int size) {
 		return BoulderPageResponse.builder()
 			.content(content)
 			.nextCursor(nextCursor)
-			.nextLikeCount(nextCursorLikeCount)
+			.nextSubCursor(nextSubCursor)
 			.hasNext(hasNext)
 			.size(size)
 			.build();
