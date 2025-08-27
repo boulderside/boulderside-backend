@@ -5,6 +5,9 @@ import com.line7studio.boulderside.domain.aggregate.user.entity.User;
 import com.line7studio.boulderside.domain.aggregate.user.enums.UserRole;
 import com.line7studio.boulderside.domain.aggregate.user.enums.UserSex;
 
+import lombok.Builder;
+
+@Builder
 public record LinkAccountResponse(
 	String nickname,
 	String phone,
@@ -14,13 +17,13 @@ public record LinkAccountResponse(
 	String name
 ) {
 	public static LinkAccountResponse from(User user) {
-		return new LinkAccountResponse(
-			user.getNickname(),
-			user.getPhone(),
-			user.getUserRole(),
-			user.getUserSex(),
-			user.getUserLevel(),
-			user.getName()
-		);
+		return LinkAccountResponse.builder()
+			.nickname(user.getNickname())
+			.phone(user.getPhone())
+			.userRole(user.getUserRole())
+			.userSex(user.getUserSex())
+			.userLevel(user.getUserLevel())
+			.name(user.getName())
+			.build();
 	}
 }
