@@ -74,8 +74,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 		String accessToken = tokenProvider.create("access", userDetails.getUserId(), userDetails.getUserRole());
 		String refreshToken = tokenProvider.create("refresh", userDetails.getUserId(), userDetails.getUserRole());
 
-		LoginResponse loginResponse = new LoginResponse(userDetails.getEmail(), userDetails.getNickname(), accessToken,
-			refreshToken);
+		LoginResponse loginResponse = LoginResponse.builder()
+			.email(userDetails.getEmail())
+			.nickname(userDetails.getNickname())
+			.accessToken(accessToken)
+			.refreshToken(refreshToken)
+			.build();
 
 		ApiResponse<LoginResponse> apiResponse = ApiResponse.of(loginResponse);
 		String json = objectMapper.writeValueAsString(apiResponse);
