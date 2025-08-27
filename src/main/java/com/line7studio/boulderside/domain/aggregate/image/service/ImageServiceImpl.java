@@ -1,14 +1,12 @@
 package com.line7studio.boulderside.domain.aggregate.image.service;
 
-import java.util.List;
-
+import com.line7studio.boulderside.domain.aggregate.image.entity.Image;
+import com.line7studio.boulderside.domain.aggregate.image.enums.ImageDomainType;
+import com.line7studio.boulderside.domain.aggregate.image.repository.ImageRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import com.line7studio.boulderside.domain.aggregate.image.entity.Image;
-import com.line7studio.boulderside.domain.aggregate.image.enums.TargetType;
-import com.line7studio.boulderside.domain.aggregate.image.repository.ImageRepository;
-
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,13 +15,13 @@ public class ImageServiceImpl implements ImageService {
 	private final ImageRepository imageRepository;
 
 	@Override
-	public List<Image> getImageListByTargetTypeAndTargetIdList(TargetType targetType, List<Long> targetIdList) {
-		return imageRepository.findByTargetTypeAndTargetIdIn(TargetType.BOULDER, targetIdList);
+	public List<Image> getImageListByImageDomainTypeAndDomainIdList(ImageDomainType imageDomainType, List<Long> domainIdList) {
+		return imageRepository.findByImageDomainTypeAndDomainIdIn(ImageDomainType.BOULDER, domainIdList);
 	}
 
 	@Override
-	public List<Image> getImageListByTargetTypeAndTargetId(TargetType targetType, Long targetId) {
-		return imageRepository.findByTargetTypeAndTargetId(TargetType.BOULDER, targetId);
+	public List<Image> getImageListByImageDomainTypeAndDomainId(ImageDomainType imageDomainType, Long domainId) {
+		return imageRepository.findByImageDomainTypeAndDomainId(ImageDomainType.BOULDER, domainId);
 	}
 
 	@Override
@@ -32,7 +30,7 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
-	public void deleteImagesByTargetTypeAndTargetId(TargetType targetType, Long targetId) {
-		imageRepository.deleteByTargetTypeAndTargetId(TargetType.BOULDER, targetId);
+	public void deleteAllImagesByImageDomainTypeAndDomainId(ImageDomainType imageDomainType, Long domainId) {
+		imageRepository.deleteByImageDomainTypeAndDomainId(ImageDomainType.BOULDER, domainId);
 	}
 }

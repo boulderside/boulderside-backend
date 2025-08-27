@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.aggregate.image.entity;
 
-import com.line7studio.boulderside.domain.aggregate.image.enums.TargetType;
+import com.line7studio.boulderside.domain.aggregate.image.enums.ImageDomainType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,13 +27,13 @@ public class Image {
 	private Long id;
 
 	/** 연관 대상 ID (FK) */
-	@Column(name = "target_id", nullable = false)
-	private Long targetId;
+	@Column(name = "domain_id", nullable = false)
+	private Long domainId;
 
 	/** 연관 대상 타입 */
 	@Enumerated(EnumType.STRING)
-	@Column(name = "target_type", nullable = false)
-	private TargetType targetType;
+	@Column(name = "image_domain_type", nullable = false)
+	private ImageDomainType imageDomainType;
 
 	/** 이미지 URL */
 	@Column(name = "image_url", length = 2048)

@@ -1,7 +1,7 @@
 package com.line7studio.boulderside.common.dto;
 
 import com.line7studio.boulderside.domain.aggregate.image.entity.Image;
-import com.line7studio.boulderside.domain.aggregate.image.enums.TargetType;
+import com.line7studio.boulderside.domain.aggregate.image.enums.ImageDomainType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,14 +13,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ImageInfo {
-	// Image
-	private TargetType targetType;
+	private ImageDomainType imageDomainType;
+    private Long domainId;
 	private String imageUrl;
 	private Integer orderIndex;
 
 	public static ImageInfo from(Image img) {
 		return ImageInfo.builder()
-			.targetType(img.getTargetType())
+			.imageDomainType(img.getImageDomainType())
+            .domainId(img.getDomainId())
 			.imageUrl(img.getImageUrl())
 			.orderIndex(img.getOrderIndex())
 			.build();
