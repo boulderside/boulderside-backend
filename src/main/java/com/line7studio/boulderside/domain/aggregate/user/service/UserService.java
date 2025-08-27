@@ -5,7 +5,7 @@ import com.line7studio.boulderside.domain.aggregate.user.entity.User;
 public interface UserService {
 	User getUserById(Long userId);
 
-	User findByPhone(String phoneNumber);
+	User getUserByPhone(String phoneNumber);
 
-	boolean isUserIdDuplicate(String email);
+	boolean existsByEmail(String email);
 }
