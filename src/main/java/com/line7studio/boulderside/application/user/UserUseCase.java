@@ -13,7 +13,7 @@ import com.line7studio.boulderside.controller.user.response.LinkAccountResponse;
 import com.line7studio.boulderside.domain.aggregate.user.entity.User;
 import com.line7studio.boulderside.domain.aggregate.user.provider.PhoneAuthProvider;
 import com.line7studio.boulderside.domain.aggregate.user.service.UserService;
-import com.line7studio.boulderside.infrastructure.redis.RedisKeyPrefix;
+import com.line7studio.boulderside.infrastructure.redis.RedisKeyPrefixType;
 import com.line7studio.boulderside.infrastructure.redis.RedisProvider;
 
 import lombok.RequiredArgsConstructor;
@@ -36,11 +36,12 @@ public class UserUseCase {
 	}
 
 	public boolean isUserIdDuplicate(String email) {
-		return userService.isUserIdDuplicate(email);
+		return userService.existsByEmail(email);
 	}
 
 	public boolean verifyAuthCode(String phoneNumber, String code) {
-		String redisKey = RedisKeyPrefix.PHONE_AUTH.of(phoneNumber);
+		String encodedPhoneNumber = aesProvider.encrypt(phoneNumber);
+		String redisKey = RedisKeyPrefixType.PHONE_AUTH.of(encodedPhoneNumber);
 
 		String storedCode = redisProvider.get(redisKey, String.class).orElse(null);
 
@@ -54,30 +55,31 @@ public class UserUseCase {
 
 	public void sendAuthCode(String phoneNumber) {
 		String encodedPhoneNumber = aesProvider.encrypt(phoneNumber);
-		User existingUser = userService.findByPhone(encodedPhoneNumber);
 
-		if (existingUser != null && existingUser.getEmail() != null && !existingUser.getEmail().isBlank()) {
-			throw new ExternalApiException(ErrorCode.ACCOUNT_ALREADY_EXISTS);
+		// 휴대폰 번호로 유저 존재 여부 확인
+		if (userService.existsByPhone(encodedPhoneNumber)) {
+			User existingUser = userService.getUserByPhone(encodedPhoneNumber);
+
+			if (existingUser.getEmail() != null && !existingUser.getEmail().isBlank()) {
+				throw new ExternalApiException(ErrorCode.ACCOUNT_ALREADY_EXISTS);
+			}
 		}
 
 		String verificationCode = generateAuthCode();
-		phoneAuthProvider.sendCertificationCode(phoneNumber, verificationCode);
-
-		String redisKey = RedisKeyPrefix.PHONE_AUTH.of(phoneNumber);
+		String redisKey = RedisKeyPrefixType.PHONE_AUTH.of(encodedPhoneNumber);
 		try {
 			redisProvider.set(redisKey, verificationCode, 3, TimeUnit.MINUTES);
 		} catch (Exception e) {
 			log.error("Redis 저장 실패 - key={}, value={}, reason={}", redisKey, verificationCode, e.getMessage(), e);
 			throw new ExternalApiException(ErrorCode.REDIS_STORE_FAILED);
 		}
+
+		phoneAuthProvider.sendCertificationCode(phoneNumber, verificationCode);
 	}
 
 	public LinkAccountResponse linkAccountWithPhone(String phoneNumber) {
-		User user = userService.findByPhone(phoneNumber);
-
-		if (user == null) {
-			return null;
-		}
+		String encodedPhoneNumber = aesProvider.encrypt(phoneNumber);
+		User user = userService.getUserByPhone(encodedPhoneNumber);
 
 		return LinkAccountResponse.from(user);
 	}
