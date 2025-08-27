@@ -1,8 +1,7 @@
 package com.line7studio.boulderside.domain.aggregate.user.service;
 
-import com.line7studio.boulderside.common.exception.BusinessException;
-import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.domain.aggregate.user.repository.UserRepository;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,8 +11,6 @@ import com.line7studio.boulderside.domain.aggregate.user.entity.User;
 import com.line7studio.boulderside.domain.aggregate.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -43,17 +40,10 @@ public class UserServiceImpl implements UserService {
 	public boolean existsByPhone(String phone) {
 		return userRepository.existsByPhone(phone);
 	}
-}
-
 
 	@Override
-	public User getUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+	public List<User> findAllById(List<Long> userIdList) {
+		return userRepository.findAllByIdIn(userIdList);
 	}
 
-  @Override
-  public List<User> findAllById(List<Long> userIdList) {
-      return userRepository.findAllByIdIn(userIdList);
-  }
-
+}
