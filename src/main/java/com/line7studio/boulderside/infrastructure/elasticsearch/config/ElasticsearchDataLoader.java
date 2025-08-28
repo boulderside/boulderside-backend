@@ -17,17 +17,12 @@ public class ElasticsearchDataLoader implements ApplicationRunner {
     private final ElasticsearchSyncService elasticsearchSyncService;
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         try {
-            // Recreate indices first to ensure proper mapping
             elasticsearchIndexService.recreateIndices();
-            
-            // Then sync all data
             elasticsearchSyncService.syncAllDataOnStartup();
         } catch (Exception e) {
-            log.error("Failed to initialize Elasticsearch on startup", e);
-            // Don't throw exception to prevent application startup failure
-            // Elasticsearch sync is not critical for basic application functionality
+            log.error("엘라스틱 서치를 위한 데이터 동기화 실패", e);
         }
     }
 }
