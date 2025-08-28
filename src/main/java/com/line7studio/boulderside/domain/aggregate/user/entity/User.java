@@ -34,9 +34,9 @@ public class User extends BaseEntity {
 	@Column(name = "nickname", nullable = false)
 	private String nickname;
 
-    /** 사용자 프로필 이미지 */
-    @Column(name = "profile_image_url")
-    private String profileImageUrl;
+	/** 사용자 프로필 이미지 */
+	@Column(name = "profile_image_url")
+	private String profileImageUrl;
 
 	/** 휴대폰 번호 */
 	@Column(name = "phone")
@@ -45,7 +45,8 @@ public class User extends BaseEntity {
 	/** 사용자 역할 (예: ADMIN, USER 등) */
 	@Enumerated(EnumType.STRING)
 	@Column(name = "user_role", nullable = false)
-	private UserRole userRole;
+	@Builder.Default
+	private UserRole userRole = UserRole.ROLE_USER;
 
 	/** 성별 */
 	@Enumerated(EnumType.STRING)
@@ -55,7 +56,8 @@ public class User extends BaseEntity {
 	/** 사용자 레벨 (공통 Level enum 사용) */
 	@Enumerated(EnumType.STRING)
 	@Column(name = "user_level")
-	private Level userLevel;
+	@Builder.Default
+	private Level userLevel = Level.V0;
 
 	/** 실제 이름 */
 	@Column(name = "name")
@@ -67,4 +69,10 @@ public class User extends BaseEntity {
 
 	@Column(name = "password")
 	private String password;
+
+	public void updateAccount(String email, String encodedPassword) {
+		this.email = email;
+		this.password = encodedPassword;
+	}
+
 }
