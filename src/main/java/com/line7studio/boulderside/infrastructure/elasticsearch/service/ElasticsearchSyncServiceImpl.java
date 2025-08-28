@@ -2,6 +2,9 @@ package com.line7studio.boulderside.infrastructure.elasticsearch.service;
 
 import com.line7studio.boulderside.domain.aggregate.boulder.entity.Boulder;
 import com.line7studio.boulderside.domain.aggregate.boulder.repository.BoulderRepository;
+import com.line7studio.boulderside.domain.aggregate.image.entity.Image;
+import com.line7studio.boulderside.domain.aggregate.image.enums.ImageDomainType;
+import com.line7studio.boulderside.domain.aggregate.image.service.ImageService;
 import com.line7studio.boulderside.domain.aggregate.post.entity.Post;
 import com.line7studio.boulderside.domain.aggregate.post.repository.PostRepository;
 import com.line7studio.boulderside.domain.aggregate.region.entity.Region;
@@ -35,6 +38,7 @@ public class ElasticsearchSyncServiceImpl implements ElasticsearchSyncService {
     private final PostRepository postRepository;
     private final RegionRepository regionRepository;
     private final UserRepository userRepository;
+    private final ImageService imageService;
     
     private final BoulderDocumentRepository boulderDocumentRepository;
     private final RouteDocumentRepository routeDocumentRepository;
@@ -61,7 +65,12 @@ public class ElasticsearchSyncServiceImpl implements ElasticsearchSyncService {
         for (Boulder boulder : boulders) {
             try {
                 Region region = regionRepository.findById(boulder.getRegionId()).orElse(null);
-                String thumbnailUrl = null;
+
+                String thumbnailUrl = imageService.getImageListByImageDomainTypeAndDomainIdAndOrderIndex(ImageDomainType.BOULDER, boulder.getId(), 0)
+                        .stream()
+                        .findFirst()
+                        .map(Image::getImageUrl)
+                        .orElse(null);
                 
                 BoulderDocument document = documentConverter.toBoulderDocument(boulder, region, thumbnailUrl);
                 boulderDocumentRepository.save(document);
@@ -109,7 +118,12 @@ public class ElasticsearchSyncServiceImpl implements ElasticsearchSyncService {
     public void syncBoulder(Boulder boulder) {
         try {
             Region region = regionRepository.findById(boulder.getRegionId()).orElse(null);
-            String thumbnailUrl = null;
+
+            String thumbnailUrl = imageService.getImageListByImageDomainTypeAndDomainIdAndOrderIndex(ImageDomainType.BOULDER, boulder.getId(), 0)
+                    .stream()
+                    .findFirst()
+                    .map(Image::getImageUrl)
+                    .orElse(null);
             
             BoulderDocument document = documentConverter.toBoulderDocument(boulder, region, thumbnailUrl);
             boulderDocumentRepository.save(document);
