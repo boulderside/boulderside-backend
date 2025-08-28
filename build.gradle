@@ -79,6 +79,10 @@ dependencies {
 
     // Aws
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+    // 엘라스틱 서치 (검색)
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    implementation 'co.elastic.clients:elasticsearch-java:8.15.0'
 }
 
 tasks.named('test') {
