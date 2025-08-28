@@ -13,10 +13,7 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.StringQuery;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -80,8 +77,11 @@ public class SearchRepositoryImpl implements ElasticsearchSearchRepository {
 
     @Override
     public UnifiedSearchResponse searchUnified(String keyword) {
-        Map<DocumentDomainType, UnifiedSearchResponse.DomainSearchResult> domainResults = new HashMap<>();
-        Map<DocumentDomainType, Long> totalCounts = new HashMap<>();
+        Map<DocumentDomainType, UnifiedSearchResponse.DomainSearchResult> domainResults =
+                new EnumMap<>(DocumentDomainType.class);
+
+        Map<DocumentDomainType, Long> totalCounts =
+                new EnumMap<>(DocumentDomainType.class);
 
         String boulderQueryString = """
             {
