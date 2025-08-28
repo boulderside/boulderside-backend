@@ -45,13 +45,13 @@ public class ElasticsearchSyncServiceImpl implements ElasticsearchSyncService {
     @Override
     @Transactional(readOnly = true)
     public void syncAllDataOnStartup() {
-        log.info("Starting Elasticsearch data synchronization...");
-        
+        log.info("Elasticsearch 데이터 동기화 시작");
+
         syncAllBoulders();
         syncAllRoutes();
         syncAllPosts();
-        
-        log.info("Elasticsearch data synchronization completed.");
+
+        log.info("Elasticsearch 데이터 동기화 완료");
     }
 
     private void syncAllBoulders() {
