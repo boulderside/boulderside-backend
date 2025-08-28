@@ -7,6 +7,7 @@ import com.line7studio.boulderside.domain.aggregate.post.enums.PostSortType;
 import com.line7studio.boulderside.domain.aggregate.post.enums.PostType;
 import com.line7studio.boulderside.domain.aggregate.post.repository.PostQueryRepository;
 import com.line7studio.boulderside.domain.aggregate.post.repository.PostRepository;
+import com.line7studio.boulderside.infrastructure.elasticsearch.service.ElasticsearchSyncService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.List;
 public class PostServiceImpl implements PostService {
 	private final PostRepository postRepository;
     private final PostQueryRepository postQueryRepository;
+    private final ElasticsearchSyncService elasticsearchSyncService;
 
 	@Override
 	public Post getPostById(Long postId) {
@@ -51,7 +53,9 @@ public class PostServiceImpl implements PostService {
                 .meetingDate(meetingDate)
                 .build();
 
-        return postRepository.save(post);
+        Post savedPost = postRepository.save(post);
+        elasticsearchSyncService.syncPost(savedPost);
+        return savedPost;
     }
 
     @Override
@@ -66,8 +70,9 @@ public class PostServiceImpl implements PostService {
         validate(postType, meetingDate);
 
         post.update(title, content, postType, meetingDate);
-
-        return post;
+        Post savedPost = postRepository.save(post);
+        elasticsearchSyncService.syncPost(savedPost);
+        return savedPost;
     }
 
     @Override
@@ -80,6 +85,7 @@ public class PostServiceImpl implements PostService {
         }
 
         postRepository.deleteById(postId);
+        elasticsearchSyncService.deletePost(postId);
     }
 
     // 검증용 내부 함수
