@@ -10,5 +10,6 @@ public final class SecurityWhitelist {
 
 	public static final String[] PUBLIC = {
 		"users/check-id", "users/phone/send-code", "users/phone/verify-code", "users/phone/link-account",
+		"users/phone/lookup", "users/phone/link-account", "users/sign-up"
 	};
 }
