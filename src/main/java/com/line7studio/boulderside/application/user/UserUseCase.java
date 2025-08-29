@@ -1,15 +1,6 @@
 package com.line7studio.boulderside.application.user;
 
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.line7studio.boulderside.application.user.dto.response.UserInfoResponse;
-import com.line7studio.boulderside.common.exception.BusinessException;
-import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.common.exception.ExternalApiException;
 import com.line7studio.boulderside.common.security.provider.AESProvider;
 import com.line7studio.boulderside.controller.user.request.PhoneLinkRequest;
 import com.line7studio.boulderside.controller.user.request.SignupRequest;
@@ -21,9 +12,14 @@ import com.line7studio.boulderside.infrastructure.redis.RedisKeyPrefixType;
 import com.line7studio.boulderside.infrastructure.redis.RedisProvider;
 import com.line7studio.boulderside.infrastructure.s3.S3FolderType;
 import com.line7studio.boulderside.infrastructure.s3.S3Provider;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +30,9 @@ public class UserUseCase {
 	private final PhoneAuthProvider phoneAuthProvider;
 	private final RedisProvider redisProvider;
 	private final S3Provider s3Provider;
+    private final Random random = new Random();
 
+    @Transactional(readOnly = true)
 	public UserInfoResponse getUserInfo(Long id) {
 		User user = userService.getUserById(id);
 		return UserInfoResponse.builder()
@@ -42,10 +40,12 @@ public class UserUseCase {
 			.build();
 	}
 
+    @Transactional(readOnly = true)
 	public boolean isUserIdDuplicate(String email) {
 		return userService.existsByEmail(email);
 	}
 
+    @Transactional(readOnly = true)
 	public boolean verifyAuthCode(String phoneNumber, String code) {
 		String encodedPhoneNumber = aesProvider.encrypt(phoneNumber);
 		String redisKey = RedisKeyPrefixType.PHONE_AUTH.of(encodedPhoneNumber);
@@ -60,83 +60,56 @@ public class UserUseCase {
 		return true;
 	}
 
+    @Transactional(readOnly = true)
 	public void sendAuthCode(String phoneNumber) {
+        // 인증번호 생성
+        String verificationCode = generateAuthCode();
 		String encodedPhoneNumber = aesProvider.encrypt(phoneNumber);
 
-		// 휴대폰 번호로 유저 존재 여부 확인
-		if (userService.existsByPhone(encodedPhoneNumber)) {
-			User existingUser = userService.getUserByPhone(encodedPhoneNumber);
+        // User 존재 여부 검증
+        userService.validateUserNotExistsByPhone(encodedPhoneNumber);
 
-			if (existingUser.getEmail() != null && !existingUser.getEmail().isBlank()) {
-				throw new ExternalApiException(ErrorCode.ACCOUNT_ALREADY_EXISTS);
-			}
-		}
-
-		String verificationCode = generateAuthCode();
+        // Redis 저장
 		String redisKey = RedisKeyPrefixType.PHONE_AUTH.of(encodedPhoneNumber);
-		try {
-			redisProvider.set(redisKey, verificationCode, 3, TimeUnit.MINUTES);
-		} catch (Exception e) {
-			log.error("Redis 저장 실패 - key={}, value={}, reason={}", redisKey, verificationCode, e.getMessage(), e);
-			throw new ExternalApiException(ErrorCode.REDIS_STORE_FAILED);
-		}
-
+        redisProvider.set(redisKey, verificationCode, 3, TimeUnit.MINUTES);
 		phoneAuthProvider.sendCertificationCode(phoneNumber, verificationCode);
 	}
 
+    @Transactional(readOnly = true)
 	public PhoneLookupResponse lookupUserByPhone(String phoneNumber) {
 		String encodedPhoneNumber = aesProvider.encrypt(phoneNumber);
-
-		try {
-			User user = userService.getUserByPhone(encodedPhoneNumber);
-			return PhoneLookupResponse.from(user);
-		} catch (BusinessException e) {
-			return PhoneLookupResponse.notExists();
-		}
+        User user = userService.getUserByPhone(encodedPhoneNumber);
+        return PhoneLookupResponse.from(user);
 	}
 
+    @Transactional
 	public void linkAccountByPhone(PhoneLinkRequest request) {
 		String encodedPhone = aesProvider.encrypt(request.phoneNumber());
 		userService.updateUserByPhone(encodedPhone, request.email(), request.password());
 	}
 
+    @Transactional
 	public void signUp(SignupRequest request, MultipartFile file) {
 		String encodedPhone = aesProvider.encrypt(request.phone());
 
-		// 이미지 저장하기
-		String profileImageUrl = null;
-		if (file != null && !file.isEmpty()) {
-			try {
-				profileImageUrl = s3Provider.imageUpload(file, S3FolderType.PROFILE).url();
-			} catch (Exception e) {
-				throw new ExternalApiException(ErrorCode.S3_INVALID_FILE_TYPE);
-			}
-		}
+        User savedUser = userService.createUser(
+                request.nickname(),
+                null,
+                encodedPhone,
+                request.userRole(),
+                request.userSex(),
+                request.userLevel(),
+                request.name(),
+                request.email(),
+                request.password()
+        );
 
-		// 데이터 저장
-		try {
-			userService.createUser(
-				request.nickname(),
-				profileImageUrl,
-				encodedPhone,
-				request.userRole(),
-				request.userSex(),
-				request.userLevel(),
-				request.name(),
-				request.email(),
-				request.password()
-			);
-		} catch (BusinessException e) {
-			s3Provider.deleteImageByUrl(profileImageUrl);
-			throw new ExternalApiException(e.getErrorCode());
-		}
-
-	}
+        String profileImageUrl = s3Provider.imageUpload(file, S3FolderType.PROFILE).url();
+        userService.updateUserProfileImage(savedUser.getId(), profileImageUrl);
+    }
 
 	private String generateAuthCode() {
-		Random random = new Random();
 		int code = 100000 + random.nextInt(900000);
 		return String.valueOf(code);
 	}
-
 }
