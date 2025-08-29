@@ -1,5 +1,6 @@
 package com.line7studio.boulderside.application.user;
 
+import com.line7studio.boulderside.application.user.dto.response.CreateUserCommand;
 import com.line7studio.boulderside.application.user.dto.response.UserInfoResponse;
 import com.line7studio.boulderside.common.security.provider.AESProvider;
 import com.line7studio.boulderside.controller.user.request.PhoneLinkRequest;
@@ -92,9 +93,8 @@ public class UserUseCase {
 	public void signUp(SignupRequest request, MultipartFile file) {
 		String encodedPhone = aesProvider.encrypt(request.phone());
 
-        User savedUser = userService.createUser(
+        CreateUserCommand createUserCommand = new CreateUserCommand(
                 request.nickname(),
-                null,
                 encodedPhone,
                 request.userRole(),
                 request.userSex(),
@@ -103,6 +103,9 @@ public class UserUseCase {
                 request.email(),
                 request.password()
         );
+
+        // 3) 유저 저장
+        User savedUser = userService.createUser(createUserCommand);
 
         String profileImageUrl = s3Provider.imageUpload(file, S3FolderType.PROFILE).url();
         userService.updateUserProfileImage(savedUser.getId(), profileImageUrl);
