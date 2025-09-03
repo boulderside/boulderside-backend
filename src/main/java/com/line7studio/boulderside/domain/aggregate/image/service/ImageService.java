@@ -10,6 +10,8 @@ public interface ImageService {
 
 	List<Image> getImageListByImageDomainTypeAndDomainId(ImageDomainType imageDomainType, Long targetId);
 
+	List<Image> getImageListByImageDomainTypeAndDomainIdAndOrderIndex(ImageDomainType imageDomainType, Long targetId, Integer orderIndex);
+
 	List<Image> createImages(List<Image> imageList);
 
 	void deleteAllImagesByImageDomainTypeAndDomainId(ImageDomainType imageDomainType, Long targetId);

@@ -2,6 +2,7 @@ package com.line7studio.boulderside.domain.aggregate.route;
 
 import com.line7studio.boulderside.common.enums.Level;
 
+import com.line7studio.boulderside.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "routes")
-public class Route {
+public class Route extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -33,6 +34,10 @@ public class Route {
 	/** 루트 이름 */
 	@Column(name = "name")
 	private String name;
+
+    /** 좋아요 수 */
+    @Column(name = "like_count")
+    private Long likeCount;
 
 	/** 난이도 레벨 */
 	@Enumerated(EnumType.STRING)
