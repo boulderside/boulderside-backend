@@ -45,35 +45,19 @@ public class SearchUseCase {
         return searchService.searchUnified(keyword);
     }
 
-    public DomainSearchResponse searchByDomain(String keyword, DocumentDomainType domain, String cursor, int size) {
+    public DomainSearchResponse searchByDomain(String keyword, DocumentDomainType domain, int size) {
         if (keyword == null || keyword.trim().isEmpty()) {
             return DomainSearchResponse.builder()
                     .items(List.of())
-                    .nextCursor(null)
-                    .hasMore(false)
                     .totalCount(0)
                     .build();
         }
         
-        List<SearchItemResponse> items = searchService.searchByDomain(keyword, domain, cursor, size + 1);
-        
-        boolean hasMore = items.size() > size;
-        if (hasMore) {
-            items = items.subList(0, size);
-        }
-        
-        String nextCursor = null;
-        if (hasMore && !items.isEmpty()) {
-            SearchItemResponse lastItem = items.getLast();
-            nextCursor = lastItem.getCreatedAt().toString();
-        }
-        
+        List<SearchItemResponse> items = searchService.searchByDomain(keyword, domain, size);
         long totalCount = searchService.countByDomain(keyword, domain);
         
         return DomainSearchResponse.builder()
                 .items(items)
-                .nextCursor(nextCursor)
-                .hasMore(hasMore)
                 .totalCount(totalCount)
                 .build();
     }

@@ -96,7 +96,7 @@ public class SearchRepositoryImpl implements ElasticsearchSearchRepository {
         boulderQuery.setPageable(org.springframework.data.domain.PageRequest.of(0, 4));
         SearchHits<BoulderDocument> boulderHits = elasticsearchOperations.search(boulderQuery, BoulderDocument.class);
         List<SearchItemResponse> boulderItems = boulderHits.stream()
-                .limit(3)
+                .limit(4)
                 .map(SearchHit::getContent)
                 .map(this::convertBoulderToSearchItem)
                 .toList();
@@ -121,7 +121,7 @@ public class SearchRepositoryImpl implements ElasticsearchSearchRepository {
         routeQuery.setPageable(org.springframework.data.domain.PageRequest.of(0, 4));
         SearchHits<RouteDocument> routeHits = elasticsearchOperations.search(routeQuery, RouteDocument.class);
         List<SearchItemResponse> routeItems = routeHits.stream()
-                .limit(3)
+                .limit(4)
                 .map(SearchHit::getContent)
                 .map(this::convertRouteToSearchItem)
                 .toList();
@@ -146,7 +146,7 @@ public class SearchRepositoryImpl implements ElasticsearchSearchRepository {
         postQuery.setPageable(org.springframework.data.domain.PageRequest.of(0, 4));
         SearchHits<PostDocument> postHits = elasticsearchOperations.search(postQuery, PostDocument.class);
         List<SearchItemResponse> postItems = postHits.stream()
-                .limit(3)
+                .limit(4)
                 .map(SearchHit::getContent)
                 .map(this::convertPostToSearchItem)
                 .toList();
@@ -165,41 +165,18 @@ public class SearchRepositoryImpl implements ElasticsearchSearchRepository {
     }
 
     @Override
-    public List<SearchItemResponse> searchByDomain(String keyword, DocumentDomainType domain, String cursor, int size) {
+    public List<SearchItemResponse> searchByDomain(String keyword, DocumentDomainType domain, int size) {
         String searchField = getSearchField(domain);
         Class<?> documentClass = getDocumentClass(domain);
 
-        String queryString;
-        if (cursor != null) {
-            queryString = """
-                {
-                    "bool": {
-                        "must": {
-                            "multi_match": {
-                                "query": "%s",
-                                "fields": ["%s"]
-                            }
-                        },
-                        "filter": {
-                            "range": {
-                                "createdAt": {
-                                    "lt": "%s"
-                                }
-                            }
-                        }
-                    }
+        String queryString = """
+            {
+                "multi_match": {
+                    "query": "%s",
+                    "fields": ["%s"]
                 }
-                """.formatted(keyword, searchField, cursor);
-        } else {
-            queryString = """
-                {
-                    "multi_match": {
-                        "query": "%s",
-                        "fields": ["%s"]
-                    }
-                }
-                """.formatted(keyword, searchField);
-        }
+            }
+            """.formatted(keyword, searchField);
 
         StringQuery query = new StringQuery(queryString);
         query.setPageable(org.springframework.data.domain.PageRequest.of(0, size));
