@@ -13,7 +13,5 @@ import java.util.List;
 @AllArgsConstructor
 public class DomainSearchResponse {
     private List<SearchItemResponse> items;
-    private String nextCursor;
-    private boolean hasMore;
     private long totalCount;
 }
