@@ -38,9 +38,8 @@ public class SearchController {
     public ResponseEntity<ApiResponse<DomainSearchResponse>> searchByDomain(
             @RequestParam String keyword,
             @RequestParam DocumentDomainType domain,
-            @RequestParam(required = false) String cursor,
-            @RequestParam(defaultValue = "20") int size) {
-        DomainSearchResponse response = searchUseCase.searchByDomain(keyword, domain, cursor, size);
+            @RequestParam(defaultValue = "10") int size) {
+        DomainSearchResponse response = searchUseCase.searchByDomain(keyword, domain, size);
         return ResponseEntity.ok(ApiResponse.of(response));
     }
 }

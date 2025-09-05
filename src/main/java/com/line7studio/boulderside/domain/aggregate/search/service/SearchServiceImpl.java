@@ -26,8 +26,8 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public List<SearchItemResponse> searchByDomain(String keyword, DocumentDomainType domain, String cursor, int size) {
-        return searchRepository.searchByDomain(keyword, domain, cursor, size);
+    public List<SearchItemResponse> searchByDomain(String keyword, DocumentDomainType domain, int size) {
+        return searchRepository.searchByDomain(keyword, domain, size);
     }
 
     @Override
