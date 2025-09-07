@@ -10,6 +10,11 @@ import com.line7studio.boulderside.domain.aggregate.comment.enums.CommentDomainT
 import com.line7studio.boulderside.domain.aggregate.comment.service.CommentService;
 import com.line7studio.boulderside.domain.aggregate.user.entity.User;
 import com.line7studio.boulderside.domain.aggregate.user.service.UserService;
+import com.line7studio.boulderside.domain.aggregate.post.service.PostService;
+import com.line7studio.boulderside.domain.aggregate.post.entity.Post;
+import com.line7studio.boulderside.domain.aggregate.route.Route;
+import com.line7studio.boulderside.domain.aggregate.route.service.RouteService;
+import com.line7studio.boulderside.infrastructure.elasticsearch.service.ElasticsearchSyncService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +28,9 @@ import java.util.stream.Collectors;
 public class CommentUseCase {
     private final CommentService commentService;
     private final UserService userService;
+    private final PostService postService;
+    private final RouteService routeService;
+    private final ElasticsearchSyncService elasticsearchSyncService;
 
     @Transactional(readOnly = true)
     public CommentPageResponse getCommentPage(Long cursor, int size, Long domainId, CommentDomainType commentDomainType, Long userId) {
@@ -72,6 +80,16 @@ public class CommentUseCase {
                 request.getContent()
         );
 
+        if (commentDomainType == CommentDomainType.POST) {
+            Post post = postService.getPostById(postId);
+            post.incrementCommentCount();
+            elasticsearchSyncService.syncPost(post);
+        } else if (commentDomainType == CommentDomainType.ROUTE) {
+            Route route = routeService.getRouteById(postId);
+            route.incrementCommentCount();
+            elasticsearchSyncService.syncRoute(route);
+        }
+
         return CommentResponse.of(savedComment, userInfo, true);
     }
 
@@ -94,6 +112,19 @@ public class CommentUseCase {
     @Transactional
     public void deleteComment(Long commentId, Long userId) {
         User user = userService.getUserById(userId);
+
+        Comment comment = commentService.getCommentById(commentId);
+        
         commentService.deleteComment(commentId, user.getId());
+
+        if (comment.getCommentDomainType() == CommentDomainType.POST) {
+            Post post = postService.getPostById(comment.getDomainId());
+            post.decrementCommentCount();
+            elasticsearchSyncService.syncPost(post);
+        } else if (comment.getCommentDomainType() == CommentDomainType.ROUTE) {
+            Route route = routeService.getRouteById(comment.getDomainId());
+            route.decrementCommentCount();
+            elasticsearchSyncService.syncRoute(route);
+        }
     }
 }

@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.line7studio.boulderside.domain.aggregate.comment.entity.QComment.comment;
 
@@ -41,5 +43,20 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
                 .orderBy(comment.id.asc())
                 .limit(size)
                 .fetch();
+    }
+
+    @Override
+    public Map<Long, Long> countCommentsByDomainIdsAndType(List<Long> domainIds, CommentDomainType commentDomainType) {
+        List<Comment> comments = jpaQueryFactory
+                .selectFrom(comment)
+                .where(comment.domainId.in(domainIds)
+                        .and(comment.commentDomainType.eq(commentDomainType)))
+                .fetch();
+
+        return comments.stream()
+                .collect(Collectors.groupingBy(
+                        Comment::getDomainId,
+                        Collectors.counting()
+                ));
     }
 }
