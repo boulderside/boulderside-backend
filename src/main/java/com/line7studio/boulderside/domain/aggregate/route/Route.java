@@ -39,8 +39,48 @@ public class Route extends BaseEntity {
     @Column(name = "like_count")
     private Long likeCount;
 
-	/** 난이도 레벨 */
+    /** 조회 수 */
+    @Column(name = "view_count")
+    private Long viewCount;
+
+    /** 조회 수 */
+    @Column(name = "climber_count")
+    private Long climberCount;
+
+    /** 댓글 수 */
+    @Column(name = "comment_count")
+    private Long commentCount;
+
+    /** 난이도 레벨 */
 	@Enumerated(EnumType.STRING)
 	@Column(name = "route_level")
 	private Level routeLevel;
+
+	public void incrementViewCount() {
+		this.viewCount = this.viewCount + 1;
+	}
+
+	public void incrementLikeCount() {
+		this.likeCount = (this.likeCount == null) ? 1 : this.likeCount + 1;
+	}
+
+	public void decrementLikeCount() {
+		this.likeCount = (this.likeCount == null || this.likeCount <= 0) ? 0 : this.likeCount - 1;
+	}
+
+	public void incrementClimberCount() {
+		this.climberCount = (this.climberCount == null) ? 1 : this.climberCount + 1;
+	}
+
+	public void decrementClimberCount() {
+		this.climberCount = (this.climberCount == null || this.climberCount <= 0) ? 0 : this.climberCount - 1;
+	}
+
+	public void incrementCommentCount() {
+		this.commentCount = (this.commentCount == null) ? 1 : this.commentCount + 1;
+	}
+
+	public void decrementCommentCount() {
+		this.commentCount = (this.commentCount == null || this.commentCount <= 0) ? 0 : this.commentCount - 1;
+	}
 }
