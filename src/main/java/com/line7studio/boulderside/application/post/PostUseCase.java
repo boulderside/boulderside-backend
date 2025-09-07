@@ -5,12 +5,15 @@ import com.line7studio.boulderside.controller.post.request.CreatePostRequest;
 import com.line7studio.boulderside.controller.post.request.UpdatePostRequest;
 import com.line7studio.boulderside.controller.post.response.PostPageResponse;
 import com.line7studio.boulderside.controller.post.response.PostResponse;
+import com.line7studio.boulderside.domain.aggregate.comment.enums.CommentDomainType;
+import com.line7studio.boulderside.domain.aggregate.comment.service.CommentService;
 import com.line7studio.boulderside.domain.aggregate.post.entity.Post;
 import com.line7studio.boulderside.domain.aggregate.post.enums.PostSortType;
 import com.line7studio.boulderside.domain.aggregate.post.enums.PostType;
 import com.line7studio.boulderside.domain.aggregate.post.service.PostService;
 import com.line7studio.boulderside.domain.aggregate.user.entity.User;
 import com.line7studio.boulderside.domain.aggregate.user.service.UserService;
+import com.line7studio.boulderside.infrastructure.elasticsearch.service.ElasticsearchSyncService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,8 @@ import java.util.stream.Collectors;
 public class PostUseCase {
 	private final PostService postService;
     private final UserService userService;
+    private final CommentService commentService;
+    private final ElasticsearchSyncService elasticsearchSyncService;
 
 	public PostPageResponse getPostPage(Long cursor, String subCursor, int size, PostType postType, PostSortType sortType, Long userId) {
         // 게시글 조회
@@ -55,13 +60,22 @@ public class PostUseCase {
         Map<Long, User> userMap = userService.findAllById(userIdList).stream()
                 .collect(Collectors.toMap(User::getId, u -> u));
 
+        // 게시글 id 취합
+        List<Long> postIdList = postList.stream()
+                .map(Post::getId)
+                .toList();
+
+        // 게시글별 댓글 수 조회
+        Map<Long, Long> commentCountMap = commentService.countCommentsByDomainIdsAndCommentDomainTypeType(postIdList, CommentDomainType.POST);
+
         // 게시글 - 유저 정보로 응답 작성
         List<PostResponse> postResponses = postList.stream()
                 .map(post -> {
                     User user = userMap.get(post.getUserId());
                     UserInfo userInfo = UserInfo.from(user);
                     Boolean isMine = post.getUserId().equals(userId);
-                    return PostResponse.of(post, userInfo, isMine);
+                    Long commentCount = commentCountMap.getOrDefault(post.getId(), 0L);
+                    return PostResponse.of(post, userInfo, isMine, commentCount);
                 })
                 .toList();
 
@@ -82,12 +96,16 @@ public class PostUseCase {
         Post post = postService.getPostById(postId);
 		post.incrementViewCount();
 
+		elasticsearchSyncService.syncPost(post);
+
         User user = userService.getUserById(post.getUserId());
         UserInfo userInfo = UserInfo.from(user);
 
         Boolean isMine = post.getUserId().equals(userId);
 
-		return PostResponse.of(post, userInfo, isMine);
+        Long commentCount = commentService.countCommentsByDomainIdAndCommentDomainType(postId, CommentDomainType.POST);
+
+		return PostResponse.of(post, userInfo, isMine, commentCount);
 	}
 
     @Transactional
@@ -103,7 +121,7 @@ public class PostUseCase {
                 request.getMeetingDate()
         );
 
-		return PostResponse.of(savedPost, userInfo, true);
+		return PostResponse.of(savedPost, userInfo, true, 0L);
 	}
 
     @Transactional
@@ -122,7 +140,7 @@ public class PostUseCase {
 
         Boolean isMine = post.getUserId().equals(userId);
 
-		return PostResponse.of(post, userInfo, isMine);
+		return PostResponse.of(post, userInfo, isMine, 0L);
 	}
 
     @Transactional

@@ -23,11 +23,12 @@ public class PostResponse {
 	private String content;
 	private PostType postType;
 	private Long viewCount;
+	private Long commentCount;
 	private LocalDate meetingDate;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	public static PostResponse of(Post post, UserInfo userInfo, Boolean isMine) {
+	public static PostResponse of(Post post, UserInfo userInfo, Boolean isMine, Long commentCount) {
 		return PostResponse.builder()
 			.postId(post.getId())
             .isMine(isMine)
@@ -36,6 +37,7 @@ public class PostResponse {
             .content(post.getContent())
 			.postType(post.getPostType())
 			.viewCount(post.getViewCount())
+			.commentCount(commentCount)
 			.meetingDate(post.getMeetingDate())
 			.createdAt(post.getCreatedAt())
 			.updatedAt(post.getUpdatedAt())
