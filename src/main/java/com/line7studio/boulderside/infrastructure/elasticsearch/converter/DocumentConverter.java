@@ -21,6 +21,8 @@ public class DocumentConverter {
                 .thumbnailUrl(thumbnailUrl)
                 .province(region != null ? region.getProvince() : null)
                 .city(region != null ? region.getCity() : null)
+                .viewCount(boulder.getViewCount())
+                .likeCount(boulder.getLikeCount())
                 .createdAt(boulder.getCreatedAt())
                 .build();
     }
@@ -31,21 +33,23 @@ public class DocumentConverter {
                 .routeName(route.getName())
                 .documentDomainType(DocumentDomainType.ROUTE)
                 .level(route.getRouteLevel())
-                .likeCount(0) // Default value, can be populated from aggregate data
-                .climberCount(0) // Default value, can be populated from aggregate data
-                .createdAt(route.getCreatedAt()) // Route now extends BaseEntity
+                .likeCount(route.getLikeCount())
+                .climberCount(route.getClimberCount())
+                .viewCount(route.getViewCount())
+                .commentCount(route.getCommentCount())
+                .createdAt(route.getCreatedAt())
                 .build();
     }
 
-    public PostDocument toPostDocument(Post post, String authorName, Integer commentCount) {
+    public PostDocument toPostDocument(Post post, String authorName) {
         return PostDocument.builder()
                 .id(post.getId().toString())
                 .title(post.getTitle())
                 .documentDomainType(DocumentDomainType.POST)
                 .meetingDate(post.getMeetingDate())
                 .authorName(authorName)
-                .viewCount(post.getViewCount() != null ? post.getViewCount().intValue() : 0)
-                .commentCount(commentCount != null ? commentCount : 0)
+                .viewCount(post.getViewCount())
+                .commentCount(post.getCommentCount())
                 .createdAt(post.getCreatedAt())
                 .build();
     }
