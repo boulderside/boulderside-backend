@@ -6,7 +6,6 @@ import com.line7studio.boulderside.domain.aggregate.boulder.entity.Boulder;
 import com.line7studio.boulderside.domain.aggregate.boulder.enums.BoulderSortType;
 import com.line7studio.boulderside.domain.aggregate.boulder.repository.BoulderQueryRepository;
 import com.line7studio.boulderside.domain.aggregate.boulder.repository.BoulderRepository;
-import com.line7studio.boulderside.infrastructure.elasticsearch.service.ElasticsearchSyncService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,6 @@ import java.util.List;
 public class BoulderServiceImpl implements BoulderService {
 	private final BoulderRepository boulderRepository;
 	private final BoulderQueryRepository boulderQueryRepository;
-	private final ElasticsearchSyncService elasticsearchSyncService;
 
     @Override
     public List<Boulder> getAllBoulders() {
@@ -37,24 +35,19 @@ public class BoulderServiceImpl implements BoulderService {
 
 	@Override
 	public Boulder createBoulder(Boulder boulder) {
-		Boulder savedBoulder = boulderRepository.save(boulder);
-		elasticsearchSyncService.syncBoulder(savedBoulder);
-		return savedBoulder;
+		return  boulderRepository.save(boulder);
 	}
 
 	@Override
 	public Boulder updateBoulder(Long boulderId, Long regionId, String name, String description, Double latitude, Double longitude) {
 		Boulder boulder = getBoulderById(boulderId);
 		boulder.update(regionId, name, description, latitude, longitude);
-		Boulder savedBoulder = boulderRepository.save(boulder);
-		elasticsearchSyncService.syncBoulder(savedBoulder);
-		return savedBoulder;
+		return boulderRepository.save(boulder);
 	}
 
 	@Override
 	public void deleteByBoulderId(Long boulderId) {
 		Boulder boulder = getBoulderById(boulderId);
 		boulderRepository.delete(boulder);
-		elasticsearchSyncService.deleteBoulder(boulderId);
 	}
 }

@@ -14,6 +14,7 @@ import com.line7studio.boulderside.domain.aggregate.image.service.ImageService;
 import com.line7studio.boulderside.domain.aggregate.region.entity.Region;
 import com.line7studio.boulderside.domain.aggregate.region.service.RegionService;
 import com.line7studio.boulderside.domain.association.like.service.UserBoulderLikeService;
+import com.line7studio.boulderside.infrastructure.elasticsearch.service.ElasticsearchSyncService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,7 @@ public class BoulderUseCase {
 	private final RegionService regionService;
 	private final BoulderService boulderService;
 	private final UserBoulderLikeService userBoulderLikeService;
+	private final ElasticsearchSyncService elasticsearchSyncService;
 
     @Transactional(readOnly = true)
     public BoulderPageResponse getBoulderPage(Long userId, BoulderSortType sortType, Long cursor, String subCursor, int size) {
@@ -95,6 +97,7 @@ public class BoulderUseCase {
     @Transactional
 	public BoulderResponse getBoulderById(Long userId, Long boulderId) {
 		Boulder boulder = boulderService.getBoulderById(boulderId);
+		boulder.incrementViewCount();
 		Region region = regionService.getRegionById(boulder.getRegionId());
 		List<Image> imageList = imageService.getImageListByImageDomainTypeAndDomainId(ImageDomainType.BOULDER, boulderId);
 		List<ImageInfo> imageInfoList = imageList.stream()
@@ -103,6 +106,9 @@ public class BoulderUseCase {
 			.toList();
 
 		boolean liked = userBoulderLikeService.existsIsLikedByUserId(boulderId, userId);
+
+        // 인덱스 업데이트
+        elasticsearchSyncService.syncBoulder(boulder);
 
 		return BoulderResponse.of(boulder, region.getProvince(), region.getCity(), imageInfoList, boulder.getLikeCount(), liked);
 	}
@@ -121,6 +127,7 @@ public class BoulderUseCase {
 			.build();
 
 		Boulder savedBoulder = boulderService.createBoulder(boulder);
+        elasticsearchSyncService.syncBoulder(savedBoulder);
 
 		List<ImageInfo> imageInfoList = Collections.emptyList();
 		if (request.getImageUrlList() != null && !request.getImageUrlList().isEmpty()) {
@@ -142,11 +149,11 @@ public class BoulderUseCase {
 				.toList();
 		}
 
-		return BoulderResponse.of(savedBoulder, region.getProvince(), region.getCity(), imageInfoList, 0L);
+		return BoulderResponse.of(savedBoulder, region.getProvince(), region.getCity(), imageInfoList, 0L, false);
 	}
 
     @Transactional
-	public BoulderResponse updateBoulder(Long boulderId, UpdateBoulderRequest request) {
+	public BoulderResponse updateBoulder(Long userId, Long boulderId, UpdateBoulderRequest request) {
 		Region region = regionService.getRegionByProvinceAndCity(request.getProvince(), request.getCity());
 
 		Boulder boulder = boulderService.updateBoulder(
@@ -180,7 +187,12 @@ public class BoulderUseCase {
 				.toList();
 		}
 
-		return BoulderResponse.of(boulder, region.getProvince(), region.getCity(), imageInfoList, boulder.getLikeCount());
+        boolean liked = userBoulderLikeService.existsIsLikedByUserId(boulderId, userId);
+
+        // 인덱스 업데이트
+        elasticsearchSyncService.syncBoulder(boulder);
+
+		return BoulderResponse.of(boulder, region.getProvince(), region.getCity(), imageInfoList, boulder.getLikeCount(), liked);
 	}
 
     @Transactional
@@ -188,5 +200,8 @@ public class BoulderUseCase {
 		imageService.deleteAllImagesByImageDomainTypeAndDomainId(ImageDomainType.BOULDER, boulderId);
 		userBoulderLikeService.deleteAllLikesByBoulderId(boulderId);
 		boulderService.deleteByBoulderId(boulderId);
+
+        // 인덱스 삭제
+        elasticsearchSyncService.deleteBoulder(boulderId);
 	}
 }

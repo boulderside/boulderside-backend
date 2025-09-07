@@ -49,8 +49,8 @@ public class BoulderController {
 
 	@PutMapping("/{boulderId}")
 	public ResponseEntity<ApiResponse<BoulderResponse>> updateBoulder(@PathVariable Long boulderId,
-		@Valid @RequestBody UpdateBoulderRequest request) {
-		BoulderResponse boulder = boulderUseCase.updateBoulder(boulderId, request);
+		@Valid @RequestBody UpdateBoulderRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+		BoulderResponse boulder = boulderUseCase.updateBoulder(userDetails.getUserId(), boulderId, request);
 		return ResponseEntity.ok(ApiResponse.of(boulder));
 	}
 
