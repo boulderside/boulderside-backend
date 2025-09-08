@@ -40,12 +40,12 @@ public class PostDocument {
     private String authorName;
 
     // 조회수
-    @Field(type = FieldType.Integer)
-    private Integer viewCount;
+    @Field(type = FieldType.Long)
+    private Long viewCount;
 
     // 댓글 수
-    @Field(type = FieldType.Integer)
-    private Integer commentCount;
+    @Field(type = FieldType.Long)
+    private Long commentCount;
 
     // 작성 시간
     @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second_millis)

@@ -23,10 +23,10 @@ public class SearchItemResponse {
     private String city;
     private Level level;
     private String authorName;
-    private Integer viewCount;
-    private Integer commentCount;
-    private Integer likeCount;
-    private Integer climberCount;
+    private Long viewCount;
+    private Long commentCount;
+    private Long likeCount;
+    private Long climberCount;
     private LocalDate meetingDate;
     private LocalDateTime createdAt;
 }

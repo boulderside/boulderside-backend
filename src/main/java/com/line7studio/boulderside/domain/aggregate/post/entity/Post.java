@@ -47,6 +47,10 @@ public class Post extends BaseEntity {
     @Column(name = "meeting_date")
     private LocalDate meetingDate;
 
+    /** 댓글 수 */
+    @Column(name = "comment_count")
+    private Long commentCount;
+
     public void update(String title, String content, PostType postType, LocalDate meetingDate) {
         this.title = title;
         this.content = content;
@@ -55,6 +59,14 @@ public class Post extends BaseEntity {
     }
 
     public void incrementViewCount() {
-        this.viewCount = (this.viewCount == null) ? 1 : this.viewCount + 1;
+        this.viewCount = this.viewCount + 1;
+    }
+
+    public void incrementCommentCount() {
+        this.commentCount = this.commentCount + 1;
+    }
+
+    public void decrementCommentCount() {
+        this.commentCount = this.commentCount <= 0 ? 0 : this.commentCount - 1;
     }
 }

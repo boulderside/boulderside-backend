@@ -2,6 +2,7 @@ package com.line7studio.boulderside.infrastructure.elasticsearch.service;
 
 import com.line7studio.boulderside.domain.aggregate.boulder.entity.Boulder;
 import com.line7studio.boulderside.domain.aggregate.boulder.repository.BoulderRepository;
+import com.line7studio.boulderside.domain.aggregate.comment.service.CommentService;
 import com.line7studio.boulderside.domain.aggregate.image.entity.Image;
 import com.line7studio.boulderside.domain.aggregate.image.enums.ImageDomainType;
 import com.line7studio.boulderside.domain.aggregate.image.service.ImageService;
@@ -39,6 +40,7 @@ public class ElasticsearchSyncServiceImpl implements ElasticsearchSyncService {
     private final RegionRepository regionRepository;
     private final UserRepository userRepository;
     private final ImageService imageService;
+    private final CommentService commentService;
     
     private final BoulderDocumentRepository boulderDocumentRepository;
     private final RouteDocumentRepository routeDocumentRepository;
@@ -103,9 +105,7 @@ public class ElasticsearchSyncServiceImpl implements ElasticsearchSyncService {
         for (Post post : posts) {
             try {
                 String authorName = getUserName(post.getUserId());
-                Integer commentCount = 0;
-                
-                PostDocument document = documentConverter.toPostDocument(post, authorName, commentCount);
+                PostDocument document = documentConverter.toPostDocument(post, authorName);
                 postDocumentRepository.save(document);
             } catch (Exception e) {
                 log.error("Failed to sync post with ID: {}", post.getId(), e);
@@ -148,9 +148,7 @@ public class ElasticsearchSyncServiceImpl implements ElasticsearchSyncService {
     public void syncPost(Post post) {
         try {
             String authorName = getUserName(post.getUserId());
-            Integer commentCount = 0;
-            
-            PostDocument document = documentConverter.toPostDocument(post, authorName, commentCount);
+            PostDocument document = documentConverter.toPostDocument(post, authorName);
             postDocumentRepository.save(document);
             log.debug("Synced post to Elasticsearch: {}", post.getId());
         } catch (Exception e) {

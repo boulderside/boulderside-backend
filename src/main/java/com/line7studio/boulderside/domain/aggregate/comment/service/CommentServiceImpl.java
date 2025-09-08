@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -58,5 +59,21 @@ public class CommentServiceImpl implements CommentService {
         }
 
         commentRepository.deleteById(commentId);
+    }
+
+    @Override
+    public Long countCommentsByDomainIdAndCommentDomainType(Long domainId, CommentDomainType commentDomainType) {
+        return commentRepository.countCommentsByDomainIdAndCommentDomainType(domainId, commentDomainType);
+    }
+
+    @Override
+    public Comment getCommentById(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
+    }
+
+    @Override
+    public Map<Long, Long> countCommentsByDomainIdsAndCommentDomainTypeType(List<Long> domainIds, CommentDomainType commentDomainType) {
+        return commentQueryRepository.countCommentsByDomainIdsAndType(domainIds, commentDomainType);
     }
 }

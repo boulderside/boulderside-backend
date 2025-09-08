@@ -30,39 +30,6 @@ public class BoulderResponse {
 	private LocalDateTime updatedAt;
 
 	public static BoulderResponse of(Boulder boulder, String province, String city, List<ImageInfo> imageInfoList,
-		Long likeCount) {
-		return BoulderResponse.builder()
-			.boulderId(boulder.getId())
-			.name(boulder.getName())
-			.description(boulder.getDescription())
-			.latitude(boulder.getLatitude())
-			.longitude(boulder.getLongitude())
-			.province(province)
-			.city(city)
-			.imageInfoList(imageInfoList)
-			.likeCount(likeCount)
-			.createdAt(boulder.getCreatedAt())
-			.updatedAt(boulder.getUpdatedAt())
-			.build();
-	}
-
-	public static BoulderResponse of(BoulderWithRegion boulderWithRegion, List<ImageInfo> imageInfoList) {
-		return BoulderResponse.builder()
-			.boulderId(boulderWithRegion.getId())
-			.name(boulderWithRegion.getName())
-			.description(boulderWithRegion.getDescription())
-			.latitude(boulderWithRegion.getLatitude())
-			.longitude(boulderWithRegion.getLongitude())
-			.province(boulderWithRegion.getProvince())
-			.city(boulderWithRegion.getCity())
-			.imageInfoList(imageInfoList)
-			.likeCount(0L)
-			.createdAt(boulderWithRegion.getCreatedAt())
-			.updatedAt(boulderWithRegion.getUpdatedAt())
-			.build();
-	}
-
-	public static BoulderResponse of(Boulder boulder, String province, String city, List<ImageInfo> imageInfoList,
 		Long likeCount, boolean isLiked) {
 		return BoulderResponse.builder()
 			.boulderId(boulder.getId())

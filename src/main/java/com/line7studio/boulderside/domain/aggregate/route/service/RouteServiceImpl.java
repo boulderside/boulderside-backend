@@ -3,8 +3,9 @@ package com.line7studio.boulderside.domain.aggregate.route.service;
 import com.line7studio.boulderside.common.exception.DomainException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.domain.aggregate.route.Route;
+import com.line7studio.boulderside.domain.aggregate.route.enums.RouteSortType;
+import com.line7studio.boulderside.domain.aggregate.route.repository.RouteQueryRepository;
 import com.line7studio.boulderside.domain.aggregate.route.repository.RouteRepository;
-import com.line7studio.boulderside.infrastructure.elasticsearch.service.ElasticsearchSyncService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +15,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RouteServiceImpl implements RouteService {
     private final RouteRepository routeRepository;
-    private final ElasticsearchSyncService elasticsearchSyncService;
+    private final RouteQueryRepository routeQueryRepository;
 
     @Override
-    public List<Route> getAllRoutes() {
-        return routeRepository.findAll();
+    public List<Route> getRoutesWithCursor(Long cursor, String subCursor, int size, RouteSortType sortType) {
+        return routeQueryRepository.findRoutesWithCursor(sortType, cursor, subCursor, size);
     }
 
     @Override
@@ -29,31 +30,29 @@ public class RouteServiceImpl implements RouteService {
 
     @Override
     public Route createRoute(Route route) {
-        Route savedRoute = routeRepository.save(route);
-        elasticsearchSyncService.syncRoute(savedRoute);
-        return savedRoute;
+        return routeRepository.save(route);
     }
 
     @Override
     public Route updateRoute(Long routeId, Route routeDetails) {
         Route route = getRouteById(routeId);
-        // Update route fields - Route entity doesn't have update methods, so we need to create a new one
         Route updatedRoute = Route.builder()
                 .id(route.getId())
                 .boulderId(routeDetails.getBoulderId() != null ? routeDetails.getBoulderId() : route.getBoulderId())
                 .name(routeDetails.getName() != null ? routeDetails.getName() : route.getName())
                 .routeLevel(routeDetails.getRouteLevel() != null ? routeDetails.getRouteLevel() : route.getRouteLevel())
+                .likeCount(route.getLikeCount())
+                .viewCount(route.getViewCount())
+                .climberCount(route.getClimberCount())
+                .commentCount(route.getCommentCount())
                 .build();
         
-        Route savedRoute = routeRepository.save(updatedRoute);
-        elasticsearchSyncService.syncRoute(savedRoute);
-        return savedRoute;
+        return routeRepository.save(updatedRoute);
     }
 
     @Override
     public void deleteRoute(Long routeId) {
         Route route = getRouteById(routeId);
         routeRepository.delete(route);
-        elasticsearchSyncService.deleteRoute(routeId);
     }
 }

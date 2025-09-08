@@ -238,6 +238,8 @@ public class SearchRepositoryImpl implements ElasticsearchSearchRepository {
                 .thumbnailUrl(boulder.getThumbnailUrl())
                 .province(boulder.getProvince())
                 .city(boulder.getCity())
+                .likeCount(boulder.getLikeCount())
+                .viewCount(boulder.getViewCount())
                 .createdAt(boulder.getCreatedAt())
                 .build();
     }

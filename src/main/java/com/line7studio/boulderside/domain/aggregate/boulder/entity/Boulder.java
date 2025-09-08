@@ -48,12 +48,28 @@ public class Boulder extends BaseEntity {
     @Column(name = "like_count")
     private Long likeCount;
 
+    /** 조회 수 */
+    @Column(name = "view_count")
+    private Long viewCount;
+
 	public void update(Long regionId, String name, String description, Double latitude, Double longitude) {
 		this.regionId = regionId;
 		this.name = name;
 		this.description = description;
 		this.latitude = latitude;
 		this.longitude = longitude;
+	}
+
+	public void incrementViewCount() {
+		this.viewCount = this.viewCount + 1;
+	}
+
+	public void incrementLikeCount() {
+		this.likeCount = this.likeCount + 1;
+	}
+
+	public void decrementLikeCount() {
+		this.likeCount = this.likeCount <= 0 ? 0 : this.likeCount - 1;
 	}
 }
 

@@ -36,12 +36,20 @@ public class RouteDocument {
     private Level level;
 
     // 좋아요 수
-    @Field(type = FieldType.Integer)
-    private Integer likeCount;
+    @Field(type = FieldType.Long)
+    private Long likeCount;
 
     // 등반자 수 (이 루트를 완등한 사용자 수)
-    @Field(type = FieldType.Integer)
-    private Integer climberCount;
+    @Field(type = FieldType.Long)
+    private Long climberCount;
+
+    // 조회수
+    @Field(type = FieldType.Long)
+    private Long viewCount;
+
+    // 댓글 수
+    @Field(type = FieldType.Long)
+    private Long commentCount;
 
     // 생성일 (최신순 정렬용)
     @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second_millis)
