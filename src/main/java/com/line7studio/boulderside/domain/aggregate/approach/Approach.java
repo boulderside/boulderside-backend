@@ -28,6 +28,10 @@ public class Approach extends BaseEntity {
 	@Column(name = "boulder_id", nullable = false)
 	private Long boulderId;
 
+	/** 진입로 인덱스 */
+	@Column(name = "order_index")
+	private Integer orderIndex;
+
 	/** 대중교통 정보 */
 	@Column(name = "transport_info")
 	private String transportInfo;

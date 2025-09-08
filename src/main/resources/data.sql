@@ -18,6 +18,104 @@ TRUNCATE TABLE comments;
 
 TRUNCATE TABLE routes;
 
+TRUNCATE TABLE approaches;
+
+INSERT INTO points (id, approach_id, order_index, name, description, note, created_at, updated_at)
+VALUES
+    -- Approach 1 (Sunrise Crag - 버스 경로)
+    (1, 1, 0, '버스 하차 지점', '402번 버스 종점', '편의점 있음', '2025-08-21 09:00:00', '2025-08-21 09:00:00'),
+    (2, 1, 1, '산 입구', '등산로 시작 지점', '아침 공기 상쾌함', '2025-08-21 09:01:00', '2025-08-21 09:01:00'),
+    (3, 1, 2, '나무 다리', '작은 개울 위 다리', '사진 포인트', '2025-08-21 09:02:00', '2025-08-21 09:02:00'),
+    (4, 1, 3, '전망 포인트', '도심이 내려다보이는 위치', NULL, '2025-08-21 09:03:00', '2025-08-21 09:03:00'),
+
+    -- Approach 2 (Sunrise Crag - 도보 경로)
+    (5, 2, 0, '안국역 출구', '3호선 안국역 2번 출구', '주말 인파 많음', '2025-08-21 09:05:00', '2025-08-21 09:05:00'),
+    (6, 2, 1, '북촌 골목길', '전통 가옥 사이 길', '사진 스팟', '2025-08-21 09:06:00', '2025-08-21 09:06:00'),
+    (7, 2, 2, '북악산 입구', '숲길 시작', NULL, '2025-08-21 09:07:00', '2025-08-21 09:07:00'),
+    (8, 2, 3, '전망대', '바위 직전 전망대', '일출 감상 명소', '2025-08-21 09:08:00', '2025-08-21 09:08:00'),
+
+    -- Approach 3 (Shadow Peak)
+    (9, 3, 0, '버스 종점', '100번 버스 종점', '화장실 있음', '2025-08-21 09:10:00', '2025-08-21 09:10:00'),
+    (10, 3, 1, '산 입구 표지판', '등산로 진입 지점', '등산객 많음', '2025-08-21 09:11:00', '2025-08-21 09:11:00'),
+    (11, 3, 2, '돌계단', '경사가 심한 돌계단 구간', NULL, '2025-08-21 09:12:00', '2025-08-21 09:12:00'),
+    (12, 3, 3, '그림자 바위 포인트', '해질녘 그림자가 길게 드리워지는 곳', '석양 명소', '2025-08-21 09:13:00', '2025-08-21 09:13:00'),
+
+    -- Approach 4 (Mossy Boulder)
+    (13, 4, 0, '종로3가역 출구', '지하철 도보 시작', NULL, '2025-08-21 09:15:00', '2025-08-21 09:15:00'),
+    (14, 4, 1, '공영주차장', '바위 인근 공영주차장', '자리 적음', '2025-08-21 09:16:00', '2025-08-21 09:16:00'),
+    (15, 4, 2, '습지 구간', '이끼 낀 바위길', '미끄러움 주의', '2025-08-21 09:17:00', '2025-08-21 09:17:00'),
+    (16, 4, 3, 'Mossy Boulder 앞', '이끼로 덮인 바위 도착', NULL, '2025-08-21 09:18:00', '2025-08-21 09:18:00'),
+
+    -- Approach 5 (Eagle''s Perch - 버스)
+    (17, 5, 0, '버스 하차', '1번 버스 산성 입구', '매표소 있음', '2025-08-21 09:20:00', '2025-08-21 09:20:00'),
+    (18, 5, 1, '산성 입구', '등산로 합류 지점', NULL, '2025-08-21 09:21:00', '2025-08-21 09:21:00'),
+    (19, 5, 2, '전망 바위', '도심 조망 가능', '아침 시간 추천', '2025-08-21 09:22:00', '2025-08-21 09:22:00'),
+    (20, 5, 3, 'Eagle''s Perch 도착', '독수리 전망 포인트', NULL, '2025-08-21 09:23:00', '2025-08-21 09:23:00'),
+
+    -- Approach 6 (Eagle''s Perch - 자차)
+    (21, 6, 0, '유성IC 출구', '고속도로 진출입로', NULL, '2025-08-21 09:25:00', '2025-08-21 09:25:00'),
+    (22, 6, 1, '산책로 시작', '바위까지 이어지는 오솔길', NULL, '2025-08-21 09:26:00', '2025-08-21 09:26:00'),
+    (23, 6, 2, '숲속 쉼터', '작은 정자 있음', '휴식 가능', '2025-08-21 09:27:00', '2025-08-21 09:27:00'),
+    (24, 6, 3, 'Eagle''s Perch 도착', '전망대 위치', NULL, '2025-08-21 09:28:00', '2025-08-21 09:28:00'),
+
+    -- Approach 7 (Whispering Stone)
+    (25, 7, 0, '버스 하차 지점', '23번 버스 종점', NULL, '2025-08-21 09:30:00', '2025-08-21 09:30:00'),
+    (26, 7, 1, '마을 입구', '작은 마을 통과', NULL, '2025-08-21 09:31:00', '2025-08-21 09:31:00'),
+    (27, 7, 2, '숲길 시작', '개울 옆 길', '벌레 많음', '2025-08-21 09:32:00', '2025-08-21 09:32:00'),
+    (28, 7, 3, 'Whispering Stone 앞', '바람 소리가 울리는 지점', NULL, '2025-08-21 09:33:00', '2025-08-21 09:33:00'),
+
+    -- Approach 8 (Red Cliff)
+    (29, 8, 0, '버스 하차 지점', '30번 버스 절벽 입구', NULL, '2025-08-21 09:35:00', '2025-08-21 09:35:00'),
+    (30, 8, 1, '붉은 암벽 초입', '사진 명소', NULL, '2025-08-21 09:36:00', '2025-08-21 09:36:00'),
+    (31, 8, 2, '전망 포인트', '붉은 절벽이 잘 보이는 지점', '오후 햇살 추천', '2025-08-21 09:37:00', '2025-08-21 09:37:00'),
+    (32, 8, 3, 'Red Cliff 정상부', '사진 스팟', NULL, '2025-08-21 09:38:00', '2025-08-21 09:38:00'),
+
+    -- Approach 9 (Twin Rocks - 버스)
+    (33, 9, 0, '버스 종점', '221번 버스 종점', NULL, '2025-08-21 09:40:00', '2025-08-21 09:40:00'),
+    (34, 9, 1, '마을 입구', '작은 다리 건너', NULL, '2025-08-21 09:41:00', '2025-08-21 09:41:00'),
+    (35, 9, 2, '쌍둥이 바위 입구', '바위 진입로', '바람 시원함', '2025-08-21 09:42:00', '2025-08-21 09:42:00'),
+    (36, 9, 3, 'Twin Rocks 사이', '바위 틈새', '포토존', '2025-08-21 09:43:00', '2025-08-21 09:43:00'),
+
+    -- Approach 10 (Twin Rocks - 자차)
+    (37, 10, 0, '임시 주차장', '공터', NULL, '2025-08-21 09:45:00', '2025-08-21 09:45:00'),
+    (38, 10, 1, '숲길 시작', '짧은 오솔길', NULL, '2025-08-21 09:46:00', '2025-08-21 09:46:00'),
+    (39, 10, 2, 'Twin Rocks 앞', '야경 감상 포인트', NULL, '2025-08-21 09:47:00', '2025-08-21 09:47:00'),
+
+    -- Approach 11 (Hidden Hollow)
+    (40, 11, 0, '버스 하차 지점', '12번 버스 골짜기 입구', NULL, '2025-08-21 09:50:00', '2025-08-21 09:50:00'),
+    (41, 11, 1, '작은 다리', '계곡 위 다리', '물소리 청량함', '2025-08-21 09:51:00', '2025-08-21 09:51:00'),
+    (42, 11, 2, '숲길 쉼터', '평상 몇 개 있음', NULL, '2025-08-21 09:52:00', '2025-08-21 09:52:00'),
+    (43, 11, 3, 'Hidden Hollow 바위 앞', '아늑한 바위', NULL, '2025-08-21 09:53:00', '2025-08-21 09:53:00');
+
+INSERT INTO approaches (id, boulder_id, order_index, transport_info, parking_info, duration, tip, created_at, updated_at)
+VALUES
+    -- Sunrise Crag (1)
+    (1, 1, 0, '서울역에서 버스 402번 환승 후 하차, 도보 10분', '주차장: 북악산 공영주차장 이용', 20, '해뜨기 30분 전에 도착하면 좋습니다.', '2025-08-21 08:00:00', '2025-08-21 08:00:00'),
+    (2, 1, 1, '지하철 3호선 안국역 하차, 도보 25분', '주차 공간 협소, 가급적 대중교통 권장', 25, '이른 아침에는 한산합니다.', '2025-08-21 08:05:00', '2025-08-21 08:05:00'),
+
+    -- Shadow Peak (2)
+    (3, 2, 0, '부산역에서 시내버스 100번, 종점 하차 후 등산로 진입', '산 입구 유료 주차장(30대 규모)', 40, '석양 무렵 그림자가 길게 드리워집니다.', '2025-08-21 08:10:00', '2025-08-21 08:10:00'),
+
+    -- Mossy Boulder (3)
+    (4, 3, 0, '종로3가역에서 도보 15분', '인근 공영주차장 이용 가능', 15, '비 온 다음 날은 미끄러우니 주의하세요.', '2025-08-21 08:15:00', '2025-08-21 08:15:00'),
+
+    -- Eagle's Perch (4)
+    (5, 4, 0, '대전역에서 버스 1번 탑승, 산성 입구 하차 후 20분 도보', '산성 주차장 무료 개방', 30, '독수리가 날아오르는 시간대는 이른 아침.', '2025-08-21 08:20:00', '2025-08-21 08:20:00'),
+    (6, 4, 1, '유성IC에서 차량 15분, 도보 10분', '주차 공간 충분', 25, '전망대에서 도심이 한눈에 들어옵니다.', '2025-08-21 08:25:00', '2025-08-21 08:25:00'),
+
+    -- Whispering Stone (5)
+    (7, 5, 0, '대구역에서 버스 23번, 종점 하차 후 숲길 따라 15분', '마을 입구 소규모 주차장', 20, '바람 소리가 크게 들리는 포인트를 찾아보세요.', '2025-08-21 08:30:00', '2025-08-21 08:30:00'),
+
+    -- Red Cliff (6)
+    (8, 6, 0, '광주송정역에서 버스 30번, 절벽 입구 하차', '주차장은 협소, 주말 혼잡', 35, '사진 촬영 명소, 오후 햇살이 좋습니다.', '2025-08-21 08:35:00', '2025-08-21 08:35:00'),
+
+    -- Twin Rocks (7)
+    (9, 7, 0, '세종시청에서 버스 221번, 종점 하차', '임시 주차 공간 있음', 25, '쌍둥이 바위 사이로 들어가면 시원한 바람.', '2025-08-21 08:40:00', '2025-08-21 08:40:00'),
+    (10, 7, 1, '차량 접근 가능, 진입로 좁음', '바위 앞 공터 주차 가능', 10, '야간에는 별빛 감상이 좋습니다.', '2025-08-21 08:45:00', '2025-08-21 08:45:00'),
+
+    -- Hidden Hollow (8)
+    (11, 8, 0, '전주역에서 버스 12번, 골짜기 입구 하차', '마을회관 앞 주차장 이용 가능', 30, '계곡물 소리와 함께 아늑한 분위기.', '2025-08-21 08:50:00', '2025-08-21 08:50:00');
+
 INSERT INTO routes (id, boulder_id, name, like_count, view_count, climber_count, comment_count, route_level, created_at, updated_at)
 VALUES
     (1, 1, 'Beginner''s Edge', 3, 0, 0, 0, 'V0', '2025-08-21 10:00:00', '2025-08-21 10:00:00'),
@@ -63,8 +161,6 @@ INSERT INTO comments (id, user_id, domain_id, comment_domain_type, content, crea
     (17, 1, 2, 'POST', '더 자세히 알고 싶습니다.', '2025-08-20 10:29:07', '2025-08-20 10:29:07'),
     (18, 1, 2, 'POST', '다른 글도 기대하겠습니다.', '2025-08-20 10:31:42', '2025-08-20 10:31:42');
 
-
-
 INSERT INTO users (nickname, phone, user_role,
                    user_sex,
                    user_level,
@@ -105,22 +201,101 @@ VALUES
     (8, 8, 'Hidden Hollow', '작은 계곡 안에 숨어있는 아늑한 바위',
      35.907757, 127.766922, 0, '2025-08-20 08:17:46', '2025-08-20 08:17:46');
 
+/* ----------------------------
+   IMAGES: BOULDER (2장씩)
+----------------------------- */
+INSERT INTO images (original_filename, domain_id, image_domain_type, image_url, order_index)
+VALUES
+    -- Boulder 1
+    ('default.png', 1, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 1, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Boulder 2
+    ('default.png', 2, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 2, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Boulder 3
+    ('default.png', 3, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 3, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Boulder 4
+    ('default.png', 4, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 4, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Boulder 5
+    ('default.png', 5, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 5, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Boulder 6
+    ('default.png', 6, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 6, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Boulder 7
+    ('default.png', 7, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 7, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Boulder 8
+    ('default.png', 8, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 8, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1);
 
--- boulder 별 이미지 (target_type = 'BOULDER')
-INSERT INTO images (domain_id, image_domain_type, image_url, order_index)
-VALUES (1, 'BOULDER', 'https://cdn.example.com/boulders/1/sunrise_1.jpg', 0),
-       (1, 'BOULDER', 'https://cdn.example.com/boulders/1/sunrise_2.jpg', 1),
-       (2, 'BOULDER', 'https://cdn.example.com/boulders/2/shadow_1.jpg', 0),
-       (2, 'BOULDER', 'https://cdn.example.com/boulders/2/shadow_2.jpg', 1),
-       (2, 'BOULDER', 'https://cdn.example.com/boulders/2/shadow_3.jpg', 2),
-       (3, 'BOULDER', 'https://cdn.example.com/boulders/3/mossy_1.jpg', 0),
-       (4, 'BOULDER', 'https://cdn.example.com/boulders/4/eagle_1.jpg', 0),
-       (4, 'BOULDER', 'https://cdn.example.com/boulders/4/eagle_2.jpg', 1),
-       (5, 'BOULDER', 'https://cdn.example.com/boulders/5/whisper_1.jpg', 0),
-       (6, 'BOULDER', 'https://cdn.example.com/boulders/6/redcliff_1.jpg', 0),
-       (6, 'BOULDER', 'https://cdn.example.com/boulders/6/redcliff_2.jpg', 1),
-       (7, 'BOULDER', 'https://cdn.example.com/boulders/7/twinrocks_1.jpg', 0),
-       (8, 'BOULDER', 'https://cdn.example.com/boulders/8/hiddenhollow_1.jpg', 0);
+/* ----------------------------
+   IMAGES: POINT (각 1장씩)
+   points.id = 1..43 기준
+----------------------------- */
+INSERT INTO images (original_filename, domain_id, image_domain_type, image_url, order_index)
+VALUES
+    ('default.png', 1,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 1,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    ('default.png', 1,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
+    ('default.png', 4,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 5,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 6,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 7,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 8,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 9,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 10, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 11, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 12, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 13, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 14, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 15, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 16, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 17, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 18, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 19, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 20, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 21, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 22, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 23, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 24, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 25, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 26, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 27, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 28, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 29, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 30, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 31, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 32, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 33, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 34, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 35, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 36, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 37, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 38, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 39, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 40, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 41, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 42, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 43, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0);
+
+
+# INSERT INTO images (domain_id, image_domain_type, image_url, order_index)
+# VALUES (1, 'BOULDER', 'https://cdn.example.com/boulders/1/sunrise_1.jpg', 0),
+#        (1, 'BOULDER', 'https://cdn.example.com/boulders/1/sunrise_2.jpg', 1),
+#        (2, 'BOULDER', 'https://cdn.example.com/boulders/2/shadow_1.jpg', 0),
+#        (2, 'BOULDER', 'https://cdn.example.com/boulders/2/shadow_2.jpg', 1),
+#        (2, 'BOULDER', 'https://cdn.example.com/boulders/2/shadow_3.jpg', 2),
+#        (3, 'BOULDER', 'https://cdn.example.com/boulders/3/mossy_1.jpg', 0),
+#        (4, 'BOULDER', 'https://cdn.example.com/boulders/4/eagle_1.jpg', 0),
+#        (4, 'BOULDER', 'https://cdn.example.com/boulders/4/eagle_2.jpg', 1),
+#        (5, 'BOULDER', 'https://cdn.example.com/boulders/5/whisper_1.jpg', 0),
+#        (6, 'BOULDER', 'https://cdn.example.com/boulders/6/redcliff_1.jpg', 0),
+#        (6, 'BOULDER', 'https://cdn.example.com/boulders/6/redcliff_2.jpg', 1),
+#        (7, 'BOULDER', 'https://cdn.example.com/boulders/7/twinrocks_1.jpg', 0),
+#        (8, 'BOULDER', 'https://cdn.example.com/boulders/8/hiddenhollow_1.jpg', 0);
 
 INSERT INTO regions (official_district_code, province, city, region_code)
 VALUES ('1100000000', '서울특별시', NULL, '11B10101'),
@@ -401,7 +576,6 @@ VALUES ('1100000000', '서울특별시', NULL, '11B10101'),
        ('5277000000', '전북특별자치도', '순창군', '11F10403'),
        ('5279000000', '전북특별자치도', '고창군', '21F10601'),
        ('5280000000', '전북특별자치도', '부안군', '21F10602');
-
 
 -- BOARD 게시글 8개
 INSERT INTO posts (user_id, title, content, post_type, view_count, comment_count, meeting_date, created_at, updated_at)
