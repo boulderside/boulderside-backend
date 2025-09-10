@@ -1,17 +1,19 @@
 package com.line7studio.boulderside.domain.aggregate.user.service;
 
+import java.util.List;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.line7studio.boulderside.application.user.dto.response.CreateUserCommand;
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.common.exception.ExternalApiException;
 import com.line7studio.boulderside.domain.aggregate.user.entity.User;
 import com.line7studio.boulderside.domain.aggregate.user.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +35,7 @@ public class UserServiceImpl implements UserService {
 			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 	}
 
-    @Override
+	@Override
 	public boolean existsByEmail(String email) {
 		return userRepository.existsByEmail(email);
 	}
@@ -41,22 +43,22 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User createUser(CreateUserCommand createUserCommand) {
 		if (existsByEmail(createUserCommand.email()) &&
-                userRepository.existsByPhone(createUserCommand.encodedPhone())) {
+			userRepository.existsByPhone(createUserCommand.encodedPhone())) {
 			throw new BusinessException(ErrorCode.ACCOUNT_ALREADY_EXISTS);
 		}
 
-        User user = User.builder()
-                .nickname(createUserCommand.nickname())
-                .phone(createUserCommand.encodedPhone())
-                .userRole(createUserCommand.userRole())
-                .userSex(createUserCommand.userSex())
-                .userLevel(createUserCommand.userLevel())
-                .name(createUserCommand.name())
-                .email(createUserCommand.email())
-                .password(passwordEncoder.encode(createUserCommand.rawPassword()))
-                .build();
+		User user = User.builder()
+			.nickname(createUserCommand.nickname())
+			.phone(createUserCommand.encodedPhone())
+			.userRole(createUserCommand.userRole())
+			.userSex(createUserCommand.userSex())
+			.userLevel(createUserCommand.userLevel())
+			.name(createUserCommand.name())
+			.email(createUserCommand.email())
+			.password(passwordEncoder.encode(createUserCommand.rawPassword()))
+			.build();
 
-        return userRepository.save(user);
+		return userRepository.save(user);
 	}
 
 	@Override
@@ -78,7 +80,7 @@ public class UserServiceImpl implements UserService {
 		log.info("[계정 연동 완료] userId={}, phone={}, email={}",
 			savedUser.getId(), savedUser.getPhone(), savedUser.getEmail());
 
-    }
+	}
 
 	@Override
 	public void updateUserProfileImage(Long userId, String profileImageUrl) {
@@ -87,15 +89,30 @@ public class UserServiceImpl implements UserService {
 
 		user.updateProfileImage(profileImageUrl);
 		User savedUser = userRepository.save(user);
-		log.info("[프로필 이미지 업데이트 완료] userId={}, profileImageUrl={}", 
+		log.info("[프로필 이미지 업데이트 완료] userId={}, profileImageUrl={}",
 			savedUser.getId(), savedUser.getProfileImageUrl());
-    }
+	}
 
-    @Override
-    public void validateUserNotExistsByPhone(String encodedPhoneNumber) {
-        User user = getUserByPhone(encodedPhoneNumber);
-        if (user.getEmail() != null && !user.getEmail().isBlank()) {
-            throw new ExternalApiException(ErrorCode.ACCOUNT_ALREADY_EXISTS);
-        }
-    }
+	@Override
+	public void validateUserNotExistsByPhone(String encodedPhoneNumber) {
+		User user = getUserByPhone(encodedPhoneNumber);
+		if (user.getEmail() != null && !user.getEmail().isBlank()) {
+			throw new ExternalApiException(ErrorCode.ACCOUNT_ALREADY_EXISTS);
+		}
+	}
+
+	@Override
+	public User findUserByPhone(String phoneNumber) {
+		return userRepository.findByPhone(phoneNumber)
+			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+	}
+
+	@Override
+	public void updatePasswordByPhone(String phoneNumber, String newPassword) {
+		User user = userRepository.findByPhone(phoneNumber)
+			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+		user.changePassword(passwordEncoder.encode(newPassword));
+		userRepository.save(user);
+	}
 }
