@@ -4,6 +4,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,16 +14,20 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.line7studio.boulderside.application.user.UserUseCase;
-import com.line7studio.boulderside.application.user.dto.response.UserInfoResponse;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
+import com.line7studio.boulderside.controller.user.request.ChangePasswordRequest;
+import com.line7studio.boulderside.controller.user.request.FindIdByPhoneRequest;
 import com.line7studio.boulderside.controller.user.request.PhoneAuthRequest;
 import com.line7studio.boulderside.controller.user.request.PhoneLinkRequest;
 import com.line7studio.boulderside.controller.user.request.PhoneLookupRequest;
 import com.line7studio.boulderside.controller.user.request.SignupRequest;
 import com.line7studio.boulderside.controller.user.request.VerifyCodeRequest;
+import com.line7studio.boulderside.controller.user.response.FindIdByPhoneResponse;
+import com.line7studio.boulderside.controller.user.response.MeResponse;
 import com.line7studio.boulderside.controller.user.response.PhoneLookupResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -31,11 +36,10 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 	private final UserUseCase userUseCase;
 
-	@GetMapping
-	public ResponseEntity<ApiResponse<UserInfoResponse>> getUser(
+	@GetMapping("/me")
+	public ResponseEntity<ApiResponse<MeResponse>> getUserInfo(
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		UserInfoResponse userInfoResponse = userUseCase.getUserInfo(userDetails.getUserId());
-		return ResponseEntity.ok(ApiResponse.of(userInfoResponse));
+		return ResponseEntity.ok(ApiResponse.of(MeResponse.from(userDetails)));
 	}
 
 	@GetMapping("/check-id")
@@ -73,11 +77,25 @@ public class UserController {
 
 	@PostMapping(value = "/sign-up", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<ApiResponse<Void>> signUp(
-		@RequestPart("data") SignupRequest request,
+		@Valid @RequestPart("data") SignupRequest request,
 		@RequestPart(value = "file", required = false) MultipartFile file
 	) {
 		userUseCase.signUp(request, file);
 		return ResponseEntity.ok(ApiResponse.success());
 	}
 
+	@PostMapping("/find-id")
+	public ResponseEntity<ApiResponse<FindIdByPhoneResponse>> findIdByPhone(
+		@RequestBody @Valid FindIdByPhoneRequest request
+	) {
+		FindIdByPhoneResponse response = userUseCase.findIdByPhone(request.phoneNumber());
+		return ResponseEntity.ok(ApiResponse.of(response));
+	}
+
+	@PatchMapping("/change-password")
+	public ResponseEntity<ApiResponse<Void>> changePassword(
+		@Valid @RequestBody ChangePasswordRequest request) {
+		userUseCase.changePassword(request.phoneNumber(), request.newPassword());
+		return ResponseEntity.ok(ApiResponse.success());
+	}
 }

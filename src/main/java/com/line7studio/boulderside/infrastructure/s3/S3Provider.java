@@ -1,5 +1,16 @@
 package com.line7studio.boulderside.infrastructure.s3;
 
+import static com.line7studio.boulderside.infrastructure.s3.S3FolderType.*;
+
+import java.io.InputStream;
+import java.net.URI;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3URI;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -8,16 +19,9 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.common.exception.ExternalApiException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.InputStream;
-import java.net.URI;
-import java.util.List;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Component
@@ -30,7 +34,18 @@ public class S3Provider {
 
 	// S3 이미지 업로드
 	public S3ObjectInfo imageUpload(MultipartFile file, S3FolderType folder) {
-        String fileName = file.getOriginalFilename();
+		if (file == null || file.isEmpty()) {
+			// 기본 이미지 제공
+			if (folder.getPath().equals(PROFILE.getPath())) {
+				return S3ObjectInfo.of(
+					"https://lhj-s3-1.s3.ap-northeast-2.amazonaws.com/profile/53ca0dcc-95db-4460-afcf-c352af4f89e7_logo.png",
+					null);
+			}
+
+			return null;
+		}
+
+		String fileName = file.getOriginalFilename();
 
 		// 확장자 검증(스푸핑 가능)
 		String ext = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
@@ -59,8 +74,8 @@ public class S3Provider {
 					.withCannedAcl(CannedAccessControlList.PublicRead)
 			);
 		} catch (Exception e) {
-            throw new BusinessException(ErrorCode.S3_UPLOAD_FAILED);
-        }
+			throw new BusinessException(ErrorCode.S3_UPLOAD_FAILED);
+		}
 
 		String s3Url = amazonS3.getUrl(bucket, s3FilePathName).toString();
 		return S3ObjectInfo.of(s3Url, fileName);

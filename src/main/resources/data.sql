@@ -176,7 +176,7 @@ VALUES ('bouldertiger', -- nickname
         'V0', -- user_level (enum 문자열)
         '김볼더', -- name
         'boulder', -- email
-        '1234',-- pass
+        '$2a$10$gjpHFHBpCIAEWZWJieBMB.3kxL3J5/x.o2yWVBMRUD5vPBo8QjWLK',-- pass (1234임)
         NOW(), -- created_at
         NOW() -- updated_at
        );

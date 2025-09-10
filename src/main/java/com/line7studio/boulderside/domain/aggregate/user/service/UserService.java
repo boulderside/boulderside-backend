@@ -1,9 +1,9 @@
 package com.line7studio.boulderside.domain.aggregate.user.service;
 
+import java.util.List;
+
 import com.line7studio.boulderside.application.user.dto.response.CreateUserCommand;
 import com.line7studio.boulderside.domain.aggregate.user.entity.User;
-
-import java.util.List;
 
 public interface UserService {
 	User getUserById(Long userId);
@@ -20,5 +20,9 @@ public interface UserService {
 
 	void updateUserProfileImage(Long userId, String profileImageUrl);
 
-    void validateUserNotExistsByPhone(String encodedPhoneNumber);
+	void validateUserNotExistsByPhone(String encodedPhoneNumber);
+
+	User findUserByPhone(String phoneNumber);
+
+	void updatePasswordByPhone(String phoneNumber, String newPassword);
 }
