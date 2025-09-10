@@ -27,14 +27,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
 		UserDetails userDetails = userDetailsService.loadUserByUsername(id);
 
-		if (!password.equals(userDetails.getPassword())) {
-			throw new AuthenticationFailureException(SecurityErrorCode.INVALID_PASSWORD);
-		}
+		// if (!password.equals(userDetails.getPassword())) {
+		// 	throw new AuthenticationFailureException(SecurityErrorCode.INVALID_PASSWORD);
+		// }
 
 		//  추후에 프론트 화면이 만들어지면 교체하기
-		// if (!passwordEncoder.matches(password, userDetails.getPassword())) {
-		// 	throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
-		// }
+		if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+			throw new AuthenticationFailureException(SecurityErrorCode.INVALID_PASSWORD);
+		}
 
 		return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
 	}
