@@ -64,7 +64,7 @@ public class UserUseCase {
 		//String encodedPhoneNumber = aesProvider.encrypt(phoneNumber);
 
 		// User 존재 여부 검증
-		userService.validateUserNotExistsByPhone(phoneNumber);
+		// userService.validateUserNotExistsByPhone(phoneNumber);
 
 		// Redis 저장
 		String redisKey = RedisKeyPrefixType.PHONE_AUTH.of(phoneNumber);
