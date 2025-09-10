@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 
 public record SignupRequest(
 	@NotBlank String nickname,
-	@NotBlank String phone,
+	@NotBlank String phoneNumber,
 	UserRole userRole,
 	UserSex userSex,
 	Level userLevel,
