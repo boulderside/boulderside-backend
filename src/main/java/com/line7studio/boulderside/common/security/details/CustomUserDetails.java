@@ -21,6 +21,7 @@ public class CustomUserDetails implements UserDetails {
 	private final String email;
 	private final String password;
 	private final String nickname;
+	private final String profileImageUrl;
 	private final UserRole userRole;
 
 	public static CustomUserDetails from(User user) {
@@ -29,6 +30,7 @@ public class CustomUserDetails implements UserDetails {
 			.email(user.getEmail())
 			.password(user.getPassword())
 			.nickname(user.getNickname())
+			.profileImageUrl(user.getProfileImageUrl())
 			.userRole(user.getUserRole())
 			.build();
 	}
