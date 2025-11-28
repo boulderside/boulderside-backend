@@ -12,7 +12,6 @@ import com.line7studio.boulderside.domain.association.like.entity.UserBoulderLik
 import com.line7studio.boulderside.domain.association.like.entity.UserRouteLike;
 import com.line7studio.boulderside.domain.association.like.service.UserBoulderLikeService;
 import com.line7studio.boulderside.domain.association.like.service.UserRouteLikeService;
-import com.line7studio.boulderside.infrastructure.elasticsearch.service.ElasticsearchSyncService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +22,6 @@ public class LikeUseCase {
 	private final RouteService routeService;
 	private final UserBoulderLikeService userBoulderLikeService;
 	private final UserRouteLikeService userRouteLikeService;
-	private final ElasticsearchSyncService elasticsearchSyncService;
 
 	@Transactional
 	public LikeResponse toggleBoulderLike(Long userId, Long boulderId) {
@@ -41,9 +39,6 @@ public class LikeUseCase {
 		} else {
 			boulder.decrementLikeCount();
 		}
-
-		elasticsearchSyncService.syncBoulder(boulder);
-		
 		long likeCount = boulder.getLikeCount() != null ? boulder.getLikeCount() : 0L;
 
 		return LikeResponse.of(boulderId, isLiked, likeCount);
@@ -65,9 +60,6 @@ public class LikeUseCase {
 		} else {
 			route.decrementLikeCount();
 		}
-
-		elasticsearchSyncService.syncRoute(route);
-		
 		long likeCount = route.getLikeCount() != null ? route.getLikeCount() : 0L;
 
 		return LikeResponse.of(routeId, isLiked, likeCount);

@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.application.search.dto;
 
-import com.line7studio.boulderside.infrastructure.elasticsearch.document.enums.DocumentDomainType;
+import com.line7studio.boulderside.domain.aggregate.search.enums.DocumentDomainType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

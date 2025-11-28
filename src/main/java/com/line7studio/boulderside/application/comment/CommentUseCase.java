@@ -14,7 +14,6 @@ import com.line7studio.boulderside.domain.aggregate.post.service.PostService;
 import com.line7studio.boulderside.domain.aggregate.post.entity.Post;
 import com.line7studio.boulderside.domain.aggregate.route.Route;
 import com.line7studio.boulderside.domain.aggregate.route.service.RouteService;
-import com.line7studio.boulderside.infrastructure.elasticsearch.service.ElasticsearchSyncService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +29,6 @@ public class CommentUseCase {
     private final UserService userService;
     private final PostService postService;
     private final RouteService routeService;
-    private final ElasticsearchSyncService elasticsearchSyncService;
 
     @Transactional(readOnly = true)
     public CommentPageResponse getCommentPage(Long cursor, int size, Long domainId, CommentDomainType commentDomainType, Long userId) {
@@ -83,11 +81,9 @@ public class CommentUseCase {
         if (commentDomainType == CommentDomainType.POST) {
             Post post = postService.getPostById(postId);
             post.incrementCommentCount();
-            elasticsearchSyncService.syncPost(post);
         } else if (commentDomainType == CommentDomainType.ROUTE) {
             Route route = routeService.getRouteById(postId);
             route.incrementCommentCount();
-            elasticsearchSyncService.syncRoute(route);
         }
 
         return CommentResponse.of(savedComment, userInfo, true);
@@ -120,11 +116,9 @@ public class CommentUseCase {
         if (comment.getCommentDomainType() == CommentDomainType.POST) {
             Post post = postService.getPostById(comment.getDomainId());
             post.decrementCommentCount();
-            elasticsearchSyncService.syncPost(post);
         } else if (comment.getCommentDomainType() == CommentDomainType.ROUTE) {
             Route route = routeService.getRouteById(comment.getDomainId());
             route.decrementCommentCount();
-            elasticsearchSyncService.syncRoute(route);
         }
     }
 }

@@ -8,7 +8,6 @@ import com.line7studio.boulderside.domain.aggregate.route.Route;
 import com.line7studio.boulderside.domain.aggregate.route.enums.RouteSortType;
 import com.line7studio.boulderside.domain.aggregate.route.service.RouteService;
 import com.line7studio.boulderside.domain.association.like.service.UserRouteLikeService;
-import com.line7studio.boulderside.infrastructure.elasticsearch.service.ElasticsearchSyncService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +21,6 @@ import java.util.Map;
 public class RouteUseCase {
 	private final RouteService routeService;
 	private final UserRouteLikeService userRouteLikeService;
-	private final ElasticsearchSyncService elasticsearchSyncService;
 
     @Transactional(readOnly = true)
     public RoutePageResponse getRoutePage(Long userId, RouteSortType sortType, Long cursor, String subCursor, int size) {
@@ -72,9 +70,6 @@ public class RouteUseCase {
 	public RouteResponse getRouteById(Long userId, Long routeId) {
 		Route route = routeService.getRouteById(routeId);
 		route.incrementViewCount();
-		
-		elasticsearchSyncService.syncRoute(route);
-
 		boolean liked = userRouteLikeService.existsIsLikedByUserId(routeId, userId);
 		long likeCount = route.getLikeCount() != null ? route.getLikeCount() : 0L;
 		
@@ -94,8 +89,6 @@ public class RouteUseCase {
 			.build();
 
 		Route savedRoute = routeService.createRoute(route);
-        elasticsearchSyncService.syncRoute(savedRoute);
-
 		return RouteResponse.of(savedRoute, 0L, false);
 	}
 
@@ -110,7 +103,6 @@ public class RouteUseCase {
 		Route updatedRoute = routeService.updateRoute(routeId, routeDetails);
         boolean liked = userRouteLikeService.existsIsLikedByUserId(routeId, userId);
 		long likeCount = updatedRoute.getLikeCount() != null ? updatedRoute.getLikeCount() : 0L;
-        elasticsearchSyncService.syncRoute(updatedRoute);
 
 		return RouteResponse.of(updatedRoute, likeCount, liked);
 	}
@@ -119,6 +111,5 @@ public class RouteUseCase {
 	public void deleteRoute(Long routeId) {
 		userRouteLikeService.deleteAllLikesByRouteId(routeId);
 		routeService.deleteRoute(routeId);
-        elasticsearchSyncService.deleteRoute(routeId);
 	}
 }

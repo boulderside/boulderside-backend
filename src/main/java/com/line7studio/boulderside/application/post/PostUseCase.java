@@ -13,7 +13,6 @@ import com.line7studio.boulderside.domain.aggregate.post.enums.PostType;
 import com.line7studio.boulderside.domain.aggregate.post.service.PostService;
 import com.line7studio.boulderside.domain.aggregate.user.entity.User;
 import com.line7studio.boulderside.domain.aggregate.user.service.UserService;
-import com.line7studio.boulderside.infrastructure.elasticsearch.service.ElasticsearchSyncService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,6 @@ public class PostUseCase {
 	private final PostService postService;
     private final UserService userService;
     private final CommentService commentService;
-    private final ElasticsearchSyncService elasticsearchSyncService;
 
 	public PostPageResponse getPostPage(Long cursor, String subCursor, int size, PostType postType, PostSortType sortType, Long userId) {
         // 게시글 조회
@@ -95,9 +93,6 @@ public class PostUseCase {
 	public PostResponse getPostById(Long postId, Long userId) {
         Post post = postService.getPostById(postId);
 		post.incrementViewCount();
-
-		elasticsearchSyncService.syncPost(post);
-
         User user = userService.getUserById(post.getUserId());
         UserInfo userInfo = UserInfo.from(user);
 
