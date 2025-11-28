@@ -36,10 +36,71 @@ dependencies {
     // MySQL Driver
     runtimeOnly 'com.mysql:mysql-connector-j'
 
-    // Springdoc OpenAPI UI (Swagger UI)
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+    // Springdoc OpenAPI UI (Swagger UI) - Latest version for Spring Boot 3
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
+
+    // Spring Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+    // QueryDSL - OpenFeign fork with security fixes for CVE-2024-49203
+    implementation 'io.github.openfeign.querydsl:querydsl-jpa:6.10.1'
+    annotationProcessor 'io.github.openfeign.querydsl:querydsl-apt:6.10.1:jakarta'
+    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+
+    // Force secure version to fix CVE-2025-48924
+    implementation 'org.apache.commons:commons-lang3:3.18.0'
+
+    // validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // webclient (API 호출)
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
+
+    // ShedLock (스케쥴러)
+    implementation 'net.javacrumbs.shedlock:shedlock-spring:5.16.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.16.0'
+
+    // Spring Retry (API 재호출)
+    implementation 'org.springframework.retry:spring-retry'
+    implementation 'org.springframework:spring-aspects'
+
+    // Nurigo 에서 제공하는 SMS 발송 SDK
+    implementation 'net.nurigo:sdk:4.3.0'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // Aws
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// QueryDSL 설정 - Spring Boot 3 권장 방식
+def generatedDir = layout.buildDirectory.dir("generated/querydsl").get().asFile
+
+sourceSets {
+    main {
+        java {
+            srcDirs += generatedDir
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.generatedSourceOutputDirectory = generatedDir
+}
+
+clean {
+    delete generatedDir
 }
