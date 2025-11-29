@@ -16,7 +16,14 @@ import java.time.LocalDateTime;
 public class RouteResponse {
 	private Long routeId;
 	private Long boulderId;
+	private String province;
+	private String city;
 	private String name;
+	private String pioneerName;
+	private Double latitude;
+	private Double longitude;
+	private String sectorName;
+	private String areaCode;
 	private Level routeLevel;
 	private Long likeCount;
 	private Boolean liked;
@@ -26,11 +33,19 @@ public class RouteResponse {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	public static RouteResponse of(Route route, Long likeCount, Boolean liked) {
+	public static RouteResponse of(Route route, String province, String city, String sectorName, String areaCode,
+		Long likeCount, Boolean liked) {
 		return RouteResponse.builder()
 			.routeId(route.getId())
 			.boulderId(route.getBoulderId())
+			.province(province)
+			.city(city)
 			.name(route.getName())
+			.pioneerName(route.getPioneerName())
+			.latitude(route.getLatitude())
+			.longitude(route.getLongitude())
+			.sectorName(sectorName)
+			.areaCode(areaCode)
 			.routeLevel(route.getRouteLevel())
 			.likeCount(likeCount)
 			.liked(liked)

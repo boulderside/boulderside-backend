@@ -18,6 +18,10 @@ public class BoulderWithRegion {
 	private String description;
 	private Double latitude;
 	private Double longitude;
+	private Long sectorId;
+	private String sectorName;
+	private String areaCode;
+	private Long viewCount;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 

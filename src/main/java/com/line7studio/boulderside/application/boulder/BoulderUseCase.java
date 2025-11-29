@@ -13,6 +13,8 @@ import com.line7studio.boulderside.domain.aggregate.image.enums.ImageDomainType;
 import com.line7studio.boulderside.domain.aggregate.image.service.ImageService;
 import com.line7studio.boulderside.domain.aggregate.region.entity.Region;
 import com.line7studio.boulderside.domain.aggregate.region.service.RegionService;
+import com.line7studio.boulderside.domain.aggregate.sector.Sector;
+import com.line7studio.boulderside.domain.aggregate.sector.service.SectorService;
 import com.line7studio.boulderside.domain.association.like.service.UserBoulderLikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 public class BoulderUseCase {
 	private final ImageService imageService;
 	private final RegionService regionService;
+	private final SectorService sectorService;
 	private final BoulderService boulderService;
 	private final UserBoulderLikeService userBoulderLikeService;
 
@@ -64,13 +67,27 @@ public class BoulderUseCase {
 					}))
 			));
 
+		List<Long> sectorIdList = boulderList.stream().map(Boulder::getSectorId).distinct().toList();
+		Map<Long, Sector> sectorMap = sectorService.getSectorsByIds(sectorIdList).stream()
+			.collect(Collectors.toMap(Sector::getId, Function.identity()));
+
 		List<BoulderResponse> boulderResponseList = boulderList.stream()
 			.map(boulder -> {
 				Region region = regionMap.get(boulder.getRegionId());
+				Sector sector = sectorMap.get(boulder.getSectorId());
 				List<ImageInfo> images = boulderImageInfoMap.getOrDefault(boulder.getId(), Collections.emptyList());
-				long likeCount = boulder.getLikeCount();
-				boolean liked = userLikeMap.get(boulder.getId());
-				return BoulderResponse.of(boulder, region.getProvince(), region.getCity(), images, likeCount, liked);
+				long likeCount = Optional.ofNullable(boulder.getLikeCount()).orElse(0L);
+				boolean liked = userLikeMap.getOrDefault(boulder.getId(), false);
+				return BoulderResponse.of(
+					boulder,
+					region.getProvince(),
+					region.getCity(),
+					sector != null ? sector.getSectorName() : null,
+					sector != null ? sector.getAreaCode() : null,
+					images,
+					likeCount,
+					liked
+				);
 			})
 			.toList();
 
@@ -117,13 +134,31 @@ public class BoulderUseCase {
                     }))
             ));
 
+        List<Long> sectorIdList = boulderList.stream()
+            .map(Boulder::getSectorId)
+            .distinct()
+            .toList();
+        Map<Long, Sector> sectorMap = sectorService.getSectorsByIds(sectorIdList)
+            .stream()
+            .collect(Collectors.toMap(Sector::getId, Function.identity()));
+
         return boulderList.stream()
             .map(boulder -> {
                 Region region = regionMap.get(boulder.getRegionId());
+                Sector sector = sectorMap.get(boulder.getSectorId());
                 List<ImageInfo> images = boulderImageInfoMap.getOrDefault(boulder.getId(), Collections.emptyList());
-                long likeCount = boulder.getLikeCount();
+                long likeCount = Optional.ofNullable(boulder.getLikeCount()).orElse(0L);
                 boolean liked = userLikeMap.getOrDefault(boulder.getId(), false);
-                return BoulderResponse.of(boulder, region.getProvince(), region.getCity(), images, likeCount, liked);
+                return BoulderResponse.of(
+                    boulder,
+                    region.getProvince(),
+                    region.getCity(),
+                    sector != null ? sector.getSectorName() : null,
+                    sector != null ? sector.getAreaCode() : null,
+                    images,
+                    likeCount,
+                    liked
+                );
             })
             .toList();
     }
@@ -140,6 +175,7 @@ public class BoulderUseCase {
 		Boulder boulder = boulderService.getBoulderById(boulderId);
 		boulder.incrementViewCount();
 		Region region = regionService.getRegionById(boulder.getRegionId());
+		Sector sector = sectorService.getSectorById(boulder.getSectorId());
 		List<Image> imageList = imageService.getImageListByImageDomainTypeAndDomainId(ImageDomainType.BOULDER, boulderId);
 		List<ImageInfo> imageInfoList = imageList.stream()
 			.map(ImageInfo::from)
@@ -147,21 +183,35 @@ public class BoulderUseCase {
 			.toList();
 
 		boolean liked = userBoulderLikeService.existsIsLikedByUserId(boulderId, userId);
+		long likeCount = Optional.ofNullable(boulder.getLikeCount()).orElse(0L);
 
-		return BoulderResponse.of(boulder, region.getProvince(), region.getCity(), imageInfoList, boulder.getLikeCount(), liked);
+		return BoulderResponse.of(
+			boulder,
+			region.getProvince(),
+			region.getCity(),
+			sector.getSectorName(),
+			sector.getAreaCode(),
+			imageInfoList,
+			likeCount,
+			liked
+		);
 	}
 
     @Transactional
 	public BoulderResponse createBoulder(CreateBoulderRequest request) {
 		Region region = regionService.getRegionByProvinceAndCity(request.getProvince(), request.getCity());
 
+		Sector sector = sectorService.getSectorById(request.getSectorId());
+
 		Boulder boulder = Boulder.builder()
 			.regionId(region.getId())
+			.sectorId(request.getSectorId())
 			.name(request.getName())
 			.description(request.getDescription())
 			.latitude(request.getLatitude())
 			.longitude(request.getLongitude())
 			.likeCount(0L)
+			.viewCount(0L)
 			.build();
 
 		Boulder savedBoulder = boulderService.createBoulder(boulder);
@@ -185,16 +235,28 @@ public class BoulderUseCase {
 				.toList();
 		}
 
-		return BoulderResponse.of(savedBoulder, region.getProvince(), region.getCity(), imageInfoList, 0L, false);
+		return BoulderResponse.of(
+			savedBoulder,
+			region.getProvince(),
+			region.getCity(),
+			sector.getSectorName(),
+			sector.getAreaCode(),
+			imageInfoList,
+			0L,
+			false
+		);
 	}
 
     @Transactional
 	public BoulderResponse updateBoulder(Long userId, Long boulderId, UpdateBoulderRequest request) {
 		Region region = regionService.getRegionByProvinceAndCity(request.getProvince(), request.getCity());
 
+		Sector sector = sectorService.getSectorById(request.getSectorId());
+
 		Boulder boulder = boulderService.updateBoulder(
 			boulderId,
 			region.getId(),
+			request.getSectorId(),
 			request.getName(),
 			request.getDescription(),
 			request.getLatitude(),
@@ -225,7 +287,17 @@ public class BoulderUseCase {
 
         boolean liked = userBoulderLikeService.existsIsLikedByUserId(boulderId, userId);
 
-		return BoulderResponse.of(boulder, region.getProvince(), region.getCity(), imageInfoList, boulder.getLikeCount(), liked);
+		long likeCount = Optional.ofNullable(boulder.getLikeCount()).orElse(0L);
+		return BoulderResponse.of(
+			boulder,
+			region.getProvince(),
+			region.getCity(),
+			sector.getSectorName(),
+			sector.getAreaCode(),
+			imageInfoList,
+			likeCount,
+			liked
+		);
 	}
 
     @Transactional

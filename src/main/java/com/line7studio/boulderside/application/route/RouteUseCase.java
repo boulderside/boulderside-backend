@@ -4,9 +4,15 @@ import com.line7studio.boulderside.controller.route.request.CreateRouteRequest;
 import com.line7studio.boulderside.controller.route.request.UpdateRouteRequest;
 import com.line7studio.boulderside.controller.route.response.RoutePageResponse;
 import com.line7studio.boulderside.controller.route.response.RouteResponse;
+import com.line7studio.boulderside.domain.aggregate.boulder.entity.Boulder;
+import com.line7studio.boulderside.domain.aggregate.boulder.service.BoulderService;
+import com.line7studio.boulderside.domain.aggregate.region.entity.Region;
+import com.line7studio.boulderside.domain.aggregate.region.service.RegionService;
 import com.line7studio.boulderside.domain.aggregate.route.Route;
 import com.line7studio.boulderside.domain.aggregate.route.enums.RouteSortType;
 import com.line7studio.boulderside.domain.aggregate.route.service.RouteService;
+import com.line7studio.boulderside.domain.aggregate.sector.Sector;
+import com.line7studio.boulderside.domain.aggregate.sector.service.SectorService;
 import com.line7studio.boulderside.domain.association.like.service.UserRouteLikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,11 +21,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class RouteUseCase {
 	private final RouteService routeService;
+	private final BoulderService boulderService;
+	private final RegionService regionService;
+	private final SectorService sectorService;
 	private final UserRouteLikeService userRouteLikeService;
 
     @Transactional(readOnly = true)
@@ -39,11 +50,29 @@ public class RouteUseCase {
 
 		Map<Long, Boolean> userLikeMap = userRouteLikeService.getIsLikedByUserIdForRouteList(routeIdList, userId);
 
+		List<Long> regionIdList = routeList.stream().map(Route::getRegionId).distinct().toList();
+		Map<Long, Region> regionMap = regionService.getRegionsByIds(regionIdList).stream()
+			.collect(Collectors.toMap(Region::getId, Function.identity()));
+
+		List<Long> sectorIdList = routeList.stream().map(Route::getSectorId).distinct().toList();
+		Map<Long, Sector> sectorMap = sectorService.getSectorsByIds(sectorIdList).stream()
+			.collect(Collectors.toMap(Sector::getId, Function.identity()));
+
 		List<RouteResponse> routeResponseList = routeList.stream()
 			.map(route -> {
 				long likeCount = route.getLikeCount() != null ? route.getLikeCount() : 0L;
 				boolean liked = userLikeMap.getOrDefault(route.getId(), false);
-				return RouteResponse.of(route, likeCount, liked);
+				Region region = regionMap.get(route.getRegionId());
+				Sector sector = sectorMap.get(route.getSectorId());
+				return RouteResponse.of(
+					route,
+					region != null ? region.getProvince() : null,
+					region != null ? region.getCity() : null,
+					sector != null ? sector.getSectorName() : null,
+					sector != null ? sector.getAreaCode() : null,
+					likeCount,
+					liked
+				);
 			})
 			.toList();
 
@@ -71,11 +100,37 @@ public class RouteUseCase {
 
         Map<Long, Boolean> userLikeMap = userRouteLikeService.getIsLikedByUserIdForRouteList(routeIdList, userId);
 
+		List<Long> regionIdList = routeList.stream()
+			.map(Route::getRegionId)
+			.distinct()
+			.toList();
+		Map<Long, Region> regionMap = regionService.getRegionsByIds(regionIdList)
+			.stream()
+			.collect(Collectors.toMap(Region::getId, Function.identity()));
+
+		List<Long> sectorIdList = routeList.stream()
+			.map(Route::getSectorId)
+			.distinct()
+			.toList();
+		Map<Long, Sector> sectorMap = sectorService.getSectorsByIds(sectorIdList)
+			.stream()
+			.collect(Collectors.toMap(Sector::getId, Function.identity()));
+
         return routeList.stream()
             .map(route -> {
                 long likeCount = route.getLikeCount() != null ? route.getLikeCount() : 0L;
                 boolean liked = userLikeMap.getOrDefault(route.getId(), false);
-                return RouteResponse.of(route, likeCount, liked);
+				Region region = regionMap.get(route.getRegionId());
+				Sector sector = sectorMap.get(route.getSectorId());
+                return RouteResponse.of(
+					route,
+					region != null ? region.getProvince() : null,
+					region != null ? region.getCity() : null,
+					sector != null ? sector.getSectorName() : null,
+					sector != null ? sector.getAreaCode() : null,
+					likeCount,
+					liked
+				);
             })
             .toList();
     }
@@ -94,16 +149,35 @@ public class RouteUseCase {
 		route.incrementViewCount();
 		boolean liked = userRouteLikeService.existsIsLikedByUserId(routeId, userId);
 		long likeCount = route.getLikeCount() != null ? route.getLikeCount() : 0L;
+		Region region = regionService.getRegionById(route.getRegionId());
+		Sector sector = sectorService.getSectorById(route.getSectorId());
 		
-		return RouteResponse.of(route, likeCount, liked);
+		return RouteResponse.of(
+			route,
+			region.getProvince(),
+			region.getCity(),
+			sector.getSectorName(),
+			sector.getAreaCode(),
+			likeCount,
+			liked
+		);
 	}
 
-    @Transactional
+	@Transactional
 	public RouteResponse createRoute(CreateRouteRequest request) {
+		Boulder boulder = boulderService.getBoulderById(request.getBoulderId());
+		Region region = regionService.getRegionById(boulder.getRegionId());
+		Sector sector = sectorService.getSectorById(boulder.getSectorId());
+
 		Route route = Route.builder()
 			.boulderId(request.getBoulderId())
+			.regionId(boulder.getRegionId())
+			.sectorId(boulder.getSectorId())
 			.name(request.getName())
+			.pioneerName(request.getPioneerName())
 			.routeLevel(request.getRouteLevel())
+			.latitude(boulder.getLatitude())
+			.longitude(boulder.getLongitude())
 			.likeCount(0L)
 			.viewCount(0L)
 			.climberCount(0L)
@@ -111,22 +185,47 @@ public class RouteUseCase {
 			.build();
 
 		Route savedRoute = routeService.createRoute(route);
-		return RouteResponse.of(savedRoute, 0L, false);
+		return RouteResponse.of(
+			savedRoute,
+			region.getProvince(),
+			region.getCity(),
+			sector.getSectorName(),
+			sector.getAreaCode(),
+			0L,
+			false
+		);
 	}
 
-    @Transactional
+	@Transactional
 	public RouteResponse updateRoute(Long userId, Long routeId, UpdateRouteRequest request) {
+		Boulder boulder = boulderService.getBoulderById(request.getBoulderId());
+		Region region = regionService.getRegionById(boulder.getRegionId());
+		Sector sector = sectorService.getSectorById(boulder.getSectorId());
+
 		Route routeDetails = Route.builder()
 			.boulderId(request.getBoulderId())
+			.regionId(boulder.getRegionId())
+			.sectorId(boulder.getSectorId())
 			.name(request.getName())
+			.pioneerName(request.getPioneerName())
 			.routeLevel(request.getRouteLevel())
+			.latitude(boulder.getLatitude())
+			.longitude(boulder.getLongitude())
 			.build();
 
 		Route updatedRoute = routeService.updateRoute(routeId, routeDetails);
         boolean liked = userRouteLikeService.existsIsLikedByUserId(routeId, userId);
 		long likeCount = updatedRoute.getLikeCount() != null ? updatedRoute.getLikeCount() : 0L;
 
-		return RouteResponse.of(updatedRoute, likeCount, liked);
+		return RouteResponse.of(
+			updatedRoute,
+			region.getProvince(),
+			region.getCity(),
+			sector.getSectorName(),
+			sector.getAreaCode(),
+			likeCount,
+			liked
+		);
 	}
 
     @Transactional

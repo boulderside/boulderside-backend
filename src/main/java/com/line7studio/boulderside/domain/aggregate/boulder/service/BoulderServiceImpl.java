@@ -39,9 +39,9 @@ public class BoulderServiceImpl implements BoulderService {
 	}
 
 	@Override
-	public Boulder updateBoulder(Long boulderId, Long regionId, String name, String description, Double latitude, Double longitude) {
+	public Boulder updateBoulder(Long boulderId, Long regionId, Long sectorId, String name, String description, Double latitude, Double longitude) {
 		Boulder boulder = getBoulderById(boulderId);
-		boulder.update(regionId, name, description, latitude, longitude);
+		boulder.update(regionId, sectorId, name, description, latitude, longitude);
 		return boulderRepository.save(boulder);
 	}
 

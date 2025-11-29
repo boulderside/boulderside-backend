@@ -39,18 +39,23 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public Route updateRoute(Long routeId, Route routeDetails) {
-        Route route = getRouteById(routeId);
-        Route updatedRoute = Route.builder()
-                .id(route.getId())
-                .boulderId(routeDetails.getBoulderId() != null ? routeDetails.getBoulderId() : route.getBoulderId())
-                .name(routeDetails.getName() != null ? routeDetails.getName() : route.getName())
-                .routeLevel(routeDetails.getRouteLevel() != null ? routeDetails.getRouteLevel() : route.getRouteLevel())
-                .likeCount(route.getLikeCount())
-                .viewCount(route.getViewCount())
-                .climberCount(route.getClimberCount())
-                .commentCount(route.getCommentCount())
-                .build();
+	public Route updateRoute(Long routeId, Route routeDetails) {
+		Route route = getRouteById(routeId);
+		Route updatedRoute = Route.builder()
+				.id(route.getId())
+				.boulderId(routeDetails.getBoulderId() != null ? routeDetails.getBoulderId() : route.getBoulderId())
+				.regionId(routeDetails.getRegionId() != null ? routeDetails.getRegionId() : route.getRegionId())
+				.sectorId(routeDetails.getSectorId() != null ? routeDetails.getSectorId() : route.getSectorId())
+				.name(routeDetails.getName() != null ? routeDetails.getName() : route.getName())
+				.pioneerName(routeDetails.getPioneerName() != null ? routeDetails.getPioneerName() : route.getPioneerName())
+				.routeLevel(routeDetails.getRouteLevel() != null ? routeDetails.getRouteLevel() : route.getRouteLevel())
+				.latitude(routeDetails.getLatitude() != null ? routeDetails.getLatitude() : route.getLatitude())
+				.longitude(routeDetails.getLongitude() != null ? routeDetails.getLongitude() : route.getLongitude())
+				.likeCount(route.getLikeCount())
+				.viewCount(route.getViewCount())
+				.climberCount(route.getClimberCount())
+				.commentCount(route.getCommentCount())
+				.build();
         
         return routeRepository.save(updatedRoute);
     }
