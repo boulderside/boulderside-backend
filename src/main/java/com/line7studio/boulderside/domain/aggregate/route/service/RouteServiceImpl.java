@@ -18,6 +18,11 @@ public class RouteServiceImpl implements RouteService {
     private final RouteQueryRepository routeQueryRepository;
 
     @Override
+    public List<Route> getAllRoutes() {
+        return routeRepository.findAll();
+    }
+
+    @Override
     public List<Route> getRoutesWithCursor(Long cursor, String subCursor, int size, RouteSortType sortType) {
         return routeQueryRepository.findRoutesWithCursor(sortType, cursor, subCursor, size);
     }

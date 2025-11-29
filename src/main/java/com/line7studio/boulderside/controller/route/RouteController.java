@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/routes")
 @RequiredArgsConstructor
@@ -29,7 +31,14 @@ public class RouteController {
 		@RequestParam(required = false) String subCursor,
 		@RequestParam(defaultValue = "5") int size) {
         RoutePageResponse routePageResponse = routeUseCase.getRoutePage(userDetails.getUserId(), routeSortType, cursor, subCursor, size);
-        return ResponseEntity.ok(ApiResponse.of(routePageResponse));
+		return ResponseEntity.ok(ApiResponse.of(routePageResponse));
+	}
+
+	@GetMapping("/all")
+	public ResponseEntity<ApiResponse<List<RouteResponse>>> getAllRoutes(
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
+		List<RouteResponse> routeList = routeUseCase.getAllRoutes(userDetails.getUserId());
+		return ResponseEntity.ok(ApiResponse.of(routeList));
 	}
 
 	@GetMapping("/{routeId}")

@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/boulders")
 @RequiredArgsConstructor
@@ -29,7 +31,14 @@ public class BoulderController {
 		@RequestParam(required = false) String subCursor,
 		@RequestParam(defaultValue = "5") int size) {
         BoulderPageResponse boulderPageResponse = boulderUseCase.getBoulderPage(userDetails.getUserId(), boulderSortType, cursor, subCursor, size);
-        return ResponseEntity.ok(ApiResponse.of(boulderPageResponse));
+		return ResponseEntity.ok(ApiResponse.of(boulderPageResponse));
+	}
+
+	@GetMapping("/all")
+	public ResponseEntity<ApiResponse<List<BoulderResponse>>> getAllBoulders(
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
+		List<BoulderResponse> boulderList = boulderUseCase.getAllBoulders(userDetails.getUserId());
+		return ResponseEntity.ok(ApiResponse.of(boulderList));
 	}
 
 	@GetMapping("/{boulderId}")
