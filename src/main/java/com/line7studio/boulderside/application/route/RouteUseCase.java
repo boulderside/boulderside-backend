@@ -58,6 +58,28 @@ public class RouteUseCase {
 		return RoutePageResponse.of(routeResponseList, nextCursor, nextSubCursor, hasNext, routeList.size());
 	}
 
+    @Transactional(readOnly = true)
+    public List<RouteResponse> getAllRoutes(Long userId) {
+        List<Route> routeList = routeService.getAllRoutes();
+        if (routeList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> routeIdList = routeList.stream()
+            .map(Route::getId)
+            .toList();
+
+        Map<Long, Boolean> userLikeMap = userRouteLikeService.getIsLikedByUserIdForRouteList(routeIdList, userId);
+
+        return routeList.stream()
+            .map(route -> {
+                long likeCount = route.getLikeCount() != null ? route.getLikeCount() : 0L;
+                boolean liked = userLikeMap.getOrDefault(route.getId(), false);
+                return RouteResponse.of(route, likeCount, liked);
+            })
+            .toList();
+    }
+
 	private String getNextSubCursor(Route route, RouteSortType sortType) {
 		return switch (sortType) {
             case DIFFICULTY -> route.getRouteLevel() != null ? route.getRouteLevel().toString() : "";

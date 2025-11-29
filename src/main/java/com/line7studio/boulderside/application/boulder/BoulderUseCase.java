@@ -85,6 +85,49 @@ public class BoulderUseCase {
 		return BoulderPageResponse.of(boulderResponseList, nextCursor, nextSubCursor, hasNext, boulderList.size());
 	}
 
+    @Transactional(readOnly = true)
+    public List<BoulderResponse> getAllBoulders(Long userId) {
+        List<Boulder> boulderList = boulderService.getAllBoulders();
+        if (boulderList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> boulderIdList = boulderList.stream()
+            .map(Boulder::getId)
+            .toList();
+
+        Map<Long, Boolean> userLikeMap = userBoulderLikeService.getIsLikedByUserIdForBoulderList(boulderIdList, userId);
+
+        List<Long> regionIdList = boulderList.stream()
+            .map(Boulder::getRegionId)
+            .distinct()
+            .toList();
+        Map<Long, Region> regionMap = regionService.getRegionsByIds(regionIdList)
+            .stream()
+            .collect(Collectors.toMap(Region::getId, Function.identity()));
+
+        List<Image> imageList = imageService.getImageListByImageDomainTypeAndDomainIdList(ImageDomainType.BOULDER, boulderIdList);
+        Map<Long, List<ImageInfo>> boulderImageInfoMap = imageList.stream()
+            .collect(Collectors.groupingBy(
+                Image::getDomainId,
+                Collectors.mapping(ImageInfo::from,
+                    Collectors.collectingAndThen(Collectors.toList(), list -> {
+                        list.sort(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)));
+                        return list;
+                    }))
+            ));
+
+        return boulderList.stream()
+            .map(boulder -> {
+                Region region = regionMap.get(boulder.getRegionId());
+                List<ImageInfo> images = boulderImageInfoMap.getOrDefault(boulder.getId(), Collections.emptyList());
+                long likeCount = boulder.getLikeCount();
+                boolean liked = userLikeMap.getOrDefault(boulder.getId(), false);
+                return BoulderResponse.of(boulder, region.getProvince(), region.getCity(), images, likeCount, liked);
+            })
+            .toList();
+    }
+
 	private String getNextSubCursor(Boulder boulder, BoulderSortType sortType) {
 		return switch (sortType) {
             case LATEST_CREATED -> boulder.getCreatedAt().toString();
