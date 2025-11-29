@@ -37,7 +37,8 @@ public class RouteController {
 	@GetMapping("/all")
 	public ResponseEntity<ApiResponse<List<RouteResponse>>> getAllRoutes(
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		List<RouteResponse> routeList = routeUseCase.getAllRoutes(userDetails.getUserId());
+		Long userId = userDetails != null ? userDetails.getUserId() : null;
+		List<RouteResponse> routeList = routeUseCase.getAllRoutes(userId);
 		return ResponseEntity.ok(ApiResponse.of(routeList));
 	}
 

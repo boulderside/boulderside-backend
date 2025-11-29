@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,6 +29,10 @@ public class Boulder extends BaseEntity {
 	@Column(name = "region_id", nullable = false)
 	private Long regionId;
 
+	/** 연관 섹터 ID (FK) */
+	@Column(name = "sector_id", nullable = false)
+	private Long sectorId;
+
 	/** 바위 이름 */
 	@Column(name = "name")
 	private String name;
@@ -44,16 +49,19 @@ public class Boulder extends BaseEntity {
 	@Column(name = "longitude")
 	private Double longitude;
 
-    /** 좋아요 수 */
-    @Column(name = "like_count")
-    private Long likeCount;
+	/** 좋아요 수 */
+	@Column(name = "like_count")
+	@Default
+	private Long likeCount = 0L;
 
-    /** 조회 수 */
-    @Column(name = "view_count")
-    private Long viewCount;
+	/** 조회 수 */
+	@Column(name = "view_count")
+	@Default
+	private Long viewCount = 0L;
 
-	public void update(Long regionId, String name, String description, Double latitude, Double longitude) {
+	public void update(Long regionId, Long sectorId, String name, String description, Double latitude, Double longitude) {
 		this.regionId = regionId;
+		this.sectorId = sectorId;
 		this.name = name;
 		this.description = description;
 		this.latitude = latitude;
@@ -61,15 +69,14 @@ public class Boulder extends BaseEntity {
 	}
 
 	public void incrementViewCount() {
-		this.viewCount = this.viewCount + 1;
+		this.viewCount = (this.viewCount == null) ? 1 : this.viewCount + 1;
 	}
 
 	public void incrementLikeCount() {
-		this.likeCount = this.likeCount + 1;
+		this.likeCount = (this.likeCount == null) ? 1 : this.likeCount + 1;
 	}
 
 	public void decrementLikeCount() {
-		this.likeCount = this.likeCount <= 0 ? 0 : this.likeCount - 1;
+		this.likeCount = (this.likeCount == null || this.likeCount <= 0) ? 0 : this.likeCount - 1;
 	}
 }
-

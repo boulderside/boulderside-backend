@@ -21,6 +21,9 @@ public class CreateRouteRequest {
 	@NotBlank(message = "루트 이름은 필수입니다")
 	private String name;
 
+	@NotBlank(message = "개척자 이름은 필수입니다")
+	private String pioneerName;
+
 	@NotNull(message = "난이도는 필수입니다")
 	private Level routeLevel;
 }

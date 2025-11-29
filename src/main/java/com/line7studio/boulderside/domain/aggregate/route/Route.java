@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,33 +32,57 @@ public class Route extends BaseEntity {
 	@Column(name = "boulder_id", nullable = false)
 	private Long boulderId;
 
+	/** 연관 지역 ID (FK) */
+	@Column(name = "region_id", nullable = false)
+	private Long regionId;
+
+	/** 연관 섹터 ID (FK) */
+	@Column(name = "sector_id", nullable = false)
+	private Long sectorId;
+
 	/** 루트 이름 */
 	@Column(name = "name")
 	private String name;
 
-    /** 좋아요 수 */
-    @Column(name = "like_count")
-    private Long likeCount;
+	/** 개척자 이름 */
+	@Column(name = "pioneer_name")
+	private String pioneerName;
 
-    /** 조회 수 */
-    @Column(name = "view_count")
-    private Long viewCount;
+	/** 좋아요 수 */
+	@Column(name = "like_count")
+	@Default
+	private Long likeCount = 0L;
 
-    /** 조회 수 */
-    @Column(name = "climber_count")
-    private Long climberCount;
+	/** 조회 수 */
+	@Column(name = "view_count")
+	@Default
+	private Long viewCount = 0L;
 
-    /** 댓글 수 */
-    @Column(name = "comment_count")
-    private Long commentCount;
+	/** 완등자 수 */
+	@Column(name = "climber_count")
+	@Default
+	private Long climberCount = 0L;
 
-    /** 난이도 레벨 */
+	/** 댓글 수 */
+	@Column(name = "comment_count")
+	@Default
+	private Long commentCount = 0L;
+
+	/** 루트 시작 지점 위도 */
+	@Column(name = "latitude")
+	private Double latitude;
+
+	/** 루트 시작 지점 경도 */
+	@Column(name = "longitude")
+	private Double longitude;
+
+	/** 난이도 레벨 */
 	@Enumerated(EnumType.STRING)
 	@Column(name = "route_level")
 	private Level routeLevel;
 
 	public void incrementViewCount() {
-		this.viewCount = this.viewCount + 1;
+		this.viewCount = (this.viewCount == null) ? 1 : this.viewCount + 1;
 	}
 
 	public void incrementLikeCount() {

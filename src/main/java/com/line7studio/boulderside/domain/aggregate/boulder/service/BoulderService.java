@@ -10,6 +10,6 @@ public interface BoulderService {
 	Boulder getBoulderById(Long boulderId);
 	List<Boulder> getBouldersWithCursor(Long cursor, String subCursor, int size, BoulderSortType sortType);
 	Boulder createBoulder(Boulder boulder);
-	Boulder updateBoulder(Long boulderId, Long regionId, String name, String description, Double latitude, Double longitude);
+	Boulder updateBoulder(Long boulderId, Long regionId, Long sectorId, String name, String description, Double latitude, Double longitude);
 	void deleteByBoulderId(Long boulderId);
 }

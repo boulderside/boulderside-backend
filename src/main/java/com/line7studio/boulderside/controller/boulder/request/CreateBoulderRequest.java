@@ -26,6 +26,9 @@ public class CreateBoulderRequest {
 	@NotNull(message = "경도는 필수입니다")
 	private Double longitude;
 
+	@NotNull(message = "섹터 ID는 필수입니다")
+	private Long sectorId;
+
 	private String province;
 
 	private String city;

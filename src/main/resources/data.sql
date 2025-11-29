@@ -10,6 +10,8 @@ TRUNCATE TABLE boulders;
 -- regions table 초기화
 TRUNCATE TABLE regions;
 
+TRUNCATE TABLE sectors;
+
 TRUNCATE TABLE images;
 
 TRUNCATE TABLE posts;
@@ -116,30 +118,30 @@ VALUES
     -- Hidden Hollow (8)
     (11, 8, 0, '전주역에서 버스 12번, 골짜기 입구 하차', '마을회관 앞 주차장 이용 가능', 30, '계곡물 소리와 함께 아늑한 분위기.', '2025-08-21 08:50:00', '2025-08-21 08:50:00');
 
-INSERT INTO routes (id, boulder_id, name, like_count, view_count, climber_count, comment_count, route_level, created_at, updated_at)
+INSERT INTO routes (id, boulder_id, region_id, sector_id, name, pioneer_name, like_count, view_count, climber_count, comment_count, latitude, longitude, route_level, created_at, updated_at)
 VALUES
-    (1, 1, 'Beginner''s Edge', 3, 0, 0, 0, 'V0', '2025-08-21 10:00:00', '2025-08-21 10:00:00'),
-    (2, 1, 'Sunrise Traverse', 5, 0, 0, 0, 'V2', '2025-08-21 10:05:00', '2025-08-21 10:05:00'),
-    (3, 2, 'Shadow Crack', 2, 0, 0, 0, 'V1', '2025-08-21 10:10:00', '2025-08-21 10:10:00'),
-    (4, 2, 'Moonlight Mantle', 7, 0, 0, 0, 'V4', '2025-08-21 10:15:00', '2025-08-21 10:15:00'),
-    (5, 3, 'Green Slab', 4, 0, 0, 0, 'V0', '2025-08-21 10:20:00', '2025-08-21 10:20:00'),
-    (6, 3, 'Moss Traverse', 9, 0, 0, 0, 'V3', '2025-08-21 10:25:00', '2025-08-21 10:25:00'),
-    (7, 3, 'Damp Pocket', 1, 0, 0, 0, 'V5', '2025-08-21 10:30:00', '2025-08-21 10:30:00'),
-    (8, 4, 'Eagle''s Flight', 6, 0, 0, 0, 'V6', '2025-08-21 10:35:00', '2025-08-21 10:35:00'),
-    (9, 4, 'Perch Traverse', 3, 0, 0, 0, 'V2', '2025-08-21 10:40:00', '2025-08-21 10:40:00'),
-    (10, 4, 'Sky Crack', 10, 0, 0, 0, 'V8', '2025-08-21 10:45:00', '2025-08-21 10:45:00'),
-    (11, 5, 'Stone Whisper', 2, 0, 0, 0, 'V1', '2025-08-21 10:50:00', '2025-08-21 10:50:00'),
-    (12, 5, 'Wind Song', 5, 0, 0, 0, 'V3', '2025-08-21 10:55:00', '2025-08-21 10:55:00'),
-    (13, 6, 'Red Wall', 12, 0, 0, 0, 'V7', '2025-08-21 11:00:00', '2025-08-21 11:00:00'),
-    (14, 6, 'Cliff Edge', 8, 0, 0, 0, 'V5', '2025-08-21 11:05:00', '2025-08-21 11:05:00'),
-    (15, 6, 'Blood Crack', 4, 0, 0, 0, 'V9', '2025-08-21 11:10:00', '2025-08-21 11:10:00'),
-    (16, 7, 'Twin Arete', 7, 0, 0, 0, 'V4', '2025-08-21 11:15:00', '2025-08-21 11:15:00'),
-    (17, 7, 'Double Slab', 2, 0, 0, 0, 'V0', '2025-08-21 11:20:00', '2025-08-21 11:20:00'),
-    (18, 8, 'Hidden Crack', 1, 0, 0, 0, 'V2', '2025-08-21 11:25:00', '2025-08-21 11:25:00'),
-    (19, 8, 'Hollow Roof', 4, 0, 0, 0, 'V6', '2025-08-21 11:30:00', '2025-08-21 11:30:00'),
-    (20, 8, 'Quiet Traverse', 3, 0, 0, 0, 'V1', '2025-08-21 11:35:00', '2025-08-21 11:35:00'),
-    (21, 2, 'Shadow Wall', 6, 0, 0, 0, 'V10', '2025-08-21 11:40:00', '2025-08-21 11:40:00'),
-    (22, 5, 'Echo Corner', 2, 0, 0, 0, 'V2', '2025-08-21 11:45:00', '2025-08-21 11:45:00');
+    (1, 1, 1, 1, 'Beginner''s Edge', 'Sunrise Crew', 3, 0, 0, 0, 37.579617, 126.977041, 'V0', '2025-08-21 10:00:00', '2025-08-21 10:00:00'),
+    (2, 1, 1, 1, 'Sunrise Traverse', 'Sunrise Crew', 5, 0, 0, 0, 37.579617, 126.977041, 'V2', '2025-08-21 10:05:00', '2025-08-21 10:05:00'),
+    (3, 2, 2, 2, 'Shadow Crack', 'Shadow Crew', 2, 0, 0, 0, 35.179554, 129.075642, 'V1', '2025-08-21 10:10:00', '2025-08-21 10:10:00'),
+    (4, 2, 2, 2, 'Moonlight Mantle', 'Shadow Crew', 7, 0, 0, 0, 35.179554, 129.075642, 'V4', '2025-08-21 10:15:00', '2025-08-21 10:15:00'),
+    (5, 3, 3, 3, 'Green Slab', 'Moss Squad', 4, 0, 0, 0, 37.566535, 126.977969, 'V0', '2025-08-21 10:20:00', '2025-08-21 10:20:00'),
+    (6, 3, 3, 3, 'Moss Traverse', 'Moss Squad', 9, 0, 0, 0, 37.566535, 126.977969, 'V3', '2025-08-21 10:25:00', '2025-08-21 10:25:00'),
+    (7, 3, 3, 3, 'Damp Pocket', 'Moss Squad', 1, 0, 0, 0, 37.566535, 126.977969, 'V5', '2025-08-21 10:30:00', '2025-08-21 10:30:00'),
+    (8, 4, 4, 1, 'Eagle''s Flight', 'Eagle Crew', 6, 0, 0, 0, 36.350411, 127.384547, 'V6', '2025-08-21 10:35:00', '2025-08-21 10:35:00'),
+    (9, 4, 4, 1, 'Perch Traverse', 'Eagle Crew', 3, 0, 0, 0, 36.350411, 127.384547, 'V2', '2025-08-21 10:40:00', '2025-08-21 10:40:00'),
+    (10, 4, 4, 1, 'Sky Crack', 'Eagle Crew', 10, 0, 0, 0, 36.350411, 127.384547, 'V8', '2025-08-21 10:45:00', '2025-08-21 10:45:00'),
+    (11, 5, 5, 2, 'Stone Whisper', 'Whisper Crew', 2, 0, 0, 0, 35.872218, 128.602528, 'V1', '2025-08-21 10:50:00', '2025-08-21 10:50:00'),
+    (12, 5, 5, 2, 'Wind Song', 'Whisper Crew', 5, 0, 0, 0, 35.872218, 128.602528, 'V3', '2025-08-21 10:55:00', '2025-08-21 10:55:00'),
+    (13, 6, 6, 3, 'Red Wall', 'Red Cliff Crew', 12, 0, 0, 0, 35.159545, 126.852601, 'V7', '2025-08-21 11:00:00', '2025-08-21 11:00:00'),
+    (14, 6, 6, 3, 'Cliff Edge', 'Red Cliff Crew', 8, 0, 0, 0, 35.159545, 126.852601, 'V5', '2025-08-21 11:05:00', '2025-08-21 11:05:00'),
+    (15, 6, 6, 3, 'Blood Crack', 'Red Cliff Crew', 4, 0, 0, 0, 35.159545, 126.852601, 'V9', '2025-08-21 11:10:00', '2025-08-21 11:10:00'),
+    (16, 7, 7, 1, 'Twin Arete', 'Twin Crew', 7, 0, 0, 0, 36.487224, 127.289098, 'V4', '2025-08-21 11:15:00', '2025-08-21 11:15:00'),
+    (17, 7, 7, 1, 'Double Slab', 'Twin Crew', 2, 0, 0, 0, 36.487224, 127.289098, 'V0', '2025-08-21 11:20:00', '2025-08-21 11:20:00'),
+    (18, 8, 8, 2, 'Hidden Crack', 'Hollow Crew', 1, 0, 0, 0, 35.907757, 127.766922, 'V2', '2025-08-21 11:25:00', '2025-08-21 11:25:00'),
+    (19, 8, 8, 2, 'Hollow Roof', 'Hollow Crew', 4, 0, 0, 0, 35.907757, 127.766922, 'V6', '2025-08-21 11:30:00', '2025-08-21 11:30:00'),
+    (20, 8, 8, 2, 'Quiet Traverse', 'Hollow Crew', 3, 0, 0, 0, 35.907757, 127.766922, 'V1', '2025-08-21 11:35:00', '2025-08-21 11:35:00'),
+    (21, 2, 2, 2, 'Shadow Wall', 'Shadow Crew', 6, 0, 0, 0, 35.179554, 129.075642, 'V10', '2025-08-21 11:40:00', '2025-08-21 11:40:00'),
+    (22, 5, 5, 2, 'Echo Corner', 'Whisper Crew', 2, 0, 0, 0, 35.872218, 128.602528, 'V2', '2025-08-21 11:45:00', '2025-08-21 11:45:00');
 
 INSERT INTO comments (id, user_id, domain_id, comment_domain_type, content, created_at, updated_at) VALUES
     (1, 1, 1, 'POST', '첫 번째 게시글의 첫 댓글입니다.', '2025-08-20 10:01:12', '2025-08-20 10:01:12'),
@@ -181,25 +183,31 @@ VALUES ('bouldertiger', -- nickname
         NOW() -- updated_at
        );
 
-INSERT INTO boulders (id, region_id, name, description,
-                      latitude, longitude, like_count, created_at, updated_at)
+INSERT INTO sectors (id, sector_name, area_code)
 VALUES
-    (1, 1, 'Sunrise Crag', '해돋이 보기 좋은 바위, 초보자도 접근 용이',
-     37.579617, 126.977041, 12, '2025-08-15 07:15:32', '2025-08-15 07:15:32'),
-    (2, 2, 'Shadow Peak', '그림자가 길게 드리워지는 고독한 암석',
-     35.179554, 129.075642, 5, '2025-08-16 09:42:18', '2025-08-16 09:42:18'),
-    (3, 3, 'Mossy Boulder', '이끼로 덮인 습한 바위, 촉감이 부드러움',
-     37.566535, 126.977969, 8, '2025-08-17 14:27:05', '2025-08-17 14:27:05'),
-    (4, 4, 'Eagle''s Perch', '독수리가 날아오르는 전망 좋은 암석',
-     36.350411, 127.384547, 20, '2025-08-18 06:55:44', '2025-08-18 06:55:44'),
-    (5, 5, 'Whispering Stone', '바람 소리가 울리는 신비한 바위',
-     35.872218, 128.602528, 2, '2025-08-18 19:33:21', '2025-08-18 19:33:21'),
-    (6, 6, 'Red Cliff', '붉은 색을 띤 절벽형 바위, 사진 찍기 좋음',
-     35.159545, 126.852601, 15, '2025-08-19 10:08:59', '2025-08-19 10:08:59'),
-    (7, 7, 'Twin Rocks', '쌍둥이처럼 생긴 두 개의 바위가 붙어 있는 장소',
-     36.487224, 127.289098, 7, '2025-08-19 22:45:11', '2025-08-19 22:45:11'),
-    (8, 8, 'Hidden Hollow', '작은 계곡 안에 숨어있는 아늑한 바위',
-     35.907757, 127.766922, 0, '2025-08-20 08:17:46', '2025-08-20 08:17:46');
+    (1, '을왕리', 'A-1'),
+    (2, '을왕리', 'A-2'),
+    (3, '을왕리', 'A-3');
+
+INSERT INTO boulders (id, region_id, sector_id, name, description,
+                      latitude, longitude, like_count, view_count, created_at, updated_at)
+VALUES
+    (1, 1, 1, 'Sunrise Crag', '해돋이 보기 좋은 바위, 초보자도 접근 용이',
+     37.579617, 126.977041, 12, 0, '2025-08-15 07:15:32', '2025-08-15 07:15:32'),
+    (2, 2, 2, 'Shadow Peak', '그림자가 길게 드리워지는 고독한 암석',
+     35.179554, 129.075642, 5, 0, '2025-08-16 09:42:18', '2025-08-16 09:42:18'),
+    (3, 3, 3, 'Mossy Boulder', '이끼로 덮인 습한 바위, 촉감이 부드러움',
+     37.566535, 126.977969, 8, 0, '2025-08-17 14:27:05', '2025-08-17 14:27:05'),
+    (4, 4, 1, 'Eagle''s Perch', '독수리가 날아오르는 전망 좋은 암석',
+     36.350411, 127.384547, 20, 0, '2025-08-18 06:55:44', '2025-08-18 06:55:44'),
+    (5, 5, 2, 'Whispering Stone', '바람 소리가 울리는 신비한 바위',
+     35.872218, 128.602528, 2, 0, '2025-08-18 19:33:21', '2025-08-18 19:33:21'),
+    (6, 6, 3, 'Red Cliff', '붉은 색을 띤 절벽형 바위, 사진 찍기 좋음',
+     35.159545, 126.852601, 15, 0, '2025-08-19 10:08:59', '2025-08-19 10:08:59'),
+    (7, 7, 1, 'Twin Rocks', '쌍둥이처럼 생긴 두 개의 바위가 붙어 있는 장소',
+     36.487224, 127.289098, 7, 0, '2025-08-19 22:45:11', '2025-08-19 22:45:11'),
+    (8, 8, 2, 'Hidden Hollow', '작은 계곡 안에 숨어있는 아늑한 바위',
+     35.907757, 127.766922, 0, 0, '2025-08-20 08:17:46', '2025-08-20 08:17:46');
 
 /* ----------------------------
    IMAGES: BOULDER (2장씩)
@@ -229,7 +237,76 @@ VALUES
     ('default.png', 7, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
     -- Boulder 8
     ('default.png', 8, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 8, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1);
+    ('default.png', 8, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Route 1
+    ('default.png', 1, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 1, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Route 2
+    ('default.png', 2, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    -- Route 3
+    ('default.png', 3, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 3, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    ('default.png', 3, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
+    -- Route 4
+    ('default.png', 4, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 4, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Route 5
+    ('default.png', 5, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    -- Route 6
+    ('default.png', 6, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 6, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    ('default.png', 6, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
+    ('default.png', 6, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 3),
+    -- Route 7
+    ('default.png', 7, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    -- Route 8
+    ('default.png', 8, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 8, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    ('default.png', 8, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
+    ('default.png', 8, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 3),
+    ('default.png', 8, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 4),
+    -- Route 9
+    ('default.png', 9, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 9, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Route 10
+    ('default.png', 10, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    -- Route 11
+    ('default.png', 11, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 11, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    ('default.png', 11, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
+    -- Route 12
+    ('default.png', 12, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 12, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Route 13
+    ('default.png', 13, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 13, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    ('default.png', 13, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
+    ('default.png', 13, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 3),
+    -- Route 14
+    ('default.png', 14, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    -- Route 15
+    ('default.png', 15, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 15, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Route 16
+    ('default.png', 16, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 16, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    ('default.png', 16, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
+    -- Route 17
+    ('default.png', 17, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    -- Route 18
+    ('default.png', 18, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 18, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Route 19
+    ('default.png', 19, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    -- Route 20
+    ('default.png', 20, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 20, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Route 21
+    ('default.png', 21, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 21, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    ('default.png', 21, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
+    -- Route 22
+    ('default.png', 22, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0);
 
 /* ----------------------------
    IMAGES: POINT (각 1장씩)
