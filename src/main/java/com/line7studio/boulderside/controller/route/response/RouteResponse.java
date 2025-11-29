@@ -1,5 +1,6 @@
 package com.line7studio.boulderside.controller.route.response;
 
+import com.line7studio.boulderside.common.dto.ImageInfo;
 import com.line7studio.boulderside.common.enums.Level;
 import com.line7studio.boulderside.domain.aggregate.route.Route;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -30,11 +32,12 @@ public class RouteResponse {
 	private Long viewCount;
 	private Long climberCount;
 	private Long commentCount;
+	private List<ImageInfo> imageInfoList;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
 	public static RouteResponse of(Route route, String province, String city, String sectorName, String areaCode,
-		Long likeCount, Boolean liked) {
+		List<ImageInfo> imageInfoList, Long likeCount, Boolean liked) {
 		return RouteResponse.builder()
 			.routeId(route.getId())
 			.boulderId(route.getBoulderId())
@@ -52,6 +55,7 @@ public class RouteResponse {
 			.viewCount(route.getViewCount())
 			.climberCount(route.getClimberCount())
 			.commentCount(route.getCommentCount())
+			.imageInfoList(imageInfoList)
 			.createdAt(route.getCreatedAt())
 			.updatedAt(route.getUpdatedAt())
 			.build();

@@ -2,10 +2,14 @@ package com.line7studio.boulderside.application.route;
 
 import com.line7studio.boulderside.controller.route.request.CreateRouteRequest;
 import com.line7studio.boulderside.controller.route.request.UpdateRouteRequest;
+import com.line7studio.boulderside.common.dto.ImageInfo;
 import com.line7studio.boulderside.controller.route.response.RoutePageResponse;
 import com.line7studio.boulderside.controller.route.response.RouteResponse;
 import com.line7studio.boulderside.domain.aggregate.boulder.entity.Boulder;
 import com.line7studio.boulderside.domain.aggregate.boulder.service.BoulderService;
+import com.line7studio.boulderside.domain.aggregate.image.entity.Image;
+import com.line7studio.boulderside.domain.aggregate.image.enums.ImageDomainType;
+import com.line7studio.boulderside.domain.aggregate.image.service.ImageService;
 import com.line7studio.boulderside.domain.aggregate.region.entity.Region;
 import com.line7studio.boulderside.domain.aggregate.region.service.RegionService;
 import com.line7studio.boulderside.domain.aggregate.route.Route;
@@ -19,8 +23,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -29,6 +35,7 @@ import java.util.stream.Collectors;
 public class RouteUseCase {
 	private final RouteService routeService;
 	private final BoulderService boulderService;
+	private final ImageService imageService;
 	private final RegionService regionService;
 	private final SectorService sectorService;
 	private final UserRouteLikeService userRouteLikeService;
@@ -50,6 +57,17 @@ public class RouteUseCase {
 
 		Map<Long, Boolean> userLikeMap = userRouteLikeService.getIsLikedByUserIdForRouteList(routeIdList, userId);
 
+		List<Image> imageList = imageService.getImageListByImageDomainTypeAndDomainIdList(ImageDomainType.ROUTE, routeIdList);
+		Map<Long, List<ImageInfo>> routeImageInfoMap = imageList.stream()
+			.collect(Collectors.groupingBy(
+				Image::getDomainId,
+				Collectors.mapping(ImageInfo::from,
+					Collectors.collectingAndThen(Collectors.toList(), list -> {
+						list.sort(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)));
+						return list;
+					}))
+			));
+
 		List<Long> regionIdList = routeList.stream().map(Route::getRegionId).distinct().toList();
 		Map<Long, Region> regionMap = regionService.getRegionsByIds(regionIdList).stream()
 			.collect(Collectors.toMap(Region::getId, Function.identity()));
@@ -64,12 +82,14 @@ public class RouteUseCase {
 				boolean liked = userLikeMap.getOrDefault(route.getId(), false);
 				Region region = regionMap.get(route.getRegionId());
 				Sector sector = sectorMap.get(route.getSectorId());
+				List<ImageInfo> imageInfoList = routeImageInfoMap.getOrDefault(route.getId(), Collections.emptyList());
 				return RouteResponse.of(
 					route,
 					region != null ? region.getProvince() : null,
 					region != null ? region.getCity() : null,
 					sector != null ? sector.getSectorName() : null,
 					sector != null ? sector.getAreaCode() : null,
+					imageInfoList,
 					likeCount,
 					liked
 				);
@@ -100,6 +120,17 @@ public class RouteUseCase {
 
         Map<Long, Boolean> userLikeMap = userRouteLikeService.getIsLikedByUserIdForRouteList(routeIdList, userId);
 
+		List<Image> imageList = imageService.getImageListByImageDomainTypeAndDomainIdList(ImageDomainType.ROUTE, routeIdList);
+		Map<Long, List<ImageInfo>> routeImageInfoMap = imageList.stream()
+			.collect(Collectors.groupingBy(
+				Image::getDomainId,
+				Collectors.mapping(ImageInfo::from,
+					Collectors.collectingAndThen(Collectors.toList(), list -> {
+						list.sort(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)));
+						return list;
+					}))
+			));
+
 		List<Long> regionIdList = routeList.stream()
 			.map(Route::getRegionId)
 			.distinct()
@@ -120,17 +151,19 @@ public class RouteUseCase {
             .map(route -> {
                 long likeCount = route.getLikeCount() != null ? route.getLikeCount() : 0L;
                 boolean liked = userLikeMap.getOrDefault(route.getId(), false);
-				Region region = regionMap.get(route.getRegionId());
-				Sector sector = sectorMap.get(route.getSectorId());
-                return RouteResponse.of(
-					route,
-					region != null ? region.getProvince() : null,
-					region != null ? region.getCity() : null,
-					sector != null ? sector.getSectorName() : null,
-					sector != null ? sector.getAreaCode() : null,
-					likeCount,
-					liked
-				);
+					Region region = regionMap.get(route.getRegionId());
+					Sector sector = sectorMap.get(route.getSectorId());
+					List<ImageInfo> imageInfoList = routeImageInfoMap.getOrDefault(route.getId(), Collections.emptyList());
+	                return RouteResponse.of(
+						route,
+						region != null ? region.getProvince() : null,
+						region != null ? region.getCity() : null,
+						sector != null ? sector.getSectorName() : null,
+						sector != null ? sector.getAreaCode() : null,
+						imageInfoList,
+						likeCount,
+						liked
+					);
             })
             .toList();
     }
@@ -151,6 +184,11 @@ public class RouteUseCase {
 		long likeCount = route.getLikeCount() != null ? route.getLikeCount() : 0L;
 		Region region = regionService.getRegionById(route.getRegionId());
 		Sector sector = sectorService.getSectorById(route.getSectorId());
+		List<ImageInfo> imageInfoList = imageService.getImageListByImageDomainTypeAndDomainId(ImageDomainType.ROUTE, routeId)
+			.stream()
+			.map(ImageInfo::from)
+			.sorted(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)))
+			.toList();
 		
 		return RouteResponse.of(
 			route,
@@ -158,6 +196,7 @@ public class RouteUseCase {
 			region.getCity(),
 			sector.getSectorName(),
 			sector.getAreaCode(),
+			imageInfoList,
 			likeCount,
 			liked
 		);
@@ -185,12 +224,14 @@ public class RouteUseCase {
 			.build();
 
 		Route savedRoute = routeService.createRoute(route);
+		List<ImageInfo> imageInfoList = Collections.emptyList();
 		return RouteResponse.of(
 			savedRoute,
 			region.getProvince(),
 			region.getCity(),
 			sector.getSectorName(),
 			sector.getAreaCode(),
+			imageInfoList,
 			0L,
 			false
 		);
@@ -216,6 +257,11 @@ public class RouteUseCase {
 		Route updatedRoute = routeService.updateRoute(routeId, routeDetails);
         boolean liked = userRouteLikeService.existsIsLikedByUserId(routeId, userId);
 		long likeCount = updatedRoute.getLikeCount() != null ? updatedRoute.getLikeCount() : 0L;
+		List<ImageInfo> imageInfoList = imageService.getImageListByImageDomainTypeAndDomainId(ImageDomainType.ROUTE, routeId)
+			.stream()
+			.map(ImageInfo::from)
+			.sorted(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)))
+			.toList();
 
 		return RouteResponse.of(
 			updatedRoute,
@@ -223,6 +269,7 @@ public class RouteUseCase {
 			region.getCity(),
 			sector.getSectorName(),
 			sector.getAreaCode(),
+			imageInfoList,
 			likeCount,
 			liked
 		);

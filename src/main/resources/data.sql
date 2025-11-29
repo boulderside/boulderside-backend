@@ -237,7 +237,76 @@ VALUES
     ('default.png', 7, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
     -- Boulder 8
     ('default.png', 8, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 8, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1);
+    ('default.png', 8, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Route 1
+    ('default.png', 1, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 1, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Route 2
+    ('default.png', 2, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    -- Route 3
+    ('default.png', 3, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 3, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    ('default.png', 3, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
+    -- Route 4
+    ('default.png', 4, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 4, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Route 5
+    ('default.png', 5, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    -- Route 6
+    ('default.png', 6, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 6, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    ('default.png', 6, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
+    ('default.png', 6, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 3),
+    -- Route 7
+    ('default.png', 7, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    -- Route 8
+    ('default.png', 8, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 8, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    ('default.png', 8, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
+    ('default.png', 8, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 3),
+    ('default.png', 8, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 4),
+    -- Route 9
+    ('default.png', 9, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 9, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Route 10
+    ('default.png', 10, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    -- Route 11
+    ('default.png', 11, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 11, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    ('default.png', 11, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
+    -- Route 12
+    ('default.png', 12, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 12, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Route 13
+    ('default.png', 13, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 13, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    ('default.png', 13, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
+    ('default.png', 13, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 3),
+    -- Route 14
+    ('default.png', 14, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    -- Route 15
+    ('default.png', 15, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 15, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Route 16
+    ('default.png', 16, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 16, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    ('default.png', 16, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
+    -- Route 17
+    ('default.png', 17, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    -- Route 18
+    ('default.png', 18, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 18, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Route 19
+    ('default.png', 19, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    -- Route 20
+    ('default.png', 20, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 20, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    -- Route 21
+    ('default.png', 21, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 21, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    ('default.png', 21, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
+    -- Route 22
+    ('default.png', 22, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0);
 
 /* ----------------------------
    IMAGES: POINT (각 1장씩)
