@@ -4,14 +4,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.line7studio.boulderside.controller.like.response.LikeResponse;
-import com.line7studio.boulderside.domain.aggregate.boulder.entity.Boulder;
-import com.line7studio.boulderside.domain.aggregate.boulder.service.BoulderService;
-import com.line7studio.boulderside.domain.aggregate.route.Route;
-import com.line7studio.boulderside.domain.aggregate.route.service.RouteService;
-import com.line7studio.boulderside.domain.association.like.entity.UserBoulderLike;
-import com.line7studio.boulderside.domain.association.like.entity.UserRouteLike;
-import com.line7studio.boulderside.domain.association.like.service.UserBoulderLikeService;
-import com.line7studio.boulderside.domain.association.like.service.UserRouteLikeService;
+import com.line7studio.boulderside.domain.feature.boulder.entity.Boulder;
+import com.line7studio.boulderside.domain.feature.boulder.service.BoulderService;
+import com.line7studio.boulderside.domain.feature.route.Route;
+import com.line7studio.boulderside.domain.feature.route.service.RouteService;
+import com.line7studio.boulderside.domain.feature.boulder.interaction.like.entity.UserBoulderLike;
+import com.line7studio.boulderside.domain.feature.route.interaction.like.entity.UserRouteLike;
+import com.line7studio.boulderside.domain.feature.boulder.interaction.like.service.UserBoulderLikeService;
+import com.line7studio.boulderside.domain.feature.route.interaction.like.service.UserRouteLikeService;
 
 import lombok.RequiredArgsConstructor;
 

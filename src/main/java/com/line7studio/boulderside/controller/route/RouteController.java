@@ -7,7 +7,7 @@ import com.line7studio.boulderside.controller.route.request.CreateRouteRequest;
 import com.line7studio.boulderside.controller.route.request.UpdateRouteRequest;
 import com.line7studio.boulderside.controller.route.response.RoutePageResponse;
 import com.line7studio.boulderside.controller.route.response.RouteResponse;
-import com.line7studio.boulderside.domain.aggregate.route.enums.RouteSortType;
+import com.line7studio.boulderside.domain.feature.route.enums.RouteSortType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,8 +1,8 @@
 package com.line7studio.boulderside.controller.comment.response;
 
 import com.line7studio.boulderside.common.dto.UserInfo;
-import com.line7studio.boulderside.domain.aggregate.comment.entity.Comment;
-import com.line7studio.boulderside.domain.aggregate.comment.enums.CommentDomainType;
+import com.line7studio.boulderside.domain.feature.comment.entity.Comment;
+import com.line7studio.boulderside.domain.feature.comment.enums.CommentDomainType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

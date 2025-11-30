@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.common.dto;
 
-import com.line7studio.boulderside.domain.aggregate.user.entity.User;
+import com.line7studio.boulderside.domain.feature.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

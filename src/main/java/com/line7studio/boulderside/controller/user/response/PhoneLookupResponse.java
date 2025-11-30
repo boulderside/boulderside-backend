@@ -1,9 +1,9 @@
 package com.line7studio.boulderside.controller.user.response;
 
 import com.line7studio.boulderside.common.enums.Level;
-import com.line7studio.boulderside.domain.aggregate.user.entity.User;
-import com.line7studio.boulderside.domain.aggregate.user.enums.UserRole;
-import com.line7studio.boulderside.domain.aggregate.user.enums.UserSex;
+import com.line7studio.boulderside.domain.feature.user.entity.User;
+import com.line7studio.boulderside.domain.feature.user.enums.UserRole;
+import com.line7studio.boulderside.domain.feature.user.enums.UserSex;
 
 import lombok.Builder;
 
