@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.post.request;
 
-import com.line7studio.boulderside.domain.aggregate.post.enums.PostType;
+import com.line7studio.boulderside.domain.feature.post.enums.PostType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

@@ -15,9 +15,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.common.security.exception.CustomEntryPoint;
 import com.line7studio.boulderside.common.security.provider.TokenProvider;
-import com.line7studio.boulderside.domain.aggregate.user.entity.User;
-import com.line7studio.boulderside.domain.aggregate.user.enums.UserRole;
-import com.line7studio.boulderside.domain.aggregate.user.repository.UserRepository;
+import com.line7studio.boulderside.domain.feature.user.entity.User;
+import com.line7studio.boulderside.domain.feature.user.enums.UserRole;
+import com.line7studio.boulderside.domain.feature.user.repository.UserRepository;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

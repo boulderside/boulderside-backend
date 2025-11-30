@@ -1,14 +1,14 @@
 package com.line7studio.boulderside.application.weather;
 
 import com.line7studio.boulderside.application.weather.dto.DailyWeatherInfoDto;
-import com.line7studio.boulderside.domain.aggregate.boulder.entity.Boulder;
-import com.line7studio.boulderside.domain.aggregate.boulder.service.BoulderService;
-import com.line7studio.boulderside.domain.aggregate.weather.entity.Weather;
-import com.line7studio.boulderside.domain.aggregate.weather.mapper.WeatherMapper;
-import com.line7studio.boulderside.domain.aggregate.weather.service.WeatherService;
-import com.line7studio.boulderside.external.weather.client.OpenWeatherClient;
-import com.line7studio.boulderside.external.weather.dto.OneCallResponse;
-import com.line7studio.boulderside.external.weather.mapper.WeatherApiMapper;
+import com.line7studio.boulderside.domain.feature.boulder.entity.Boulder;
+import com.line7studio.boulderside.domain.feature.boulder.service.BoulderService;
+import com.line7studio.boulderside.domain.feature.weather.entity.Weather;
+import com.line7studio.boulderside.domain.feature.weather.mapper.WeatherMapper;
+import com.line7studio.boulderside.domain.feature.weather.service.WeatherService;
+import com.line7studio.boulderside.domain.feature.weather.external.client.OpenWeatherClient;
+import com.line7studio.boulderside.domain.feature.weather.external.dto.OneCallResponse;
+import com.line7studio.boulderside.domain.feature.weather.external.mapper.WeatherApiMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -8,8 +8,8 @@ import com.line7studio.boulderside.controller.post.request.CreatePostRequest;
 import com.line7studio.boulderside.controller.post.request.UpdatePostRequest;
 import com.line7studio.boulderside.controller.post.response.PostPageResponse;
 import com.line7studio.boulderside.controller.post.response.PostResponse;
-import com.line7studio.boulderside.domain.aggregate.post.enums.PostSortType;
-import com.line7studio.boulderside.domain.aggregate.post.enums.PostType;
+import com.line7studio.boulderside.domain.feature.post.enums.PostSortType;
+import com.line7studio.boulderside.domain.feature.post.enums.PostType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +35,15 @@ public class PostController {
         @AuthenticationPrincipal CustomUserDetails userDetails) {
 		PostPageResponse postPageResponse = postUseCase.getPostPage(cursor, subCursor, size, postType, postSortType, userDetails.getUserId());
 		return ResponseEntity.ok(ApiResponse.of(postPageResponse));
+	}
+
+	@GetMapping("/me")
+	public ResponseEntity<ApiResponse<PostPageResponse>> getMyPosts(
+		@RequestParam(required = false) Long cursor,
+		@RequestParam(defaultValue = "10") int size,
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
+		PostPageResponse response = postUseCase.getMyPosts(cursor, size, userDetails.getUserId());
+		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
 	@GetMapping("/{id}")

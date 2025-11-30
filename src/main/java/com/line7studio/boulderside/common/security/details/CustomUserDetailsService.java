@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.line7studio.boulderside.common.security.exception.AuthenticationFailureException;
 import com.line7studio.boulderside.common.security.exception.SecurityErrorCode;
-import com.line7studio.boulderside.domain.aggregate.user.entity.User;
-import com.line7studio.boulderside.domain.aggregate.user.repository.UserRepository;
+import com.line7studio.boulderside.domain.feature.user.entity.User;
+import com.line7studio.boulderside.domain.feature.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 

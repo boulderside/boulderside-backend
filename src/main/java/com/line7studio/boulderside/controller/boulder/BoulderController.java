@@ -7,7 +7,7 @@ import com.line7studio.boulderside.controller.boulder.request.CreateBoulderReque
 import com.line7studio.boulderside.controller.boulder.request.UpdateBoulderRequest;
 import com.line7studio.boulderside.controller.boulder.response.BoulderPageResponse;
 import com.line7studio.boulderside.controller.boulder.response.BoulderResponse;
-import com.line7studio.boulderside.domain.aggregate.boulder.enums.BoulderSortType;
+import com.line7studio.boulderside.domain.feature.boulder.enums.BoulderSortType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,8 +1,8 @@
 package com.line7studio.boulderside.controller.post.response;
 
 import com.line7studio.boulderside.common.dto.UserInfo;
-import com.line7studio.boulderside.domain.aggregate.post.entity.Post;
-import com.line7studio.boulderside.domain.aggregate.post.enums.PostType;
+import com.line7studio.boulderside.domain.feature.post.entity.Post;
+import com.line7studio.boulderside.domain.feature.post.enums.PostType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
