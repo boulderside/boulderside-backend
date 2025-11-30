@@ -7,11 +7,15 @@ import com.line7studio.boulderside.domain.feature.post.enums.PostSortType;
 import com.line7studio.boulderside.domain.feature.post.enums.PostType;
 import com.line7studio.boulderside.domain.feature.post.repository.PostQueryRepository;
 import com.line7studio.boulderside.domain.feature.post.repository.PostRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +41,15 @@ public class PostServiceImpl implements PostService {
 
         return postQueryRepository.findPostsWithCursor(cursor, subCursor, size, postType, postSortType);
 	}
+
+    @Override
+    public List<Post> getPostsByUser(Long userId, Long cursor, int size) {
+        Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "id"));
+        if (cursor == null) {
+            return postRepository.findByUserIdOrderByIdDesc(userId, pageable);
+        }
+        return postRepository.findByUserIdAndIdLessThanOrderByIdDesc(userId, cursor, pageable);
+    }
 
     @Override
     public Post createPost(Long userId, String title, String content, PostType postType, LocalDate meetingDate) {

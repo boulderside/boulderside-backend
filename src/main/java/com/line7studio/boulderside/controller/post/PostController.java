@@ -37,6 +37,15 @@ public class PostController {
 		return ResponseEntity.ok(ApiResponse.of(postPageResponse));
 	}
 
+	@GetMapping("/me")
+	public ResponseEntity<ApiResponse<PostPageResponse>> getMyPosts(
+		@RequestParam(required = false) Long cursor,
+		@RequestParam(defaultValue = "10") int size,
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
+		PostPageResponse response = postUseCase.getMyPosts(cursor, size, userDetails.getUserId());
+		return ResponseEntity.ok(ApiResponse.of(response));
+	}
+
 	@GetMapping("/{id}")
 	public ResponseEntity<ApiResponse<PostResponse>> getPost(
             @PathVariable Long id,

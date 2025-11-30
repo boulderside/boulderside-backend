@@ -80,6 +80,39 @@ public class PostUseCase {
 		return PostPageResponse.of(postResponses, nextCursor, nextSubCursor, hasNext, postList.size());
 	}
 
+	public PostPageResponse getMyPosts(Long cursor, int size, Long userId) {
+		List<Post> postList = postService.getPostsByUser(userId, cursor, size + 1);
+
+		boolean hasNext = postList.size() > size;
+		if (hasNext) {
+			postList = postList.subList(0, size);
+		}
+
+		Long nextCursor = null;
+		if (hasNext && !postList.isEmpty()) {
+			nextCursor = postList.getLast().getId();
+		}
+
+		User user = userService.getUserById(userId);
+		UserInfo userInfo = UserInfo.from(user);
+
+		List<Long> postIdList = postList.stream()
+			.map(Post::getId)
+			.toList();
+
+		Map<Long, Long> commentCountMap = commentService.countCommentsByDomainIdsAndCommentDomainTypeType(
+			postIdList, CommentDomainType.POST);
+
+		List<PostResponse> postResponses = postList.stream()
+			.map(post -> {
+				Long commentCount = commentCountMap.getOrDefault(post.getId(), 0L);
+				return PostResponse.of(post, userInfo, true, commentCount);
+			})
+			.toList();
+
+		return PostPageResponse.of(postResponses, nextCursor, null, hasNext, postList.size());
+	}
+
 	private String getNextSubCursor(Post post, PostSortType sortType) {
 		return switch (sortType) {
             case LATEST_CREATED -> post.getCreatedAt().toString();
