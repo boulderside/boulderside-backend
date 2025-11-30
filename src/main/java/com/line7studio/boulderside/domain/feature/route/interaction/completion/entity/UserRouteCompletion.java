@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,4 +32,18 @@ public class UserRouteCompletion extends BaseEntity {
 	/** 연관 사용자 ID (FK) */
 	@Column(name = "user_id", nullable = false)
 	private Long userId;
+
+	/** 완료 여부 */
+	@Column(name = "is_completed", nullable = false)
+	@Default
+	private Boolean completed = Boolean.FALSE;
+
+	/** 메모 */
+	@Column(name = "memo")
+	private String memo;
+
+	public void update(boolean completed, String memo) {
+		this.completed = completed;
+		this.memo = memo;
+	}
 }
