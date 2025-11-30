@@ -1,10 +1,11 @@
 package com.line7studio.boulderside.domain.feature.route.interaction.like.repository;
 
+import java.util.List;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.line7studio.boulderside.domain.feature.route.interaction.like.entity.UserRouteLike;
-
-import java.util.List;
 
 public interface UserRouteLikeRepository extends JpaRepository<UserRouteLike, Long> {
 	boolean existsByUserIdAndRouteId(Long userId, Long routeId);
@@ -15,5 +16,9 @@ public interface UserRouteLikeRepository extends JpaRepository<UserRouteLike, Lo
 
 	void deleteAllByRouteId(Long routeId);
 
-    List<UserRouteLike> findByUserIdAndRouteIdIn(Long userId, List<Long> routeIds);
+	List<UserRouteLike> findByUserIdAndRouteIdIn(Long userId, List<Long> routeIds);
+
+	List<UserRouteLike> findByUserIdOrderByIdDesc(Long userId, Pageable pageable);
+
+	List<UserRouteLike> findByUserIdAndIdLessThanOrderByIdDesc(Long userId, Long id, Pageable pageable);
 }

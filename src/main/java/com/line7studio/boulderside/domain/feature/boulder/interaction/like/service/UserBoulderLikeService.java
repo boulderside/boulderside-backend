@@ -15,4 +15,6 @@ public interface UserBoulderLikeService {
 	Map<Long, Boolean> getIsLikedByUserIdForBoulderList(List<Long> boulderIdList, Long userId);
 
 	void deleteAllLikesByBoulderId(Long boulderId);
+
+	List<UserBoulderLike> getLikesByUser(Long userId, Long cursor, int size);
 }

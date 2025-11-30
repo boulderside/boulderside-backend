@@ -1,5 +1,13 @@
 package com.line7studio.boulderside.domain.feature.boulder.interaction.like.service;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.line7studio.boulderside.common.exception.ErrorCode;
@@ -8,11 +16,6 @@ import com.line7studio.boulderside.domain.feature.boulder.interaction.like.entit
 import com.line7studio.boulderside.domain.feature.boulder.interaction.like.repository.UserBoulderLikeRepository;
 
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -75,5 +78,14 @@ public class UserBoulderLikeServiceImpl implements UserBoulderLikeService {
 			throw new ValidationException(ErrorCode.VALIDATION_FAILED);
 		}
 		userBoulderLikeRepository.deleteAllByBoulderId(boulderId);
+	}
+
+	@Override
+	public List<UserBoulderLike> getLikesByUser(Long userId, Long cursor, int size) {
+		Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "id"));
+		if (cursor == null) {
+			return userBoulderLikeRepository.findByUserIdOrderByIdDesc(userId, pageable);
+		}
+		return userBoulderLikeRepository.findByUserIdAndIdLessThanOrderByIdDesc(userId, cursor, pageable);
 	}
 }

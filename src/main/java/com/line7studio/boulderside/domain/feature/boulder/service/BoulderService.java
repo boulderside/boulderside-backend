@@ -9,6 +9,7 @@ public interface BoulderService {
     List<Boulder> getAllBoulders();
 	Boulder getBoulderById(Long boulderId);
 	List<Boulder> getBouldersWithCursor(Long cursor, String subCursor, int size, BoulderSortType sortType);
+	List<Boulder> getBouldersByIds(List<Long> boulderIds);
 	Boulder createBoulder(Boulder boulder);
 	Boulder updateBoulder(Long boulderId, Long regionId, Long sectorId, String name, String description, Double latitude, Double longitude);
 	void deleteByBoulderId(Long boulderId);

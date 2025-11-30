@@ -34,6 +34,11 @@ public class BoulderServiceImpl implements BoulderService {
 	}
 
 	@Override
+	public List<Boulder> getBouldersByIds(List<Long> boulderIds) {
+		return boulderRepository.findAllById(boulderIds);
+	}
+
+	@Override
 	public Boulder createBoulder(Boulder boulder) {
 		return  boulderRepository.save(boulder);
 	}

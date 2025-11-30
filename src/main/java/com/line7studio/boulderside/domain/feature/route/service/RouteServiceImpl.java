@@ -28,6 +28,11 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
+    public List<Route> getRoutesByIds(List<Long> routeIds) {
+        return routeRepository.findAllById(routeIds);
+    }
+
+    @Override
     public Route getRouteById(Long routeId) {
         return routeRepository.findById(routeId)
                 .orElseThrow(() -> new DomainException(ErrorCode.ROUTE_NOT_FOUND));
