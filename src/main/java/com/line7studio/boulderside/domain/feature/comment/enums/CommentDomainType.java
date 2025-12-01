@@ -7,7 +7,8 @@ import java.util.Arrays;
 
 
 public enum CommentDomainType {
-    POST("posts"),
+    BOARD_POST("board-posts"),
+    MATE_POST("mate-posts"),
     ROUTE("routes");
 
     private final String pathName;

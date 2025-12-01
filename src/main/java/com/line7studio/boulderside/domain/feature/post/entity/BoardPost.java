@@ -1,61 +1,61 @@
 package com.line7studio.boulderside.domain.feature.post.entity;
 
 import com.line7studio.boulderside.domain.BaseEntity;
-import com.line7studio.boulderside.domain.feature.post.enums.PostType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
-@Entity
 @Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "posts")
-public class Post extends BaseEntity {
+@Entity
+@Table(name = "board_posts")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class BoardPost extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    /** 사용자 ID */
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    /** 게시글 제목 */
     @Column(name = "title", nullable = false)
     private String title;
 
-    /** 게시글 내용 */
     @Column(name = "content")
     private String content;
 
-    /** 게시글 유형 */
-    @Enumerated(EnumType.STRING)
-    @Column(name = "post_type", nullable = false)
-    private PostType postType;
-
-    /** 조회 수 */
-    @Column(name = "view_count")
+    @Column(name = "view_count", nullable = false)
     private Long viewCount;
 
-    /** 동행 날짜 */
-    @Column(name = "meeting_date")
-    private LocalDate meetingDate;
-
-    /** 댓글 수 */
-    @Column(name = "comment_count")
+    @Column(name = "comment_count", nullable = false)
     private Long commentCount;
 
-    public void update(String title, String content, PostType postType, LocalDate meetingDate) {
+    @Builder
+    public BoardPost(Long id, Long userId, String title, String content, Long viewCount, Long commentCount) {
+        this.id = id;
+        this.userId = userId;
         this.title = title;
         this.content = content;
-        this.postType = postType;
-        this.meetingDate = meetingDate;
+        this.viewCount = viewCount == null ? 0L : viewCount;
+        this.commentCount = commentCount == null ? 0L : commentCount;
+    }
+
+    public static BoardPost create(Long userId, String title, String content) {
+        return BoardPost.builder()
+            .userId(userId)
+            .title(title)
+            .content(content)
+            .viewCount(0L)
+            .commentCount(0L)
+            .build();
+    }
+
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
 
     public void incrementViewCount() {
