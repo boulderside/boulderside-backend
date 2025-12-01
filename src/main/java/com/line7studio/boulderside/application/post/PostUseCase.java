@@ -167,9 +167,10 @@ public class PostUseCase {
         );
 
         Boolean isMine = post.getUserId().equals(userId);
+        Long commentCount = commentService.countCommentsByDomainIdAndCommentDomainType(postId, CommentDomainType.POST);
 
-		return PostResponse.of(post, userInfo, isMine, 0L);
-	}
+        return PostResponse.of(post, userInfo, isMine, commentCount);
+    }
 
     @Transactional
 	public void deletePost(Long postId, Long userId) {

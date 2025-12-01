@@ -21,7 +21,7 @@ public enum ErrorCode {
 	ROUTE_COMPLETION_NOT_FOUND("D012", "루트 등반 기록을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
 	// Validation (V001~V099)
-	VALIDATION_FAILED("V001", "입력 값 검증에 실패했습니다.", HttpStatus.BAD_REQUEST),
+	VALIDATION_FAILED("V001", "잘못된 입력값입니다.", HttpStatus.BAD_REQUEST),
 	CONSTRAINT_VIOLATION("V002", "비즈니스 제약조건을 위반했습니다.", HttpStatus.BAD_REQUEST),
 	MISSING_REQUIRED_FIELD("V003", "필수 입력 값이 누락되었습니다.", HttpStatus.BAD_REQUEST),
     NOT_SUPPORT_SORT_TYPE("V004", "지원하지 않는 정렬 타입입니다.", HttpStatus.BAD_REQUEST),
@@ -50,12 +50,12 @@ public enum ErrorCode {
 	LONGITUDE_OUT_OF_RANGE("E002", "경도의 범위를 벗어났습니다.", HttpStatus.BAD_REQUEST);
 
 	private final String code;
-	private final String errorMessage;
+	private final String message;
 	private final HttpStatus httpStatus;
 
-	ErrorCode(String code, String errorMessage, HttpStatus httpStatus) {
+	ErrorCode(String code, String message, HttpStatus httpStatus) {
 		this.code = code;
-		this.errorMessage = errorMessage;
+		this.message = message;
 		this.httpStatus = httpStatus;
 	}
 }

@@ -33,8 +33,7 @@ public class CustomEntryPoint implements AuthenticationEntryPoint {
 			errorCode = SecurityErrorCode.UNKNOWN_AUTHENTICATION_ERROR;
 		}
 
-		ErrorResponse errorResponse = new ErrorResponse(errorCode.getCode(),
-			errorCode.getMessage());
+		ErrorResponse errorResponse = ErrorResponse.of(errorCode.getCode(), errorCode.getMessage());
 
 		String jsonResponse = objectMapper.writeValueAsString(errorResponse);
 		response.getWriter().write(jsonResponse);
