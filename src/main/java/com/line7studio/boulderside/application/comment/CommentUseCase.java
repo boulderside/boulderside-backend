@@ -10,8 +10,7 @@ import com.line7studio.boulderside.domain.feature.comment.enums.CommentDomainTyp
 import com.line7studio.boulderside.domain.feature.comment.service.CommentService;
 import com.line7studio.boulderside.domain.feature.user.entity.User;
 import com.line7studio.boulderside.domain.feature.user.service.UserService;
-import com.line7studio.boulderside.domain.feature.post.service.PostService;
-import com.line7studio.boulderside.domain.feature.post.entity.Post;
+import com.line7studio.boulderside.domain.feature.post.service.PostReadService;
 import com.line7studio.boulderside.domain.feature.route.Route;
 import com.line7studio.boulderside.domain.feature.route.service.RouteService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,7 @@ import java.util.stream.Collectors;
 public class CommentUseCase {
     private final CommentService commentService;
     private final UserService userService;
-    private final PostService postService;
+    private final PostReadService postReadService;
     private final RouteService routeService;
 
     @Transactional(readOnly = true)
@@ -78,9 +77,8 @@ public class CommentUseCase {
                 request.getContent()
         );
 
-        if (commentDomainType == CommentDomainType.POST) {
-            Post post = postService.getPostById(postId);
-            post.incrementCommentCount();
+        if (commentDomainType == CommentDomainType.BOARD_POST || commentDomainType == CommentDomainType.MATE_POST) {
+            postReadService.incrementCommentCount(postId);
         } else if (commentDomainType == CommentDomainType.ROUTE) {
             Route route = routeService.getRouteById(postId);
             route.incrementCommentCount();
@@ -113,9 +111,8 @@ public class CommentUseCase {
         
         commentService.deleteComment(commentId, user.getId());
 
-        if (comment.getCommentDomainType() == CommentDomainType.POST) {
-            Post post = postService.getPostById(comment.getDomainId());
-            post.decrementCommentCount();
+        if (comment.getCommentDomainType() == CommentDomainType.BOARD_POST || comment.getCommentDomainType() == CommentDomainType.MATE_POST) {
+            postReadService.decrementCommentCount(comment.getDomainId());
         } else if (comment.getCommentDomainType() == CommentDomainType.ROUTE) {
             Route route = routeService.getRouteById(comment.getDomainId());
             route.decrementCommentCount();

@@ -1,6 +1,5 @@
-package com.line7studio.boulderside.controller.post.request;
+package com.line7studio.boulderside.controller.matepost.request;
 
-import com.line7studio.boulderside.domain.feature.post.enums.PostType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,15 +13,13 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreatePostRequest {
+public class CreateMatePostRequest {
 	@NotBlank(message = "제목은 필수입니다")
 	private String title;
 
-    @NotBlank(message = "내용은 필수입니다")
+	@NotBlank(message = "내용은 필수입니다")
 	private String content;
 
-	@NotNull(message = "게시글 유형은 필수입니다")
-	private PostType postType;
-
+	@NotNull(message = "동행 날짜는 필수입니다")
 	private LocalDate meetingDate;
 }

@@ -5,8 +5,10 @@ import com.line7studio.boulderside.application.search.dto.UnifiedSearchResponse;
 import com.line7studio.boulderside.domain.feature.boulder.entity.QBoulder;
 import com.line7studio.boulderside.domain.feature.image.entity.QImage;
 import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;
-import com.line7studio.boulderside.domain.feature.post.entity.Post;
-import com.line7studio.boulderside.domain.feature.post.entity.QPost;
+import com.line7studio.boulderside.domain.feature.post.entity.BoardPost;
+import com.line7studio.boulderside.domain.feature.post.entity.MatePost;
+import com.line7studio.boulderside.domain.feature.post.entity.QBoardPost;
+import com.line7studio.boulderside.domain.feature.post.entity.QMatePost;
 import com.line7studio.boulderside.domain.feature.region.entity.QRegion;
 import com.line7studio.boulderside.domain.feature.route.QRoute;
 import com.line7studio.boulderside.domain.feature.route.Route;
@@ -17,11 +19,14 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,7 +34,8 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private static final QBoulder BOULDER = QBoulder.boulder;
     private static final QRoute ROUTE = QRoute.route;
-    private static final QPost POST = QPost.post;
+    private static final QMatePost MATE_POST = QMatePost.matePost;
+    private static final QBoardPost BOARD_POST = QBoardPost.boardPost;
     private static final QRegion REGION = QRegion.region;
     private static final QImage IMAGE = QImage.image;
     private static final QUser USER = QUser.user;
@@ -64,10 +70,19 @@ public class SearchRepositoryImpl implements SearchRepository {
         );
 
         suggestions.addAll(
-            queryFactory.select(POST.title)
-                .from(POST)
-                .where(POST.title.containsIgnoreCase(keyword))
-                .orderBy(POST.createdAt.desc(), POST.id.desc())
+            queryFactory.select(MATE_POST.title)
+                .from(MATE_POST)
+                .where(MATE_POST.title.containsIgnoreCase(keyword))
+                .orderBy(MATE_POST.createdAt.desc(), MATE_POST.id.desc())
+                .limit(limit)
+                .fetch()
+        );
+
+        suggestions.addAll(
+            queryFactory.select(BOARD_POST.title)
+                .from(BOARD_POST)
+                .where(BOARD_POST.title.containsIgnoreCase(keyword))
+                .orderBy(BOARD_POST.createdAt.desc(), BOARD_POST.id.desc())
                 .limit(limit)
                 .fetch()
         );
@@ -190,20 +205,19 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private List<SearchItemResponse> fetchPostSearchItems(String keyword, int size) {
-        List<Tuple> tuples = queryFactory
-            .select(POST, USER.nickname)
-            .from(POST)
-            .leftJoin(USER).on(USER.id.eq(POST.userId))
-            .where(POST.title.containsIgnoreCase(keyword))
-            .orderBy(POST.createdAt.desc(), POST.id.desc())
+        List<PostSearchResult> mateResults = queryFactory
+            .select(MATE_POST, USER.nickname)
+            .from(MATE_POST)
+            .leftJoin(USER).on(USER.id.eq(MATE_POST.userId))
+            .where(MATE_POST.title.containsIgnoreCase(keyword))
+            .orderBy(MATE_POST.createdAt.desc(), MATE_POST.id.desc())
             .limit(size)
-            .fetch();
-
-        return tuples.stream()
+            .fetch()
+            .stream()
             .map(tuple -> {
-                Post post = tuple.get(POST);
+                MatePost post = tuple.get(MATE_POST);
                 String authorName = tuple.get(USER.nickname);
-                return SearchItemResponse.builder()
+                SearchItemResponse response = SearchItemResponse.builder()
                     .id(String.valueOf(post.getId()))
                     .title(post.getTitle())
                     .domainType(DocumentDomainType.POST)
@@ -213,7 +227,40 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .meetingDate(post.getMeetingDate())
                     .createdAt(post.getCreatedAt())
                     .build();
+                return new PostSearchResult(response, post.getCreatedAt(), post.getId());
             })
+            .toList();
+
+        List<PostSearchResult> boardResults = queryFactory
+            .select(BOARD_POST, USER.nickname)
+            .from(BOARD_POST)
+            .leftJoin(USER).on(USER.id.eq(BOARD_POST.userId))
+            .where(BOARD_POST.title.containsIgnoreCase(keyword))
+            .orderBy(BOARD_POST.createdAt.desc(), BOARD_POST.id.desc())
+            .limit(size)
+            .fetch()
+            .stream()
+            .map(tuple -> {
+                BoardPost post = tuple.get(BOARD_POST);
+                String authorName = tuple.get(USER.nickname);
+                SearchItemResponse response = SearchItemResponse.builder()
+                    .id(String.valueOf(post.getId()))
+                    .title(post.getTitle())
+                    .domainType(DocumentDomainType.POST)
+                    .authorName(authorName)
+                    .viewCount(defaultLong(post.getViewCount()))
+                    .commentCount(defaultLong(post.getCommentCount()))
+                    .createdAt(post.getCreatedAt())
+                    .build();
+                return new PostSearchResult(response, post.getCreatedAt(), post.getId());
+            })
+            .toList();
+
+        return Stream.concat(mateResults.stream(), boardResults.stream())
+            .sorted(Comparator.comparing(PostSearchResult::createdAt).reversed()
+                .thenComparing(PostSearchResult::id, Comparator.reverseOrder()))
+            .limit(size)
+            .map(PostSearchResult::response)
             .toList();
     }
 
@@ -236,15 +283,30 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     private long countPosts(String keyword) {
+        return countMatePosts(keyword) + countBoardPosts(keyword);
+    }
+
+    private long countMatePosts(String keyword) {
         Long count = queryFactory
-            .select(POST.count())
-            .from(POST)
-            .where(POST.title.containsIgnoreCase(keyword))
+            .select(MATE_POST.count())
+            .from(MATE_POST)
+            .where(MATE_POST.title.containsIgnoreCase(keyword))
+            .fetchOne();
+        return count != null ? count : 0L;
+    }
+
+    private long countBoardPosts(String keyword) {
+        Long count = queryFactory
+            .select(BOARD_POST.count())
+            .from(BOARD_POST)
+            .where(BOARD_POST.title.containsIgnoreCase(keyword))
             .fetchOne();
         return count != null ? count : 0L;
     }
 
     private long defaultLong(Long value) {
         return value == null ? 0L : value;
+    }
+    private record PostSearchResult(SearchItemResponse response, LocalDateTime createdAt, Long id) {
     }
 }
