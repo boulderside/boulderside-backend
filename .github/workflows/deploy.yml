@@ -12,6 +12,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Write SSH key
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/boulderside.pem
+          chmod 600 /tmp/boulderside.pem
+
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
@@ -31,6 +36,7 @@ jobs:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
 
+      # 3. Restart app on EC2 (이제 키 파일 사용 가능)
       - name: Restart app on EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i /tmp/boulderside.pem $EC2_USER@$EC2_HOST << 'EOF'
@@ -40,8 +46,3 @@ jobs:
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
-
-      - name: Write SSH key
-        run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/boulderside.pem
-          chmod 600 /tmp/boulderside.pem
