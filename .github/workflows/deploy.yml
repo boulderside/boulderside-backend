@@ -1,0 +1,89 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: boulderside
+      IMAGE_TAG: ${{ github.sha }}
+      EC2_HOST: ${{ secrets.EC2_HOST }}
+      EC2_USER: ${{ secrets.EC2_USER }}
+      EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Run tests
+        run: |
+          chmod +x gradlew
+          ./gradlew clean test
+
+      - name: Build Docker image
+        run: docker build -t $IMAGE_NAME:$IMAGE_TAG .
+
+      - name: Prepare deployment files
+        run: |
+          # secrets에서 prod.env 생성 및 DOCKER_IMAGE 추가
+          echo "${{ secrets.BOULDERSIDE_SECRETS }}" > prod.env
+          echo "DOCKER_IMAGE=$IMAGE_NAME:$IMAGE_TAG" >> prod.env
+          docker save $IMAGE_NAME:$IMAGE_TAG | gzip > boulderside-image.tar.gz
+
+      - name: Deploy to EC2
+        run: |
+          # 임시 SSH 키 설정
+          echo "$EC2_SSH_KEY" > key.pem
+          chmod 600 key.pem
+
+          # 파일 전송 (이미지, 환경변수, compose 파일)
+          scp -o StrictHostKeyChecking=no -i key.pem \
+            boulderside-image.tar.gz \
+            prod.env \
+            docker-compose.prod.yml \
+            $EC2_USER@$EC2_HOST:~ 
+
+          # 원격 배포 명령어 실행
+          ssh -o StrictHostKeyChecking=no -i key.pem $EC2_USER@$EC2_HOST << 'EOF'
+            set -e
+            APP_DIR=~/boulderside
+            mkdir -p $APP_DIR
+
+            # 설정 파일 이동
+            mv ~/prod.env $APP_DIR/
+            mv ~/docker-compose.prod.yml $APP_DIR/
+
+            # Docker 이미지 로드
+            echo "Loading Docker image..."
+            gunzip -c ~/boulderside-image.tar.gz | docker load
+            rm ~/boulderside-image.tar.gz
+
+            # 서비스 재시작
+            cd $APP_DIR
+            echo "Restarting services..."
+            
+            # docker compose 명령어 결정 (v2 및 v1 지원)
+            if docker compose version >/dev/null 2>&1; then
+              DC="docker compose"
+            else
+              DC="docker-compose"
+            fi
+
+            $DC -f docker-compose.prod.yml down --remove-orphans || true
+            $DC --env-file prod.env -f docker-compose.prod.yml up -d
+
+            # 사용되지 않는 이미지 정리
+            docker image prune -f
+          EOF
+
+          # 로컬 키 정리
+          rm key.pem
