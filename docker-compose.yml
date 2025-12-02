@@ -6,6 +6,7 @@ services:
     container_name: spring
     depends_on:
       - redis
+      - mysql
     env_file:
       - local.env
     ports:
@@ -19,12 +20,8 @@ services:
   redis:
     image: redis:7-alpine
     container_name: redis
-    command: ["redis-server", "--appendonly", "yes"]
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
     restart: always
-    environment:
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
     ports:
       - "6379:6379"
     volumes:
@@ -33,7 +30,6 @@ services:
       - backend
 
   mysql:
-    profiles: ["local"]
     image: mysql:8.0.42
     container_name: mysql
     restart: always
