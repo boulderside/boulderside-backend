@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.controller.like.response;
+package com.line7studio.boulderside.controller.route.response;
 
 import java.util.List;
 
