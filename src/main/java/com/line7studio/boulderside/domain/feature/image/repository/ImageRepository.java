@@ -13,5 +13,7 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
 	List<Image> findByImageDomainTypeAndDomainIdAndOrderIndex(ImageDomainType imageDomainType, Long domainId, Integer orderIndex);
 
+	List<Image> findByImageDomainType(ImageDomainType imageDomainType);
+
 	void deleteByImageDomainTypeAndDomainId(ImageDomainType imageDomainType, Long domainId);
 }
