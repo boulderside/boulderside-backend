@@ -13,4 +13,14 @@ public final class SecurityWhitelist {
 		"users/phone/lookup", "users/phone/link-account", "users/sign-up", "users/find-id",
 		"users/change-password"
 	};
+
+	public static final String[] ADMIN = {
+		"admin/boulders/**",
+		"admin/routes/**",
+		"admin/approaches/**",
+		"admin/board-posts/**",
+		"admin/mate-posts/**",
+		"admin/comments/**",
+		"admin/users/**"
+	};
 }
