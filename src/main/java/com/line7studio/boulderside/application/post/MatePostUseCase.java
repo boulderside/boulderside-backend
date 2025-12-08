@@ -159,6 +159,41 @@ public class MatePostUseCase {
         matePostService.deleteMatePost(postId, user.getId());
     }
 
+    @Transactional
+    public MatePostResponse adminCreateMatePost(CreateMatePostRequest request, Long adminUserId) {
+        User adminUser = userService.getUserById(adminUserId);
+        UserInfo userInfo = UserInfo.from(adminUser);
+
+        MatePost savedPost = matePostService.createMatePost(
+            adminUser.getId(),
+            request.getTitle(),
+            request.getContent(),
+            request.getMeetingDate()
+        );
+
+        return MatePostResponse.of(savedPost, userInfo, true, 0L);
+    }
+
+    @Transactional
+    public MatePostResponse adminUpdateMatePost(Long postId, UpdateMatePostRequest request) {
+        MatePost post = matePostService.updateMatePostAsAdmin(
+            postId,
+            request.getTitle(),
+            request.getContent(),
+            request.getMeetingDate()
+        );
+
+        User user = userService.getUserById(post.getUserId());
+        UserInfo userInfo = UserInfo.from(user);
+        Long commentCount = commentService.countCommentsByDomainIdAndCommentDomainType(postId, CommentDomainType.MATE_POST);
+        return MatePostResponse.of(post, userInfo, false, commentCount);
+    }
+
+    @Transactional
+    public void adminDeleteMatePost(Long postId) {
+        matePostService.deleteMatePostAsAdmin(postId);
+    }
+
     private MatePostResponse buildSinglePostResponse(MatePost post, Long userId) {
         User user = userService.getUserById(post.getUserId());
         UserInfo userInfo = UserInfo.from(user);

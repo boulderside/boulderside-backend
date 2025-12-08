@@ -76,6 +76,24 @@ public class MatePostServiceImpl implements MatePostService {
         matePostRepository.deleteById(postId);
     }
 
+    @Override
+    public MatePost updateMatePostAsAdmin(Long postId, String title, String content, LocalDate meetingDate) {
+        MatePost matePost = matePostRepository.findById(postId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+
+        validateMeetingDate(meetingDate);
+        matePost.update(title, content, meetingDate);
+        return matePostRepository.save(matePost);
+    }
+
+    @Override
+    public void deleteMatePostAsAdmin(Long postId) {
+        MatePost matePost = matePostRepository.findById(postId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+
+        matePostRepository.delete(matePost);
+    }
+
     private void validateOwner(Long ownerId, Long userId) {
         if (!ownerId.equals(userId)) {
             throw new BusinessException(ErrorCode.NO_PERMISSION, "게시글 작업은 작성자만 가능합니다.");
