@@ -8,4 +8,5 @@ import java.util.List;
 public interface PointRepository extends JpaRepository<Point, Long> {
     List<Point> findByApproachIdOrderByOrderIndexAsc(Long approachId);
     List<Point> findAllByApproachIdInOrderByApproachIdAscOrderIndexAsc(List<Long> approachIdList);
+    void deleteByApproachId(Long approachId);
 }
