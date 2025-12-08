@@ -156,6 +156,34 @@ public class BoardPostUseCase {
         boardPostService.deleteBoardPost(postId, user.getId());
     }
 
+    @Transactional
+    public BoardPostResponse adminUpdateBoardPost(Long postId, UpdateBoardPostRequest request) {
+        BoardPost post = boardPostService.updateBoardPostAsAdmin(postId, request.getTitle(), request.getContent());
+        User user = userService.getUserById(post.getUserId());
+        UserInfo userInfo = UserInfo.from(user);
+        Long commentCount = commentService.countCommentsByDomainIdAndCommentDomainType(postId, CommentDomainType.BOARD_POST);
+        return BoardPostResponse.of(post, userInfo, false, commentCount);
+    }
+
+    @Transactional
+    public void adminDeleteBoardPost(Long postId) {
+        boardPostService.deleteBoardPostAsAdmin(postId);
+    }
+
+    @Transactional
+    public BoardPostResponse adminCreateBoardPost(CreateBoardPostRequest request, Long adminUserId) {
+        User adminUser = userService.getUserById(adminUserId);
+        UserInfo userInfo = UserInfo.from(adminUser);
+
+        BoardPost savedPost = boardPostService.createBoardPost(
+            adminUser.getId(),
+            request.getTitle(),
+            request.getContent()
+        );
+
+        return BoardPostResponse.of(savedPost, userInfo, true, 0L);
+    }
+
     private BoardPostResponse buildSinglePostResponse(BoardPost post, Long userId) {
         User user = userService.getUserById(post.getUserId());
         UserInfo userInfo = UserInfo.from(user);

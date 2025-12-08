@@ -69,6 +69,23 @@ public class BoardPostServiceImpl implements BoardPostService {
         boardPostRepository.deleteById(postId);
     }
 
+    @Override
+    public BoardPost updateBoardPostAsAdmin(Long postId, String title, String content) {
+        BoardPost boardPost = boardPostRepository.findById(postId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+
+        boardPost.update(title, content);
+        return boardPostRepository.save(boardPost);
+    }
+
+    @Override
+    public void deleteBoardPostAsAdmin(Long postId) {
+        BoardPost boardPost = boardPostRepository.findById(postId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+
+        boardPostRepository.delete(boardPost);
+    }
+
     private void validateOwner(Long ownerId, Long userId) {
         if (!ownerId.equals(userId)) {
             throw new BusinessException(ErrorCode.NO_PERMISSION, "게시글 작업은 작성자만 가능합니다.");

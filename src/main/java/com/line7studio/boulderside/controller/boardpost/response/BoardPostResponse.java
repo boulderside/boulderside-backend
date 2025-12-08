@@ -23,6 +23,7 @@ public class BoardPostResponse {
     private Long commentCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long userId;
 
     public static BoardPostResponse of(BoardPost boardPost, UserInfo userInfo, Boolean isMine, Long commentCount) {
         return BoardPostResponse.builder()
@@ -35,6 +36,7 @@ public class BoardPostResponse {
             .commentCount(commentCount)
             .createdAt(boardPost.getCreatedAt())
             .updatedAt(boardPost.getUpdatedAt())
+            .userId(userInfo.getId())
             .build();
     }
 }
