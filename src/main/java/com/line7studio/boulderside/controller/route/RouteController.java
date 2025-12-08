@@ -3,17 +3,17 @@ package com.line7studio.boulderside.controller.route;
 import com.line7studio.boulderside.application.route.RouteUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
-import com.line7studio.boulderside.controller.route.request.CreateRouteRequest;
-import com.line7studio.boulderside.controller.route.request.UpdateRouteRequest;
 import com.line7studio.boulderside.controller.route.response.RoutePageResponse;
 import com.line7studio.boulderside.controller.route.response.RouteResponse;
 import com.line7studio.boulderside.domain.feature.route.enums.RouteSortType;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ import java.util.List;
 public class RouteController {
 	private final RouteUseCase routeUseCase;
 
-	@GetMapping
+	@GetMapping("/page")
 	public ResponseEntity<ApiResponse<RoutePageResponse>> getRoutePage(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestParam(defaultValue = "DIFFICULTY") RouteSortType routeSortType,
@@ -34,11 +34,10 @@ public class RouteController {
 		return ResponseEntity.ok(ApiResponse.of(routePageResponse));
 	}
 
-	@GetMapping("/all")
+	@GetMapping
 	public ResponseEntity<ApiResponse<List<RouteResponse>>> getAllRoutes(
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		Long userId = userDetails != null ? userDetails.getUserId() : null;
-		List<RouteResponse> routeList = routeUseCase.getAllRoutes(userId);
+		List<RouteResponse> routeList = routeUseCase.getAllRoutes(userDetails.getUserId());
 		return ResponseEntity.ok(ApiResponse.of(routeList));
 	}
 
@@ -50,24 +49,4 @@ public class RouteController {
 		return ResponseEntity.ok(ApiResponse.of(route));
 	}
 
-	@PostMapping
-	public ResponseEntity<ApiResponse<RouteResponse>> createRoute(
-		@Valid @RequestBody CreateRouteRequest request) {
-		RouteResponse route = routeUseCase.createRoute(request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(route));
-	}
-
-	@PutMapping("/{routeId}")
-	public ResponseEntity<ApiResponse<RouteResponse>> updateRoute(@PathVariable Long routeId,
-		@Valid @RequestBody UpdateRouteRequest request,
-        @AuthenticationPrincipal CustomUserDetails userDetails) {
-		RouteResponse route = routeUseCase.updateRoute(userDetails.getUserId(), routeId, request);
-		return ResponseEntity.ok(ApiResponse.of(route));
-	}
-
-	@DeleteMapping("/{routeId}")
-	public ResponseEntity<ApiResponse<Void>> deleteRoute(@PathVariable Long routeId) {
-		routeUseCase.deleteRoute(routeId);
-		return ResponseEntity.ok(ApiResponse.success());
-	}
 }
