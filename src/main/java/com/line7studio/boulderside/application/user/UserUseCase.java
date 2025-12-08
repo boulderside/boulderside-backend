@@ -1,5 +1,6 @@
 package com.line7studio.boulderside.application.user;
 
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -11,9 +12,11 @@ import com.line7studio.boulderside.application.user.dto.response.CreateUserComma
 import com.line7studio.boulderside.common.security.provider.AESProvider;
 import com.line7studio.boulderside.controller.user.request.PhoneLinkRequest;
 import com.line7studio.boulderside.controller.user.request.SignupRequest;
+import com.line7studio.boulderside.controller.user.response.AdminUserResponse;
 import com.line7studio.boulderside.controller.user.response.FindIdByPhoneResponse;
 import com.line7studio.boulderside.controller.user.response.PhoneLookupResponse;
 import com.line7studio.boulderside.domain.feature.user.entity.User;
+import com.line7studio.boulderside.domain.feature.user.enums.UserRole;
 import com.line7studio.boulderside.domain.feature.user.provider.PhoneAuthProvider;
 import com.line7studio.boulderside.domain.feature.user.service.UserService;
 import com.line7studio.boulderside.infrastructure.cache.redis.RedisKeyPrefixType;
@@ -129,6 +132,20 @@ public class UserUseCase {
 	private String generateAuthCode() {
 		int code = 100000 + random.nextInt(900000);
 		return String.valueOf(code);
+	}
+
+	@Transactional(readOnly = true)
+	public List<AdminUserResponse> getAllUsers() {
+		List<User> users = userService.getAllUsers();
+		return users.stream()
+			.map(AdminUserResponse::from)
+			.toList();
+	}
+
+	@Transactional
+	public AdminUserResponse updateUserRole(Long userId, UserRole userRole) {
+		User updatedUser = userService.updateUserRole(userId, userRole);
+		return AdminUserResponse.from(updatedUser);
 	}
 
 }
