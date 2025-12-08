@@ -9,18 +9,12 @@ public final class SecurityWhitelist {
 	};
 
 	public static final String[] PUBLIC = {
-		"users/check-id", "users/phone/send-code", "users/phone/verify-code", "users/phone/link-account",
-		"users/phone/lookup", "users/phone/link-account", "users/sign-up", "users/find-id",
-		"users/change-password"
+		"/users/check-id", "/users/phone/send-code", "/users/phone/verify-code", "/users/phone/link-account",
+		"/users/phone/lookup", "/users/phone/link-account", "/users/sign-up", "/users/find-id",
+		"/users/change-password"
 	};
 
 	public static final String[] ADMIN = {
-		"admin/boulders/**",
-		"admin/routes/**",
-		"admin/approaches/**",
-		"admin/board-posts/**",
-		"admin/mate-posts/**",
-		"admin/comments/**",
-		"admin/users/**"
+        "/api/admin/**"
 	};
 }

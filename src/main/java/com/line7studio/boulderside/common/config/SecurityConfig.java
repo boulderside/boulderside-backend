@@ -75,7 +75,7 @@ public class SecurityConfig {
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowCredentials(true); // 자격 증명 포함 허용(Authorization 헤더, 쿠기 사용 가능)
-		configuration.setAllowedOrigins(List.of("http://localhost:5500", "http://127.0.0.1:5500", "http://localhost:63342")); //허용할 프론트엔드 도메인
+		configuration.setAllowedOrigins(List.of("http://localhost:5500", "http://127.0.0.1:5500")); //허용할 프론트엔드 도메인
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")); //허용 메소드
 		configuration.setAllowedHeaders(List.of("*"));
 		configuration.setExposedHeaders(List.of("*"));
