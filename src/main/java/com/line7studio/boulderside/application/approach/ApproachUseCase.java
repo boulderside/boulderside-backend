@@ -3,6 +3,8 @@ package com.line7studio.boulderside.application.approach;
 import com.line7studio.boulderside.common.dto.ImageInfo;
 import com.line7studio.boulderside.common.dto.PointInfo;
 import com.line7studio.boulderside.controller.approach.request.CreateApproachRequest;
+import com.line7studio.boulderside.controller.approach.request.CreatePointRequest;
+import com.line7studio.boulderside.controller.approach.request.UpdateApproachRequest;
 import com.line7studio.boulderside.controller.approach.response.ApproachResponse;
 import com.line7studio.boulderside.domain.feature.approach.Approach;
 import com.line7studio.boulderside.domain.feature.approach.service.ApproachService;
@@ -28,61 +30,80 @@ public class ApproachUseCase {
     @Transactional
     public ApproachResponse createApproach(CreateApproachRequest request) {
         Approach approach = Approach.builder()
-                .boulderId(request.getBoulderId())
-                .orderIndex(request.getOrderIndex())
-                .transportInfo(request.getTransportInfo())
-                .parkingInfo(request.getParkingInfo())
-                .duration(request.getDuration())
-                .tip(request.getTip())
-                .build();
-        
+            .boulderId(request.getBoulderId())
+            .orderIndex(request.getOrderIndex())
+            .transportInfo(request.getTransportInfo())
+            .parkingInfo(request.getParkingInfo())
+            .duration(request.getDuration())
+            .tip(request.getTip())
+            .build();
+
         Approach savedApproach = approachService.save(approach);
-
-        List<PointInfo> pointInfos = List.of();
-        if (request.getPoints() != null && !request.getPoints().isEmpty()) {
-            List<Point> points = request.getPoints().stream()
-                    .map(pointRequest -> Point.builder()
-                            .approachId(savedApproach.getId())
-                            .orderIndex(pointRequest.getOrderIndex())
-                            .name(pointRequest.getName())
-                            .description(pointRequest.getDescription())
-                            .note(pointRequest.getNote())
-                            .build())
-                    .toList();
-            
-            List<Point> savedPoints = pointService.saveAll(points);
-            pointInfos = savedPoints.stream()
-                    .map(point -> PointInfo.of(point, List.of()))
-                    .toList();
-        }
-
+        List<PointInfo> pointInfos = createPoints(savedApproach.getId(), request.getPoints());
         return ApproachResponse.of(savedApproach, pointInfos);
     }
 
-    public List<ApproachResponse> getApproachesByBoulderId(Long boulderId) {
-        List<Approach> approacheList = approachService.findByBoulderIdOrderByOrderIndexAsc(boulderId);
+    @Transactional
+    public ApproachResponse updateApproach(Long approachId, UpdateApproachRequest request) {
+        Approach approach = approachService.getById(approachId);
+        approach.update(
+            request.getBoulderId(),
+            request.getOrderIndex(),
+            request.getTransportInfo(),
+            request.getParkingInfo(),
+            request.getDuration(),
+            request.getTip()
+        );
 
-        if (approacheList.isEmpty()) {
+        List<Point> existingPoints = pointService.findByApproachIdOrderByOrderIndexAsc(approachId);
+        deletePointResources(existingPoints);
+        pointService.deleteByApproachId(approachId);
+
+        List<PointInfo> pointInfos = createPoints(approachId, request.getPoints());
+        return ApproachResponse.of(approach, pointInfos);
+    }
+
+    @Transactional
+    public void deleteApproach(Long approachId) {
+        approachService.getById(approachId);
+        List<Point> existingPoints = pointService.findByApproachIdOrderByOrderIndexAsc(approachId);
+        deletePointResources(existingPoints);
+        pointService.deleteByApproachId(approachId);
+        approachService.deleteById(approachId);
+    }
+
+    public List<ApproachResponse> getApproachesByBoulderId(Long boulderId) {
+        List<Approach> approachList = approachService.findByBoulderIdOrderByOrderIndexAsc(boulderId);
+        return buildApproachResponses(approachList);
+    }
+
+    public List<ApproachResponse> getAllApproaches() {
+        List<Approach> approachList = approachService.findAll();
+        return buildApproachResponses(approachList);
+    }
+
+    private List<ApproachResponse> buildApproachResponses(List<Approach> approachList) {
+        if (approachList.isEmpty()) {
             return List.of();
         }
 
-        List<Long> approachIdList = approacheList.stream().map(Approach::getId).toList();
+        List<Long> approachIdList = approachList.stream().map(Approach::getId).toList();
 
         List<Point> pointList = pointService.findAllByApproachIdInOrderByApproachIdAscOrderIndexAsc(approachIdList);
 
         Map<Long, List<Point>> pointsByApproachId = pointList.stream()
-                .collect(Collectors.groupingBy(Point::getApproachId));
+            .collect(Collectors.groupingBy(Point::getApproachId));
 
         List<Long> pointIdList = pointList.stream().map(Point::getId).toList();
         Map<Long, List<ImageInfo>> imagesByPointId = pointIdList.isEmpty() ? Map.of() :
-                imageService.getImageListByImageDomainTypeAndDomainIdList(ImageDomainType.POINT, pointIdList)
-                        .stream()
-                        .map(ImageInfo::from)
-                        .collect(Collectors.groupingBy(ImageInfo::getDomainId));
+            imageService.getImageListByImageDomainTypeAndDomainIdList(ImageDomainType.POINT, pointIdList)
+                .stream()
+                .map(ImageInfo::from)
+                .collect(Collectors.groupingBy(ImageInfo::getDomainId));
 
-        return approacheList.stream()
-                .map(approach -> buildApproachResponseWithPreloadedData(approach, pointsByApproachId, imagesByPointId))
-                .collect(Collectors.toList());
+        return approachList.stream()
+            .map(approach -> buildApproachResponseWithPreloadedData(approach, pointsByApproachId, imagesByPointId))
+            .collect(Collectors.toList());
     }
 
     private ApproachResponse buildApproachResponseWithPreloadedData(
@@ -97,5 +118,35 @@ public class ApproachUseCase {
                 .collect(Collectors.toList());
 
         return ApproachResponse.of(approach, pointInfos);
+    }
+    private List<PointInfo> createPoints(Long approachId, List<CreatePointRequest> pointRequests) {
+        if (pointRequests == null || pointRequests.isEmpty()) {
+            return List.of();
+        }
+
+        List<Point> points = pointRequests.stream()
+            .map(pointRequest -> Point.builder()
+                .approachId(approachId)
+                .orderIndex(pointRequest.getOrderIndex())
+                .name(pointRequest.getName())
+                .description(pointRequest.getDescription())
+                .note(pointRequest.getNote())
+                .build())
+            .toList();
+
+        List<Point> savedPoints = pointService.saveAll(points);
+        return savedPoints.stream()
+            .map(point -> PointInfo.of(point, List.of()))
+            .toList();
+    }
+
+    private void deletePointResources(List<Point> points) {
+        if (points == null || points.isEmpty()) {
+            return;
+        }
+
+        points.forEach(point ->
+            imageService.deleteAllImagesByImageDomainTypeAndDomainId(ImageDomainType.POINT, point.getId())
+        );
     }
 }
