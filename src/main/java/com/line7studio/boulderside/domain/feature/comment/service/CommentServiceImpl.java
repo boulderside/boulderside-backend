@@ -76,4 +76,19 @@ public class CommentServiceImpl implements CommentService {
     public Map<Long, Long> countCommentsByDomainIdsAndCommentDomainTypeType(List<Long> domainIds, CommentDomainType commentDomainType) {
         return commentQueryRepository.countCommentsByDomainIdsAndType(domainIds, commentDomainType);
     }
+
+    @Override
+    public Comment updateCommentAsAdmin(Long commentId, String content) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
+        comment.update(content);
+        return comment;
+    }
+
+    @Override
+    public void deleteCommentAsAdmin(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
+        commentRepository.delete(comment);
+    }
 }

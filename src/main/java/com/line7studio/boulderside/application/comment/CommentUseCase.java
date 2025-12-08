@@ -1,6 +1,7 @@
 package com.line7studio.boulderside.application.comment;
 
 import com.line7studio.boulderside.common.dto.UserInfo;
+import com.line7studio.boulderside.controller.comment.request.CreateAdminCommentRequest;
 import com.line7studio.boulderside.controller.comment.request.CreateCommentRequest;
 import com.line7studio.boulderside.controller.comment.request.UpdateCommentRequest;
 import com.line7studio.boulderside.controller.comment.response.CommentPageResponse;
@@ -117,5 +118,52 @@ public class CommentUseCase {
             Route route = routeService.getRouteById(comment.getDomainId());
             route.decrementCommentCount();
         }
+    }
+
+    @Transactional
+    public CommentResponse adminUpdateComment(Long commentId, UpdateCommentRequest request) {
+        Comment comment = commentService.updateCommentAsAdmin(commentId, request.getContent());
+        User user = userService.getUserById(comment.getUserId());
+        UserInfo userInfo = UserInfo.from(user);
+        return CommentResponse.of(comment, userInfo, false);
+    }
+
+    @Transactional
+    public void adminDeleteComment(Long commentId) {
+        Comment comment = commentService.getCommentById(commentId);
+        commentService.deleteCommentAsAdmin(commentId);
+
+        if (comment.getCommentDomainType() == CommentDomainType.BOARD_POST || comment.getCommentDomainType() == CommentDomainType.MATE_POST) {
+            postReadService.decrementCommentCount(comment.getDomainId());
+        } else if (comment.getCommentDomainType() == CommentDomainType.ROUTE) {
+            Route route = routeService.getRouteById(comment.getDomainId());
+            route.decrementCommentCount();
+        }
+    }
+
+    @Transactional
+    public CommentResponse adminCreateComment(CreateAdminCommentRequest request, Long adminUserId) {
+        Long targetUserId = request.getUserId() != null ? request.getUserId() : adminUserId;
+        User user = userService.getUserById(targetUserId);
+        UserInfo userInfo = UserInfo.from(user);
+
+        CommentDomainType domainType = CommentDomainType.fromPath(request.getDomainType());
+
+        Comment savedComment = commentService.createComment(
+            user.getId(),
+            request.getDomainId(),
+            domainType,
+            request.getContent()
+        );
+
+        if (domainType == CommentDomainType.BOARD_POST || domainType == CommentDomainType.MATE_POST) {
+            postReadService.incrementCommentCount(request.getDomainId());
+        } else if (domainType == CommentDomainType.ROUTE) {
+            Route route = routeService.getRouteById(request.getDomainId());
+            route.incrementCommentCount();
+        }
+
+        boolean isMine = targetUserId.equals(adminUserId);
+        return CommentResponse.of(savedComment, userInfo, isMine);
     }
 }
