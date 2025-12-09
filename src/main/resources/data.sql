@@ -19,6 +19,7 @@ TRUNCATE TABLE comments;
 TRUNCATE TABLE routes;
 
 TRUNCATE TABLE approaches;
+TRUNCATE TABLE points;
 
 INSERT INTO board_posts (user_id, title, content, view_count, comment_count, created_at, updated_at) VALUES
  (1, '볼더링장 같이 가실 분 구합니다! (강남)', '이번 주 토요일 오후에 같이 클라이밍 하실 분 계신가요? 초보 환영합니다!', 50, 3, '2025-10-01 11:30:00', '2025-10-01 11:30:00'),
@@ -77,6 +78,51 @@ VALUES
 
     -- Hidden Hollow (8)
     (11, 8, 0, '전주역에서 버스 12번, 골짜기 입구 하차', '마을회관 앞 주차장 이용 가능', 30, '계곡물 소리와 함께 아늑한 분위기.', '2025-08-21 08:50:00', '2025-08-21 08:50:00');
+
+INSERT INTO points (id, approach_id, order_index, name, description, note, created_at, updated_at) VALUES
+    (1, 1, 0, '북악산 주차장', '북악산 공영주차장에서 출발', '주차비는 카드 결제 가능', '2025-08-21 09:00:00', '2025-08-21 09:00:00'),
+    (2, 1, 1, '소나무 숲길', '완만한 경사의 흙길', '이른 아침 이슬에 주의', '2025-08-21 09:01:00', '2025-08-21 09:01:00'),
+    (3, 1, 2, '전망 바위', '서울 시내가 보이는 포인트', '사진 촬영 명소', '2025-08-21 09:02:00', '2025-08-21 09:02:00'),
+    (4, 1, 3, 'Sunrise Crag 베이스', '볼더 바로 앞 공터', '스트레칭하기 좋은 공간', '2025-08-21 09:03:00', '2025-08-21 09:03:00'),
+    (5, 2, 0, '안국역 출구', '역 2번 출구에서 직진', '편의점에서 간식 구매 가능', '2025-08-21 09:04:00', '2025-08-21 09:04:00'),
+    (6, 2, 1, '한옥마을 골목', '전통가옥 사이로 난 길', '주민 생활 구역, 소음 주의', '2025-08-21 09:05:00', '2025-08-21 09:05:00'),
+    (7, 2, 2, '북측 오르막', '돌계단과 흙길 혼합', '미끄럼 주의', '2025-08-21 09:06:00', '2025-08-21 09:06:00'),
+    (8, 2, 3, '정상 접근로', '바위 바로 전 갈림길', '좌측 길로 진입', '2025-08-21 09:07:00', '2025-08-21 09:07:00'),
+    (9, 3, 0, '부산역 3번 출구', '버스 환승 지점', '인근에 코인락커 있음', '2025-08-21 09:08:00', '2025-08-21 09:08:00'),
+    (10, 3, 1, '어귀 쉼터', '버스 종점 옆 정자', '물 보충 가능', '2025-08-21 09:09:00', '2025-08-21 09:09:00'),
+    (11, 3, 2, '등산로 초입', '완만한 숲길 시작', '해충 스프레이 권장', '2025-08-21 09:10:00', '2025-08-21 09:10:00'),
+    (12, 3, 3, 'Shadow Peak 베이스', '암벽 앞 평평한 공간', '바람이 강함', '2025-08-21 09:11:00', '2025-08-21 09:11:00'),
+    (13, 4, 0, '종로3가 역사', '6번 출구 집결 지점', '지하철 이용 추천', '2025-08-21 09:12:00', '2025-08-21 09:12:00'),
+    (14, 4, 1, '계곡 초입', '작은 다리를 건너는 지점', '우천 시 수위 상승', '2025-08-21 09:13:00', '2025-08-21 09:13:00'),
+    (15, 4, 2, '이끼 숲길', '미끄러운 돌길', '트레킹화 필수', '2025-08-21 09:14:00', '2025-08-21 09:14:00'),
+    (16, 4, 3, 'Mossy Boulder 앞', '볼더 하단 쉼터', '습기가 많음', '2025-08-21 09:15:00', '2025-08-21 09:15:00'),
+    (17, 5, 0, '대전 산성 입구', '버스 하차 후 바로 보임', '매점에서 간식 구매 가능', '2025-08-21 09:16:00', '2025-08-21 09:16:00'),
+    (18, 5, 1, '현수교', '짧은 구름다리', '사진 스팟', '2025-08-21 09:17:00', '2025-08-21 09:17:00'),
+    (19, 5, 2, 'Eagle''s Perch 베이스', '전망대 아래 공터', '강풍 주의', '2025-08-21 09:18:00', '2025-08-21 09:18:00'),
+    (20, 6, 0, '유성IC 출발점', '도로 옆 임시 주차장', '네비게이션 주소: 유성전망대', '2025-08-21 09:19:00', '2025-08-21 09:19:00'),
+    (21, 6, 1, '임도 진입', '비포장 도로 시작', 'SUV 권장', '2025-08-21 09:20:00', '2025-08-21 09:20:00'),
+    (22, 6, 2, '소나무 숲', '완만한 오르막', '그늘이 많아 시원함', '2025-08-21 09:21:00', '2025-08-21 09:21:00'),
+    (23, 6, 3, '전망 데크', '도심 조망 포인트', '사진 촬영 추천', '2025-08-21 09:22:00', '2025-08-21 09:22:00'),
+    (24, 7, 0, '대구역 버스정류장', '23번 버스 승차 지점', '교통카드 필수', '2025-08-21 09:23:00', '2025-08-21 09:23:00'),
+    (25, 7, 1, '숲길 입구', '마을 뒤편 좁은 길', '주민 차량 주의', '2025-08-21 09:24:00', '2025-08-21 09:24:00'),
+    (26, 7, 2, '폭포 포인트', '작은 폭포 옆 바위', '발판이 젖어 있음', '2025-08-21 09:25:00', '2025-08-21 09:25:00'),
+    (27, 8, 0, 'Red Cliff 주차장', '절벽 입구 소형 주차장', '주말 혼잡', '2025-08-21 09:26:00', '2025-08-21 09:26:00'),
+    (28, 8, 1, '붉은 흙길', '틈새에서 붉은 토양이 드러남', '비 오면 진흙길', '2025-08-21 09:27:00', '2025-08-21 09:27:00'),
+    (29, 8, 2, '절벽 전망대', '절벽 중간 평탄지', '안전 펜스 있음', '2025-08-21 09:28:00', '2025-08-21 09:28:00'),
+    (30, 8, 3, 'Red Cliff 베이스', '볼더 앞 작은 공터', '장비 정리에 용이', '2025-08-21 09:29:00', '2025-08-21 09:29:00'),
+    (31, 9, 0, '세종시청 앞', '221번 버스 정류장', '정기권 사용 가능', '2025-08-21 09:30:00', '2025-08-21 09:30:00'),
+    (32, 9, 1, '갈대밭 길', '쌍둥이 바위로 향하는 갈대밭', '노을이 아름다움', '2025-08-21 09:31:00', '2025-08-21 09:31:00'),
+    (33, 9, 2, 'Twin Rocks 앞마당', '두 바위 사이 공터', '야영 금지', '2025-08-21 09:32:00', '2025-08-21 09:32:00'),
+    (34, 10, 0, '비포장 주차장', '차량 접근 가능', '비 오면 진입 곤란', '2025-08-21 09:33:00', '2025-08-21 09:33:00'),
+    (35, 10, 1, '계곡 다리', '작은 나무 다리', '미끄럼 방지 필요', '2025-08-21 09:34:00', '2025-08-21 09:34:00'),
+    (36, 10, 2, '야간 전망 포인트', '별 관측 최적지', '랜턴 필수', '2025-08-21 09:35:00', '2025-08-21 09:35:00'),
+    (37, 10, 3, 'Hidden Hollow 입구', '계곡 속 진입로', '습기 높음', '2025-08-21 09:36:00', '2025-08-21 09:36:00'),
+    (38, 11, 0, '전주역 광장', '버스 승차 위치', '인근 카페 다수', '2025-08-21 09:37:00', '2025-08-21 09:37:00'),
+    (39, 11, 1, '골짜기 입구', '마을회관 옆', '주민 인사 권장', '2025-08-21 09:38:00', '2025-08-21 09:38:00'),
+    (40, 11, 2, '계류길', '맑은 계류 따라 오르는 길', '장화 추천', '2025-08-21 09:39:00', '2025-08-21 09:39:00'),
+    (41, 11, 3, '은신처 평상', '나무 평상 두 개', '휴식 가능', '2025-08-21 09:40:00', '2025-08-21 09:40:00'),
+    (42, 11, 4, 'Hidden Hollow 베이스', '바위 바로 앞 플랫폼', '기온이 낮음', '2025-08-21 09:41:00', '2025-08-21 09:41:00'),
+    (43, 11, 5, '비상 대피소', '간이 대피소 위치', '우천 시 대피 가능', '2025-08-21 09:42:00', '2025-08-21 09:42:00');
 
 INSERT INTO routes (id, boulder_id, region_id, sector_id, name, pioneer_name, like_count, view_count, climber_count, comment_count, latitude, longitude, route_level, created_at, updated_at)
 VALUES
@@ -138,7 +184,7 @@ VALUES ('bouldertiger', -- nickname
         'V0', -- user_level (enum 문자열)
         '김볼더', -- name
         'boulder', -- email
-        '$2a$10$gjpHFHBpCIAEWZWJieBMB.3kxL3J5/x.o2yWVBMRUD5vPBo8QjWLK',-- pass (1234임)
+        '$2a$10$gjpHFHBpCIAEWZWJieBMB.3kxL3J5/x.o2yWVBMRUD5vPBo8QjWLK',
         NOW(), -- created_at
         NOW() -- updated_at
        );
@@ -316,23 +362,12 @@ VALUES
     ('default.png', 40, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
     ('default.png', 41, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
     ('default.png', 42, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 43, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0);
 
-
-# INSERT INTO images (domain_id, image_domain_type, image_url, order_index)
-# VALUES (1, 'BOULDER', 'https://cdn.example.com/boulders/1/sunrise_1.jpg', 0),
-#        (1, 'BOULDER', 'https://cdn.example.com/boulders/1/sunrise_2.jpg', 1),
-#        (2, 'BOULDER', 'https://cdn.example.com/boulders/2/shadow_1.jpg', 0),
-#        (2, 'BOULDER', 'https://cdn.example.com/boulders/2/shadow_2.jpg', 1),
-#        (2, 'BOULDER', 'https://cdn.example.com/boulders/2/shadow_3.jpg', 2),
-#        (3, 'BOULDER', 'https://cdn.example.com/boulders/3/mossy_1.jpg', 0),
-#        (4, 'BOULDER', 'https://cdn.example.com/boulders/4/eagle_1.jpg', 0),
-#        (4, 'BOULDER', 'https://cdn.example.com/boulders/4/eagle_2.jpg', 1),
-#        (5, 'BOULDER', 'https://cdn.example.com/boulders/5/whisper_1.jpg', 0),
-#        (6, 'BOULDER', 'https://cdn.example.com/boulders/6/redcliff_1.jpg', 0),
-#        (6, 'BOULDER', 'https://cdn.example.com/boulders/6/redcliff_2.jpg', 1),
-#        (7, 'BOULDER', 'https://cdn.example.com/boulders/7/twinrocks_1.jpg', 0),
-#        (8, 'BOULDER', 'https://cdn.example.com/boulders/8/hiddenhollow_1.jpg', 0);
+('default.png', 2, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 2, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    ('default.png', 3, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
+    ('default.png', 3, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
+    ('default.png', 3, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2);
 
 INSERT INTO regions (official_district_code, province, city, region_code)
 VALUES ('1100000000', '서울특별시', NULL, '11B10101'),
