@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.controller.interaction.request;
+package com.line7studio.boulderside.controller.route.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

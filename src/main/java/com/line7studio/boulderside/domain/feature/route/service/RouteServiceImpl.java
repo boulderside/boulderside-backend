@@ -32,6 +32,11 @@ public class RouteServiceImpl implements RouteService {
         return routeRepository.findAllById(routeIds);
     }
 
+	@Override
+	public List<Route> getRoutesByBoulderId(Long boulderId) {
+		return routeRepository.findByBoulderIdOrderByIdAsc(boulderId);
+	}
+
     @Override
     public Route getRouteById(Long routeId) {
         return routeRepository.findById(routeId)

@@ -18,4 +18,8 @@ public interface MatePostService {
     MatePost updateMatePost(Long postId, String title, String content, LocalDate meetingDate, Long userId);
 
     void deleteMatePost(Long postId, Long userId);
+
+    MatePost updateMatePostAsAdmin(Long postId, String title, String content, LocalDate meetingDate);
+
+    void deleteMatePostAsAdmin(Long postId);
 }

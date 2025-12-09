@@ -24,8 +24,8 @@ public class BoardPostController {
 
     private final BoardPostUseCase boardPostUseCase;
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<BoardPostPageResponse>> getBoardPosts(
+    @GetMapping("/page")
+    public ResponseEntity<ApiResponse<BoardPostPageResponse>> getBoardPostPage(
         @RequestParam(required = false) Long cursor,
         @RequestParam(required = false) String subCursor,
         @RequestParam(defaultValue = "10") int size,

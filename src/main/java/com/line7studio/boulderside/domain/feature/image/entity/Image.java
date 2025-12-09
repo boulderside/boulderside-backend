@@ -46,4 +46,13 @@ public class Image {
 	/** 이미지 인덱스 (순서) */
 	@Column(name = "order_index")
 	private Integer orderIndex;
+
+	public void update(Long domainId, ImageDomainType imageDomainType, String imageUrl, Integer orderIndex,
+		String originalFileName) {
+		this.domainId = domainId;
+		this.imageDomainType = imageDomainType;
+		this.imageUrl = imageUrl;
+		this.orderIndex = orderIndex;
+		this.originalFileName = originalFileName;
+	}
 }

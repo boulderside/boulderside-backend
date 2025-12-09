@@ -7,4 +7,8 @@ import java.util.List;
 public interface SectorService {
 	Sector getSectorById(Long sectorId);
 	List<Sector> getSectorsByIds(List<Long> sectorIdList);
+	List<Sector> getAllSectors();
+	Sector saveSector(Sector sector);
+	Sector updateSector(Long sectorId, String sectorName, String areaCode);
+	void deleteSector(Long sectorId);
 }

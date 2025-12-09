@@ -47,4 +47,14 @@ public class Approach extends BaseEntity {
 	/** 팁 */
 	@Column(name = "tip")
 	private String tip;
+
+	public void update(Long boulderId, Integer orderIndex, String transportInfo, String parkingInfo, Integer duration,
+		String tip) {
+		this.boulderId = boulderId;
+		this.orderIndex = orderIndex;
+		this.transportInfo = transportInfo;
+		this.parkingInfo = parkingInfo;
+		this.duration = duration;
+		this.tip = tip;
+	}
 }

@@ -16,11 +16,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/comments")
 @RequiredArgsConstructor
 public class CommentController {
     private final CommentUseCase commentUseCase;
 
-    @GetMapping("/{domainType}/{domainId}/comments")
+    @GetMapping("/{domainType}/{domainId}")
     public ResponseEntity<ApiResponse<CommentPageResponse>> getComments(
             @PathVariable String domainType,
             @PathVariable Long domainId,
@@ -33,7 +34,7 @@ public class CommentController {
         return ResponseEntity.ok(ApiResponse.of(response));
     }
 
-    @PostMapping("/{domainType}/{domainId}/comments")
+    @PostMapping("/{domainType}/{domainId}")
     public ResponseEntity<ApiResponse<CommentResponse>> createComment(
             @PathVariable String domainType,
             @PathVariable Long domainId,
@@ -45,7 +46,7 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(comment));
     }
 
-    @PutMapping("/{domainType}/{domainId}/comments/{commentId}")
+    @PutMapping("/{domainType}/{domainId}/{commentId}")
     public ResponseEntity<ApiResponse<CommentResponse>> updateComment(
             @PathVariable String domainType,
             @PathVariable Long domainId,
@@ -56,7 +57,7 @@ public class CommentController {
         return ResponseEntity.ok(ApiResponse.of(comment));
     }
 
-    @DeleteMapping("/{domainType}/{domainId}/comments/{commentId}")
+    @DeleteMapping("/{domainType}/{domainId}/{commentId}")
     public ResponseEntity<ApiResponse<Void>> deleteComment(
             @PathVariable String domainType,
             @PathVariable Long domainId,

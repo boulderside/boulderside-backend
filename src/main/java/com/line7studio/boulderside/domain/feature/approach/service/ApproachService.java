@@ -6,5 +6,8 @@ import java.util.List;
 
 public interface ApproachService {
     Approach save(Approach approach);
+    Approach getById(Long id);
+    void deleteById(Long id);
     List<Approach> findByBoulderIdOrderByOrderIndexAsc(Long boulderId);
+    List<Approach> findAll();
 }

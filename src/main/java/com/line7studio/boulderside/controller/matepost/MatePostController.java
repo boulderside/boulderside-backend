@@ -24,8 +24,8 @@ public class MatePostController {
 
     private final MatePostUseCase matePostUseCase;
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<MatePostPageResponse>> getMatePosts(
+    @GetMapping("/page")
+    public ResponseEntity<ApiResponse<MatePostPageResponse>> getMatePostPage(
         @RequestParam(required = false) Long cursor,
         @RequestParam(required = false) String subCursor,
         @RequestParam(defaultValue = "10") int size,

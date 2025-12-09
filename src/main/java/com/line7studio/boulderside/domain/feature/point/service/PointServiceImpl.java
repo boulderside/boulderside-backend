@@ -23,7 +23,17 @@ public class PointServiceImpl implements PointService {
     }
 
     @Override
+    public List<Point> findByApproachIdOrderByOrderIndexAsc(Long approachId) {
+        return pointRepository.findByApproachIdOrderByOrderIndexAsc(approachId);
+    }
+
+    @Override
     public List<Point> findAllByApproachIdInOrderByApproachIdAscOrderIndexAsc(List<Long> approachIdList) {
         return pointRepository.findAllByApproachIdInOrderByApproachIdAscOrderIndexAsc(approachIdList);
+    }
+
+    @Override
+    public void deleteByApproachId(Long approachId) {
+        pointRepository.deleteByApproachId(approachId);
     }
 }

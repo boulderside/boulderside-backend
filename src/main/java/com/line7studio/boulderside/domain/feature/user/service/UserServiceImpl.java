@@ -10,6 +10,7 @@ import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.common.exception.ExternalApiException;
 import com.line7studio.boulderside.domain.feature.user.entity.User;
+import com.line7studio.boulderside.domain.feature.user.enums.UserRole;
 import com.line7studio.boulderside.domain.feature.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -114,5 +115,19 @@ public class UserServiceImpl implements UserService {
 
 		user.changePassword(passwordEncoder.encode(newPassword));
 		userRepository.save(user);
+	}
+
+	@Override
+	public List<User> getAllUsers() {
+		return userRepository.findAll();
+	}
+
+	@Override
+	public User updateUserRole(Long userId, UserRole userRole) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+		user.updateRole(userRole);
+		return userRepository.save(user);
 	}
 }

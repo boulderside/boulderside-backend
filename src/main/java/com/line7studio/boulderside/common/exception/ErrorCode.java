@@ -19,6 +19,8 @@ public enum ErrorCode {
     SECTOR_NOT_FOUND("D010", "해당 섹터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 	ROUTE_COMPLETION_ALREADY_EXISTS("D011", "이미 등록된 루트 등반 기록이 있습니다.", HttpStatus.CONFLICT),
 	ROUTE_COMPLETION_NOT_FOUND("D012", "루트 등반 기록을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+	APPROACH_NOT_FOUND("D013", "해당 진입로를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+	IMAGE_NOT_FOUND("D014", "해당 이미지를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
 	// Validation (V001~V099)
 	VALIDATION_FAILED("V001", "잘못된 입력값입니다.", HttpStatus.BAD_REQUEST),

@@ -17,4 +17,8 @@ public interface BoardPostService {
     BoardPost updateBoardPost(Long postId, String title, String content, Long userId);
 
     void deleteBoardPost(Long postId, Long userId);
+
+    BoardPost updateBoardPostAsAdmin(Long postId, String title, String content);
+
+    void deleteBoardPostAsAdmin(Long postId);
 }

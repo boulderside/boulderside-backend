@@ -11,6 +11,8 @@ public interface CommentService {
     Comment createComment(Long userId, Long domainId, CommentDomainType commentDomainType, String content);
     Comment updateComment(Long commentId, String content, Long userId);
     void deleteComment(Long commentId, Long userId);
+    Comment updateCommentAsAdmin(Long commentId, String content);
+    void deleteCommentAsAdmin(Long commentId);
     Comment getCommentById(Long commentId);
     Map<Long, Long> countCommentsByDomainIdsAndCommentDomainTypeType(List<Long> domainIds, CommentDomainType commentDomainType);
     Long countCommentsByDomainIdAndCommentDomainType(Long postId, CommentDomainType commentDomainType);

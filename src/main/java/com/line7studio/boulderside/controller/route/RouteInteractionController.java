@@ -11,13 +11,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.line7studio.boulderside.application.interaction.RouteInteractionUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
-import com.line7studio.boulderside.controller.interaction.request.CompletionRequest;
-import com.line7studio.boulderside.controller.interaction.response.RouteCompletionResponse;
+import com.line7studio.boulderside.controller.route.request.CompletionRequest;
+import com.line7studio.boulderside.controller.route.response.LikedRoutePageResponse;
+import com.line7studio.boulderside.controller.route.response.RouteCompletionResponse;
+import com.line7studio.boulderside.controller.route.response.RouteLikeResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -69,5 +72,22 @@ public class RouteInteractionController {
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 		List<RouteCompletionResponse> responses = routeInteractionUseCase.getAllCompletions(userDetails.getUserId());
 		return ResponseEntity.ok(ApiResponse.of(responses));
+	}
+
+	@PostMapping("/{routeId}/likes/toggle")
+	public ResponseEntity<ApiResponse<RouteLikeResponse>> toggleRouteLike(
+		@PathVariable Long routeId,
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
+		RouteLikeResponse response = routeInteractionUseCase.toggleLike(userDetails.getUserId(), routeId);
+		return ResponseEntity.ok(ApiResponse.of(response));
+	}
+
+	@GetMapping("/likes")
+	public ResponseEntity<ApiResponse<LikedRoutePageResponse>> getLikedRoutes(
+		@RequestParam(required = false) Long cursor,
+		@RequestParam(defaultValue = "10") int size,
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
+		LikedRoutePageResponse response = routeInteractionUseCase.getLikedRoutes(userDetails.getUserId(), cursor, size);
+		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 }

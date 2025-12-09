@@ -3,14 +3,10 @@ package com.line7studio.boulderside.controller.boulder;
 import com.line7studio.boulderside.application.boulder.BoulderUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
-import com.line7studio.boulderside.controller.boulder.request.CreateBoulderRequest;
-import com.line7studio.boulderside.controller.boulder.request.UpdateBoulderRequest;
 import com.line7studio.boulderside.controller.boulder.response.BoulderPageResponse;
 import com.line7studio.boulderside.controller.boulder.response.BoulderResponse;
 import com.line7studio.boulderside.domain.feature.boulder.enums.BoulderSortType;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +19,7 @@ import java.util.List;
 public class BoulderController {
 	private final BoulderUseCase boulderUseCase;
 
-	@GetMapping
+	@GetMapping("/page")
 	public ResponseEntity<ApiResponse<BoulderPageResponse>> getBoulderPage(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestParam(defaultValue = "LATEST_CREATED") BoulderSortType boulderSortType,
@@ -34,7 +30,7 @@ public class BoulderController {
 		return ResponseEntity.ok(ApiResponse.of(boulderPageResponse));
 	}
 
-	@GetMapping("/all")
+	@GetMapping
 	public ResponseEntity<ApiResponse<List<BoulderResponse>>> getAllBoulders(
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 		List<BoulderResponse> boulderList = boulderUseCase.getAllBoulders(userDetails.getUserId());
@@ -47,25 +43,5 @@ public class BoulderController {
 			@PathVariable Long boulderId) {
 		BoulderResponse boulder = boulderUseCase.getBoulderById(userDetails.getUserId(), boulderId);
 		return ResponseEntity.ok(ApiResponse.of(boulder));
-	}
-
-	@PostMapping
-	public ResponseEntity<ApiResponse<BoulderResponse>> createBoulder(
-		@Valid @RequestBody CreateBoulderRequest request) {
-		BoulderResponse boulder = boulderUseCase.createBoulder(request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(boulder));
-	}
-
-	@PutMapping("/{boulderId}")
-	public ResponseEntity<ApiResponse<BoulderResponse>> updateBoulder(@PathVariable Long boulderId,
-		@Valid @RequestBody UpdateBoulderRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
-		BoulderResponse boulder = boulderUseCase.updateBoulder(userDetails.getUserId(), boulderId, request);
-		return ResponseEntity.ok(ApiResponse.of(boulder));
-	}
-
-	@DeleteMapping("/{boulderId}")
-	public ResponseEntity<ApiResponse<Void>> deleteBoulder(@PathVariable Long boulderId) {
-		boulderUseCase.deleteBoulder(boulderId);
-		return ResponseEntity.ok(ApiResponse.success());
 	}
 }

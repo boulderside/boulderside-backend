@@ -31,4 +31,9 @@ public class Sector {
 	/** 구역 */
 	@Column(name = "area_code", nullable = false)
 	private String areaCode;
+
+	public void update(String sectorName, String areaCode) {
+		this.sectorName = sectorName;
+		this.areaCode = areaCode;
+	}
 }

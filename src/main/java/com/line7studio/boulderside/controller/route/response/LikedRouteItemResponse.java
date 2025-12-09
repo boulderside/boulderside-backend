@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.controller.like.response;
+package com.line7studio.boulderside.controller.route.response;
 
 import java.time.LocalDateTime;
 
@@ -15,8 +15,6 @@ public class LikedRouteItemResponse {
 	private final Long routeId;
 	private final String name;
 	private final Long boulderId;
-	private final Long regionId;
-	private final Long sectorId;
 	private final Long likeCount;
 	private final Long viewCount;
 	private final LocalDateTime likedAt;
@@ -27,8 +25,6 @@ public class LikedRouteItemResponse {
 			.routeId(route.getId())
 			.name(route.getName())
 			.boulderId(route.getBoulderId())
-			.regionId(route.getRegionId())
-			.sectorId(route.getSectorId())
 			.likeCount(route.getLikeCount())
 			.viewCount(route.getViewCount())
 			.likedAt(like.getCreatedAt())

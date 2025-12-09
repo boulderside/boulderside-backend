@@ -37,4 +37,11 @@ public class Region {
 	/** 지역코드 */
 	@Column(name = "region_code", nullable = false)
 	private String regionCode;
+
+	public void update(String officialDistrictCode, String province, String city, String regionCode) {
+		this.officialDistrictCode = officialDistrictCode;
+		this.province = province;
+		this.city = city;
+		this.regionCode = regionCode;
+	}
 }
