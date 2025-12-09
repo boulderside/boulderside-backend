@@ -55,6 +55,7 @@ public class SecurityConfig {
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers(SecurityWhitelist.SWAGGER).permitAll()
 				.requestMatchers(SecurityWhitelist.PUBLIC).permitAll()
+                    .requestMatchers(SecurityWhitelist.ADMIN_PUBLIC).permitAll()
 				.requestMatchers(SecurityWhitelist.ADMIN).hasRole("ADMIN")
 				.anyRequest().authenticated());
 

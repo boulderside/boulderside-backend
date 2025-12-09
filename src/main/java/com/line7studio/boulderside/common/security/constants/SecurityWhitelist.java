@@ -14,6 +14,10 @@ public final class SecurityWhitelist {
 		"/users/change-password"
 	};
 
+    public static final String[] ADMIN_PUBLIC = {
+            "/admin/**"
+    };
+
 	public static final String[] ADMIN = {
         "/api/admin/**"
 	};
