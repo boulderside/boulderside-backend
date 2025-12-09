@@ -108,64 +108,11 @@ public class RouteUseCase {
 	}
 
     @Transactional(readOnly = true)
-    public List<RouteResponse> getAllRoutes(Long userId) {
-        List<Route> routeList = routeService.getAllRoutes();
-        if (routeList.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Long> routeIdList = routeList.stream()
-            .map(Route::getId)
-            .toList();
-
-        Map<Long, Boolean> userLikeMap = userRouteLikeService.getIsLikedByUserIdForRouteList(routeIdList, userId);
-
-		List<Image> imageList = imageService.getImageListByImageDomainTypeAndDomainIdList(ImageDomainType.ROUTE, routeIdList);
-		Map<Long, List<ImageInfo>> routeImageInfoMap = imageList.stream()
-			.collect(Collectors.groupingBy(
-				Image::getDomainId,
-				Collectors.mapping(ImageInfo::from,
-					Collectors.collectingAndThen(Collectors.toList(), list -> {
-						list.sort(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)));
-						return list;
-					}))
-			));
-
-		List<Long> regionIdList = routeList.stream()
-			.map(Route::getRegionId)
-			.distinct()
-			.toList();
-		Map<Long, Region> regionMap = regionService.getRegionsByIds(regionIdList)
-			.stream()
-			.collect(Collectors.toMap(Region::getId, Function.identity()));
-
-		List<Long> sectorIdList = routeList.stream()
-			.map(Route::getSectorId)
-			.distinct()
-			.toList();
-		Map<Long, Sector> sectorMap = sectorService.getSectorsByIds(sectorIdList)
-			.stream()
-			.collect(Collectors.toMap(Sector::getId, Function.identity()));
-
-        return routeList.stream()
-            .map(route -> {
-                long likeCount = route.getLikeCount() != null ? route.getLikeCount() : 0L;
-                boolean liked = userLikeMap.getOrDefault(route.getId(), false);
-					Region region = regionMap.get(route.getRegionId());
-					Sector sector = sectorMap.get(route.getSectorId());
-					List<ImageInfo> imageInfoList = routeImageInfoMap.getOrDefault(route.getId(), Collections.emptyList());
-	                return RouteResponse.of(
-						route,
-						region != null ? region.getProvince() : null,
-						region != null ? region.getCity() : null,
-						sector != null ? sector.getSectorName() : null,
-						sector != null ? sector.getAreaCode() : null,
-						imageInfoList,
-						likeCount,
-						liked
-					);
-            })
-            .toList();
+    public List<RouteResponse> getRoutes(Long userId, Long boulderId) {
+        List<Route> routeList = boulderId == null
+            ? routeService.getAllRoutes()
+            : routeService.getRoutesByBoulderId(boulderId);
+        return buildRouteResponses(routeList, userId);
     }
 
 	private String getNextSubCursor(Route route, RouteSortType sortType) {
@@ -279,5 +226,64 @@ public class RouteUseCase {
 	public void deleteRoute(Long routeId) {
 		userRouteLikeService.deleteAllLikesByRouteId(routeId);
 		routeService.deleteRoute(routeId);
+	}
+
+	private List<RouteResponse> buildRouteResponses(List<Route> routeList, Long userId) {
+		if (routeList.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<Long> routeIdList = routeList.stream()
+			.map(Route::getId)
+			.toList();
+
+		Map<Long, Boolean> userLikeMap = userRouteLikeService.getIsLikedByUserIdForRouteList(routeIdList, userId);
+
+		List<Image> imageList = imageService.getImageListByImageDomainTypeAndDomainIdList(ImageDomainType.ROUTE, routeIdList);
+		Map<Long, List<ImageInfo>> routeImageInfoMap = imageList.stream()
+			.collect(Collectors.groupingBy(
+				Image::getDomainId,
+				Collectors.mapping(ImageInfo::from,
+					Collectors.collectingAndThen(Collectors.toList(), list -> {
+						list.sort(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)));
+						return list;
+					}))
+			));
+
+		List<Long> regionIdList = routeList.stream()
+			.map(Route::getRegionId)
+			.distinct()
+			.toList();
+		Map<Long, Region> regionMap = regionService.getRegionsByIds(regionIdList)
+			.stream()
+			.collect(Collectors.toMap(Region::getId, Function.identity()));
+
+		List<Long> sectorIdList = routeList.stream()
+			.map(Route::getSectorId)
+			.distinct()
+			.toList();
+		Map<Long, Sector> sectorMap = sectorService.getSectorsByIds(sectorIdList)
+			.stream()
+			.collect(Collectors.toMap(Sector::getId, Function.identity()));
+
+		return routeList.stream()
+			.map(route -> {
+				long likeCount = route.getLikeCount() != null ? route.getLikeCount() : 0L;
+				boolean liked = userLikeMap.getOrDefault(route.getId(), false);
+				Region region = regionMap.get(route.getRegionId());
+				Sector sector = sectorMap.get(route.getSectorId());
+				List<ImageInfo> imageInfoList = routeImageInfoMap.getOrDefault(route.getId(), Collections.emptyList());
+				return RouteResponse.of(
+					route,
+					region != null ? region.getProvince() : null,
+					region != null ? region.getCity() : null,
+					sector != null ? sector.getSectorName() : null,
+					sector != null ? sector.getAreaCode() : null,
+					imageInfoList,
+					likeCount,
+					liked
+				);
+			})
+			.toList();
 	}
 }

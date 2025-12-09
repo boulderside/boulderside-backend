@@ -9,6 +9,7 @@ public interface RouteService {
     List<Route> getAllRoutes();
     List<Route> getRoutesWithCursor(Long cursor, String subCursor, int size, RouteSortType sortType);
     List<Route> getRoutesByIds(List<Long> routeIds);
+	List<Route> getRoutesByBoulderId(Long boulderId);
     Route getRouteById(Long routeId);
     Route createRoute(Route route);
     Route updateRoute(Long routeId, Route routeDetails);

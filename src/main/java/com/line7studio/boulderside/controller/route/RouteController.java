@@ -35,9 +35,10 @@ public class RouteController {
 	}
 
 	@GetMapping
-	public ResponseEntity<ApiResponse<List<RouteResponse>>> getAllRoutes(
-		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		List<RouteResponse> routeList = routeUseCase.getAllRoutes(userDetails.getUserId());
+	public ResponseEntity<ApiResponse<List<RouteResponse>>> getRoutes(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestParam(required = false) Long boulderId) {
+		List<RouteResponse> routeList = routeUseCase.getRoutes(userDetails.getUserId(), boulderId);
 		return ResponseEntity.ok(ApiResponse.of(routeList));
 	}
 
@@ -48,5 +49,4 @@ public class RouteController {
 		RouteResponse route = routeUseCase.getRouteById(userDetails.getUserId(), routeId);
 		return ResponseEntity.ok(ApiResponse.of(route));
 	}
-
 }
