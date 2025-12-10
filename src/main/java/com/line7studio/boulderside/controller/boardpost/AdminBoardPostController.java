@@ -31,7 +31,7 @@ public class AdminBoardPostController {
     public ResponseEntity<ApiResponse<BoardPostResponse>> createBoardPost(
         @Valid @RequestBody CreateBoardPostRequest request,
         @AuthenticationPrincipal CustomUserDetails userDetails) {
-        BoardPostResponse response = boardPostUseCase.adminCreateBoardPost(request, userDetails.getUserId());
+        BoardPostResponse response = boardPostUseCase.adminCreateBoardPost(request, userDetails.userId());
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(response));
     }
 

@@ -31,7 +31,7 @@ public class AdminMatePostController {
         @Valid @RequestBody CreateMatePostRequest request,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        MatePostResponse response = matePostUseCase.adminCreateMatePost(request, userDetails.getUserId());
+        MatePostResponse response = matePostUseCase.adminCreateMatePost(request, userDetails.userId());
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(response));
     }
 

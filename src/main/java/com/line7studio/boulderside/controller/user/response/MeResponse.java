@@ -1,16 +1,19 @@
 package com.line7studio.boulderside.controller.user.response;
 
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
+import com.line7studio.boulderside.domain.feature.user.enums.UserRole;
 
 import lombok.Builder;
 
 @Builder
-public record MeResponse(String email, String nickname, String profileImageUrl) {
+public record MeResponse(Long userId, String email, String nickname, String profileImageUrl, UserRole role) {
 	public static MeResponse from(CustomUserDetails user) {
 		return MeResponse.builder()
-			.email(user.getEmail())
-			.nickname(user.getNickname())
-			.profileImageUrl(user.getProfileImageUrl())
+			.userId(user.userId())
+			.email(user.email())
+			.nickname(user.nickname())
+			.profileImageUrl(user.profileImageUrl())
+			.role(user.userRole())
 			.build();
 	}
 }

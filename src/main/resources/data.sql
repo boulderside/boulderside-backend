@@ -4,6 +4,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- user table 초기화
 TRUNCATE TABLE users;
 
+TRUNCATE TABLE user_credentials;
+
 -- boulders table 초기화
 TRUNCATE TABLE boulders;
 
@@ -174,7 +176,6 @@ INSERT INTO users (nickname, phone, user_role,
                    user_level,
                    name,
                    email,
-                   password,
                    created_at,
                    updated_at)
 VALUES ('bouldertiger', -- nickname
@@ -183,8 +184,7 @@ VALUES ('bouldertiger', -- nickname
         'MAN', -- user_sex (enum 문자열)
         'V0', -- user_level (enum 문자열)
         '김볼더', -- name
-        'boulder', -- email
-        '$2a$10$gjpHFHBpCIAEWZWJieBMB.3kxL3J5/x.o2yWVBMRUD5vPBo8QjWLK',
+        'boulder@example.com', -- email
         NOW(), -- created_at
         NOW() -- updated_at
        );

@@ -32,7 +32,7 @@ public class AdminCommentController {
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         CommentPageResponse response = commentUseCase.getCommentPage(
-            cursor, size, domainId, CommentDomainType.fromPath(domainType), userDetails.getUserId()
+            cursor, size, domainId, CommentDomainType.fromPath(domainType), userDetails.userId()
         );
         return ResponseEntity.ok(ApiResponse.of(response));
     }
@@ -42,7 +42,7 @@ public class AdminCommentController {
         @Valid @RequestBody CreateAdminCommentRequest request,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        CommentResponse response = commentUseCase.adminCreateComment(request, userDetails.getUserId());
+        CommentResponse response = commentUseCase.adminCreateComment(request, userDetails.userId());
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(response));
     }
 

@@ -36,7 +36,7 @@ public class AdminRouteController {
 	public ResponseEntity<ApiResponse<RouteResponse>> updateRoute(@PathVariable Long routeId,
 		@Valid @RequestBody UpdateRouteRequest request,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		RouteResponse route = routeUseCase.updateRoute(userDetails.getUserId(), routeId, request);
+		RouteResponse route = routeUseCase.updateRoute(userDetails.userId(), routeId, request);
 		return ResponseEntity.ok(ApiResponse.of(route));
 	}
 

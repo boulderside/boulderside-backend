@@ -32,7 +32,7 @@ public class MatePostController {
         @RequestParam(defaultValue = "LATEST_CREATED") MatePostSortType postSortType,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        MatePostPageResponse response = matePostUseCase.getMatePostPage(cursor, subCursor, size, postSortType, userDetails.getUserId());
+        MatePostPageResponse response = matePostUseCase.getMatePostPage(cursor, subCursor, size, postSortType, userDetails.userId());
         return ResponseEntity.ok(ApiResponse.of(response));
     }
 
@@ -42,7 +42,7 @@ public class MatePostController {
         @RequestParam(defaultValue = "10") int size,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        MatePostPageResponse response = matePostUseCase.getMyMatePosts(cursor, size, userDetails.getUserId());
+        MatePostPageResponse response = matePostUseCase.getMyMatePosts(cursor, size, userDetails.userId());
         return ResponseEntity.ok(ApiResponse.of(response));
     }
 
@@ -52,7 +52,7 @@ public class MatePostController {
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         log.info("조회한 게시글" + id);
-        MatePostResponse response = matePostUseCase.getMatePost(id, userDetails.getUserId());
+        MatePostResponse response = matePostUseCase.getMatePost(id, userDetails.userId());
         return ResponseEntity.ok(ApiResponse.of(response));
     }
 
@@ -61,7 +61,7 @@ public class MatePostController {
         @Valid @RequestBody CreateMatePostRequest request,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        MatePostResponse response = matePostUseCase.createMatePost(request, userDetails.getUserId());
+        MatePostResponse response = matePostUseCase.createMatePost(request, userDetails.userId());
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(response));
     }
 
@@ -71,7 +71,7 @@ public class MatePostController {
         @Valid @RequestBody UpdateMatePostRequest request,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        MatePostResponse response = matePostUseCase.updateMatePost(id, request, userDetails.getUserId());
+        MatePostResponse response = matePostUseCase.updateMatePost(id, request, userDetails.userId());
         return ResponseEntity.ok(ApiResponse.of(response));
     }
 
@@ -80,7 +80,7 @@ public class MatePostController {
         @PathVariable Long id,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        matePostUseCase.deleteMatePost(id, userDetails.getUserId());
+        matePostUseCase.deleteMatePost(id, userDetails.userId());
         return ResponseEntity.ok(ApiResponse.success());
     }
 }

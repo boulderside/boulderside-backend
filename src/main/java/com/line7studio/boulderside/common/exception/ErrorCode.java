@@ -12,7 +12,7 @@ public enum ErrorCode {
 	USER_INACTIVE("D003", "비활성 상태의 사용자입니다.", HttpStatus.BAD_REQUEST),
 	ALREADY_LIKED("D004", "이미 좋아요를 누른 항목입니다.", HttpStatus.CONFLICT),
 	REGION_NOT_FOUND("D005", "해당 지역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-    POST_NOT_FOUND("D006", "해당 게시글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+	POST_NOT_FOUND("D006", "해당 게시글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     COMMENT_NOT_FOUND("D007", "해당 댓글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     NO_PERMISSION("D008", "해당 작업에 대한 권한이 없습니다.", HttpStatus.FORBIDDEN),
     ROUTE_NOT_FOUND("D009", "해당 루트를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
@@ -21,6 +21,8 @@ public enum ErrorCode {
 	ROUTE_COMPLETION_NOT_FOUND("D012", "루트 등반 기록을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 	APPROACH_NOT_FOUND("D013", "해당 진입로를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 	IMAGE_NOT_FOUND("D014", "해당 이미지를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+	NOT_SUPPORTED_AUTH_PROVIDER("D015", "지원하지 않는 인증 제공자입니다.", HttpStatus.BAD_REQUEST),
+	NICKNAME_ALREADY_EXISTS("D016", "이미 사용 중인 닉네임입니다.", HttpStatus.CONFLICT),
 
 	// Validation (V001~V099)
 	VALIDATION_FAILED("V001", "잘못된 입력값입니다.", HttpStatus.BAD_REQUEST),
@@ -45,6 +47,8 @@ public enum ErrorCode {
 	S3_UPLOAD_FAILED("A009", "S3 이미지 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 	S3_DELETE_FAILED("A010", "S3 이미지 삭제에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 	S3_INVALID_FILE_TYPE("A011", "지원하지 않는 파일 형식입니다.", HttpStatus.BAD_REQUEST),
+	OAUTH_TOKEN_INVALID("A012", "유효하지 않은 OAuth 토큰입니다.", HttpStatus.UNAUTHORIZED),
+	REFRESH_TOKEN_INVALID("A013", "유효하지 않은 리프레시 토큰입니다.", HttpStatus.UNAUTHORIZED),
 	UNKNOWN_ERROR("A999", "알 수 없는 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 
 	// External (E001~E099)

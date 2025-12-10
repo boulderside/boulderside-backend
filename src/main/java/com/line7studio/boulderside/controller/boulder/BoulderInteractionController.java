@@ -27,7 +27,7 @@ public class BoulderInteractionController {
 	public ResponseEntity<ApiResponse<BoulderLikeResponse>> toggleBoulderLike(
 		@PathVariable Long boulderId,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		BoulderLikeResponse response = boulderInteractionUseCase.toggleLike(userDetails.getUserId(), boulderId);
+		BoulderLikeResponse response = boulderInteractionUseCase.toggleLike(userDetails.userId(), boulderId);
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
@@ -36,7 +36,7 @@ public class BoulderInteractionController {
 		@RequestParam(required = false) Long cursor,
 		@RequestParam(defaultValue = "10") int size,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		LikedBoulderPageResponse response = boulderInteractionUseCase.getLikedBoulders(userDetails.getUserId(), cursor,
+		LikedBoulderPageResponse response = boulderInteractionUseCase.getLikedBoulders(userDetails.userId(), cursor,
 			size);
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}

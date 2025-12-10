@@ -29,7 +29,7 @@ public class CommentController {
             @RequestParam(defaultValue = "10") int size,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         CommentPageResponse response = commentUseCase.getCommentPage(
-                cursor, size, domainId, CommentDomainType.fromPath(domainType), userDetails.getUserId()
+                cursor, size, domainId, CommentDomainType.fromPath(domainType), userDetails.userId()
         );
         return ResponseEntity.ok(ApiResponse.of(response));
     }
@@ -41,7 +41,7 @@ public class CommentController {
             @Valid @RequestBody CreateCommentRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         CommentResponse comment = commentUseCase.createComment(
-                domainId, CommentDomainType.fromPath(domainType), request, userDetails.getUserId()
+                domainId, CommentDomainType.fromPath(domainType), request, userDetails.userId()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(comment));
     }
@@ -53,7 +53,7 @@ public class CommentController {
             @PathVariable Long commentId,
             @Valid @RequestBody UpdateCommentRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        CommentResponse comment = commentUseCase.updateComment(commentId, request, userDetails.getUserId());
+        CommentResponse comment = commentUseCase.updateComment(commentId, request, userDetails.userId());
         return ResponseEntity.ok(ApiResponse.of(comment));
     }
 
@@ -63,7 +63,7 @@ public class CommentController {
             @PathVariable Long domainId,
             @PathVariable Long commentId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        commentUseCase.deleteComment(commentId, userDetails.getUserId());
+        commentUseCase.deleteComment(commentId, userDetails.userId());
         return ResponseEntity.ok(ApiResponse.success());
     }
 }

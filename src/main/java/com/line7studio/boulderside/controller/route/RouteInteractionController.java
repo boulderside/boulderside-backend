@@ -35,7 +35,7 @@ public class RouteInteractionController {
 	public ResponseEntity<ApiResponse<RouteCompletionResponse>> getCompletion(
 		@PathVariable Long routeId,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		RouteCompletionResponse response = routeInteractionUseCase.getCompletion(userDetails.getUserId(), routeId);
+		RouteCompletionResponse response = routeInteractionUseCase.getCompletion(userDetails.userId(), routeId);
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
@@ -45,7 +45,7 @@ public class RouteInteractionController {
 		@Valid @RequestBody CompletionRequest request,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 		RouteCompletionResponse response = routeInteractionUseCase.createCompletion(
-			userDetails.getUserId(), routeId, request.getCompleted(), request.getMemo());
+			userDetails.userId(), routeId, request.getCompleted(), request.getMemo());
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
@@ -55,7 +55,7 @@ public class RouteInteractionController {
 		@Valid @RequestBody CompletionRequest request,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 		RouteCompletionResponse response = routeInteractionUseCase.updateCompletion(
-			userDetails.getUserId(), routeId, request.getCompleted(), request.getMemo());
+			userDetails.userId(), routeId, request.getCompleted(), request.getMemo());
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
@@ -63,14 +63,14 @@ public class RouteInteractionController {
 	public ResponseEntity<ApiResponse<Void>> deleteCompletion(
 		@PathVariable Long routeId,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		routeInteractionUseCase.deleteCompletion(userDetails.getUserId(), routeId);
+		routeInteractionUseCase.deleteCompletion(userDetails.userId(), routeId);
 		return ResponseEntity.ok(ApiResponse.success());
 	}
 
 	@GetMapping("/completions")
 	public ResponseEntity<ApiResponse<List<RouteCompletionResponse>>> getCompletionList(
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		List<RouteCompletionResponse> responses = routeInteractionUseCase.getAllCompletions(userDetails.getUserId());
+		List<RouteCompletionResponse> responses = routeInteractionUseCase.getAllCompletions(userDetails.userId());
 		return ResponseEntity.ok(ApiResponse.of(responses));
 	}
 
@@ -78,7 +78,7 @@ public class RouteInteractionController {
 	public ResponseEntity<ApiResponse<RouteLikeResponse>> toggleRouteLike(
 		@PathVariable Long routeId,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		RouteLikeResponse response = routeInteractionUseCase.toggleLike(userDetails.getUserId(), routeId);
+		RouteLikeResponse response = routeInteractionUseCase.toggleLike(userDetails.userId(), routeId);
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
@@ -87,7 +87,7 @@ public class RouteInteractionController {
 		@RequestParam(required = false) Long cursor,
 		@RequestParam(defaultValue = "10") int size,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		LikedRoutePageResponse response = routeInteractionUseCase.getLikedRoutes(userDetails.getUserId(), cursor, size);
+		LikedRoutePageResponse response = routeInteractionUseCase.getLikedRoutes(userDetails.userId(), cursor, size);
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 }
