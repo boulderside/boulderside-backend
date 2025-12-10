@@ -15,14 +15,15 @@ public enum ErrorCode {
 	POST_NOT_FOUND("D006", "해당 게시글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     COMMENT_NOT_FOUND("D007", "해당 댓글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     NO_PERMISSION("D008", "해당 작업에 대한 권한이 없습니다.", HttpStatus.FORBIDDEN),
-    ROUTE_NOT_FOUND("D009", "해당 루트를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-    SECTOR_NOT_FOUND("D010", "해당 섹터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+	ROUTE_NOT_FOUND("D009", "해당 루트를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+	SECTOR_NOT_FOUND("D010", "해당 섹터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 	ROUTE_COMPLETION_ALREADY_EXISTS("D011", "이미 등록된 루트 등반 기록이 있습니다.", HttpStatus.CONFLICT),
 	ROUTE_COMPLETION_NOT_FOUND("D012", "루트 등반 기록을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 	APPROACH_NOT_FOUND("D013", "해당 진입로를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 	IMAGE_NOT_FOUND("D014", "해당 이미지를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 	NOT_SUPPORTED_AUTH_PROVIDER("D015", "지원하지 않는 인증 제공자입니다.", HttpStatus.BAD_REQUEST),
 	NICKNAME_ALREADY_EXISTS("D016", "이미 사용 중인 닉네임입니다.", HttpStatus.CONFLICT),
+	USER_NOT_REGISTERED("D017", "아직 회원가입이 완료되지 않은 사용자입니다.", HttpStatus.NOT_FOUND),
 
 	// Validation (V001~V099)
 	VALIDATION_FAILED("V001", "잘못된 입력값입니다.", HttpStatus.BAD_REQUEST),
