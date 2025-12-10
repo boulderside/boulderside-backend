@@ -9,6 +9,7 @@ import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.common.security.provider.TokenProvider;
 import com.line7studio.boulderside.common.security.vo.LoginResponse;
 import com.line7studio.boulderside.controller.auth.request.OAuthLoginRequest;
+import com.line7studio.boulderside.controller.auth.request.OAuthSignupRequest;
 import com.line7studio.boulderside.controller.auth.request.RefreshTokenRequest;
 import com.line7studio.boulderside.domain.feature.user.entity.User;
 import com.line7studio.boulderside.domain.feature.user.enums.UserRole;
@@ -28,36 +29,51 @@ public class AuthUseCase {
 
 	@Transactional
 	public LoginResponse loginWithOAuth(OAuthLoginRequest request) {
-
-        // Provider Client 주입 (KAKAO, GOOGLE, APPLE, NAVER)
 		OAuthClient client = oAuthClientRegistry.getClient(request.providerType());
-
-        // Provider Server에게 사용자가 제출한 Token으로 신원 조회
 		OAuthUserProfile profile = client.fetchUserProfile(request.identityToken());
 
-        // 이미 존재하는 회원인지 DB에서 조회 (user credentials 테이블)
-		var existingCredential = userCredentialService.findByProvider(request.providerType(), profile.providerUserId());
+		var credential = userCredentialService.findByProvider(request.providerType(), profile.providerUserId())
+			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_REGISTERED));
 
-		User user;
-		boolean isNewUser = false;
+		User user = userService.getUserById(credential.getUserId());
 
-        if (existingCredential.isPresent()) {
-            user = userService.getUserById(existingCredential.get().getUserId());
-        } else {
-            user = registerUserFromOAuth(profile);
-            isNewUser = true;
-        }
+		String accessToken = tokenProvider.create("access", user.getId(), user.getUserRole());
+		String refreshToken = tokenProvider.create("refresh", user.getId(), user.getUserRole());
+		userCredentialService.updateOAuthCredential(credential, refreshToken);
+
+		return LoginResponse.builder()
+			.userId(user.getId())
+			.nickname(user.getNickname())
+			.accessToken(accessToken)
+			.refreshToken(refreshToken)
+			.isNew(false)
+			.build();
+	}
+
+	@Transactional
+	public LoginResponse signupWithOAuth(OAuthSignupRequest request) {
+		OAuthClient client = oAuthClientRegistry.getClient(request.providerType());
+		OAuthUserProfile profile = client.fetchUserProfile(request.identityToken());
+
+		if (userCredentialService.findByProvider(request.providerType(), profile.providerUserId()).isPresent()) {
+			throw new BusinessException(ErrorCode.ACCOUNT_ALREADY_EXISTS);
+		}
+
+		CreateUserCommand command = CreateUserCommand.builder()
+			.nickname(request.nickname())
+			.userRole(UserRole.ROLE_USER)
+			.build();
+
+		User user = userService.createUser(command);
 
 		String accessToken = tokenProvider.create("access", user.getId(), user.getUserRole());
 		String refreshToken = tokenProvider.create("refresh", user.getId(), user.getUserRole());
 
-		existingCredential.ifPresentOrElse(
-			credential -> userCredentialService.updateOAuthCredential(credential, refreshToken),
-			() -> userCredentialService.createOAuthCredential(
-				user,
-				request.providerType(),
-				profile.providerUserId(),
-				refreshToken)
+		userCredentialService.createOAuthCredential(
+			user,
+			request.providerType(),
+			profile.providerUserId(),
+			refreshToken
 		);
 
 		return LoginResponse.builder()
@@ -65,7 +81,7 @@ public class AuthUseCase {
 			.nickname(user.getNickname())
 			.accessToken(accessToken)
 			.refreshToken(refreshToken)
-			.isNew(isNewUser)
+			.isNew(true)
 			.build();
 	}
 
@@ -95,19 +111,6 @@ public class AuthUseCase {
 			.refreshToken(newRefreshToken)
 			.isNew(false)
 			.build();
-	}
-
-	private User registerUserFromOAuth(OAuthUserProfile profile) {
-		CreateUserCommand command = CreateUserCommand.builder()
-			.nickname(resolveNickname(profile))
-			.userRole(UserRole.ROLE_USER)
-			.build();
-
-		return userService.createUser(command);
-	}
-
-	private String resolveNickname(OAuthUserProfile profile) {
-		return profile.providerType().name() + "_" + profile.providerUserId();
 	}
 
 	private void validateRefreshToken(String refreshToken) {

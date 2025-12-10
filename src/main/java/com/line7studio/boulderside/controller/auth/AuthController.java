@@ -11,6 +11,7 @@ import com.line7studio.boulderside.application.auth.AuthUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.vo.LoginResponse;
 import com.line7studio.boulderside.controller.auth.request.OAuthLoginRequest;
+import com.line7studio.boulderside.controller.auth.request.OAuthSignupRequest;
 import com.line7studio.boulderside.controller.auth.request.RefreshTokenRequest;
 
 import jakarta.validation.Valid;
@@ -26,7 +27,14 @@ public class AuthController {
 	@PostMapping("/oauth/login")
 	public ResponseEntity<ApiResponse<LoginResponse>> loginWithOAuth(
 		@Valid @RequestBody OAuthLoginRequest request) {
-        LoginResponse response = authUseCase.loginWithOAuth(request);
+		LoginResponse response = authUseCase.loginWithOAuth(request);
+		return ResponseEntity.ok(ApiResponse.of(response));
+	}
+
+	@PostMapping("/oauth/signup")
+	public ResponseEntity<ApiResponse<LoginResponse>> signupWithOAuth(
+		@Valid @RequestBody OAuthSignupRequest request) {
+		LoginResponse response = authUseCase.signupWithOAuth(request);
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
