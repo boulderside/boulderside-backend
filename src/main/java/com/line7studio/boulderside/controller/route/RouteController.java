@@ -30,7 +30,7 @@ public class RouteController {
 		@RequestParam(required = false) Long cursor,
 		@RequestParam(required = false) String subCursor,
 		@RequestParam(defaultValue = "5") int size) {
-        RoutePageResponse routePageResponse = routeUseCase.getRoutePage(userDetails.getUserId(), routeSortType, cursor, subCursor, size);
+        RoutePageResponse routePageResponse = routeUseCase.getRoutePage(userDetails.userId(), routeSortType, cursor, subCursor, size);
 		return ResponseEntity.ok(ApiResponse.of(routePageResponse));
 	}
 
@@ -38,7 +38,7 @@ public class RouteController {
 	public ResponseEntity<ApiResponse<List<RouteResponse>>> getRoutes(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestParam(required = false) Long boulderId) {
-		List<RouteResponse> routeList = routeUseCase.getRoutes(userDetails.getUserId(), boulderId);
+		List<RouteResponse> routeList = routeUseCase.getRoutes(userDetails.userId(), boulderId);
 		return ResponseEntity.ok(ApiResponse.of(routeList));
 	}
 
@@ -46,7 +46,7 @@ public class RouteController {
 	public ResponseEntity<ApiResponse<RouteResponse>> getRoute(
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			@PathVariable Long routeId) {
-		RouteResponse route = routeUseCase.getRouteById(userDetails.getUserId(), routeId);
+		RouteResponse route = routeUseCase.getRouteById(userDetails.userId(), routeId);
 		return ResponseEntity.ok(ApiResponse.of(route));
 	}
 }

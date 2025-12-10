@@ -1,8 +1,16 @@
 package com.line7studio.boulderside.common.security.filter;
 
-import java.io.IOException;
-import java.util.List;
-
+import com.line7studio.boulderside.common.security.details.CustomUserDetails;
+import com.line7studio.boulderside.common.security.provider.TokenProvider;
+import com.line7studio.boulderside.domain.feature.user.entity.User;
+import com.line7studio.boulderside.domain.feature.user.enums.UserRole;
+import com.line7studio.boulderside.domain.feature.user.repository.UserRepository;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,24 +20,13 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.line7studio.boulderside.common.security.details.CustomUserDetails;
-import com.line7studio.boulderside.common.security.exception.CustomEntryPoint;
-import com.line7studio.boulderside.common.security.provider.TokenProvider;
-import com.line7studio.boulderside.domain.feature.user.entity.User;
-import com.line7studio.boulderside.domain.feature.user.enums.UserRole;
-import com.line7studio.boulderside.domain.feature.user.repository.UserRepository;
-
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 	private final TokenProvider tokenProvider;
-	private final CustomEntryPoint customEntryPoint;
 	private final UserRepository userRepository;
 
 	// OPTIONS는 CORS의 요청이기 때문에 굳이 JWT 인청 필터를 거칠 필요가 없음.
@@ -43,7 +40,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-		FilterChain filterChain) throws ServletException, IOException {
+                                    @NotNull FilterChain filterChain) throws ServletException, IOException {
 
 		String authorizationHeader = request.getHeader("Authorization");
 		// 헤더에 토큰이 없는 경우에도 필터 통과하기
@@ -56,7 +53,7 @@ public class JWTFilter extends OncePerRequestFilter {
 			String token = authorizationHeader.substring(7);
 			boolean isExpired = tokenProvider.isExpired(token);
 			if (isExpired) {
-				//TODO: 토큰이 만료된 경우로 RefreshToken을 요청 로직 추가하기
+				handleInvalidToken(response);
 				return;
 			}
 
@@ -80,9 +77,14 @@ public class JWTFilter extends OncePerRequestFilter {
 			SecurityContextHolder.setContext(securityContext);
 
 		} catch (Exception e) {
-
+			handleInvalidToken(response);
+			return;
 		}
 
 		filterChain.doFilter(request, response);
+	}
+
+	private void handleInvalidToken(HttpServletResponse response) throws IOException {
+		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
 	}
 }

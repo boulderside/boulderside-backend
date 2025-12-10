@@ -31,7 +31,7 @@ public class AdminBoulderController {
 	public ResponseEntity<ApiResponse<BoulderResponse>> updateBoulder(@PathVariable Long boulderId,
 		@Valid @RequestBody UpdateBoulderRequest request,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		BoulderResponse response = boulderUseCase.updateBoulder(userDetails.getUserId(), boulderId, request);
+		BoulderResponse response = boulderUseCase.updateBoulder(userDetails.userId(), boulderId, request);
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 

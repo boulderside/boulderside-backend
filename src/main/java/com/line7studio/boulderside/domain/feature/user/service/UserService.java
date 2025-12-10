@@ -9,25 +9,18 @@ import com.line7studio.boulderside.domain.feature.user.enums.UserRole;
 public interface UserService {
 	User getUserById(Long userId);
 
-	User getUserByPhone(String phoneNumber);
-
-	void updateUserByPhone(String phoneNumber, String email, String password);
-
 	List<User> findAllById(List<Long> userIdList);
-
-	boolean existsByEmail(String email);
 
 	User createUser(CreateUserCommand createUserCommand);
 
 	void updateUserProfileImage(Long userId, String profileImageUrl);
 
-	void validateUserNotExistsByPhone(String encodedPhoneNumber);
+	void updateNickname(Long userId, String nickname);
 
-	User findUserByPhone(String phoneNumber);
-
-	void updatePasswordByPhone(String phoneNumber, String newPassword);
+	boolean isNicknameAvailable(String nickname);
 
 	List<User> getAllUsers();
 
 	User updateUserRole(Long userId, UserRole userRole);
+
 }

@@ -30,7 +30,7 @@ public class AuthInfoLoggingAspect {
 			Long userId = null;
 
 			if (principal instanceof CustomUserDetails userDetails) {
-				userId = userDetails.getUserId();
+				userId = userDetails.userId();
 			}
 
 			Collection<? extends GrantedAuthority> roles = auth.getAuthorities();

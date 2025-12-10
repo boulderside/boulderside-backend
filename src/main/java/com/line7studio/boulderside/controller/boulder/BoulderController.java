@@ -26,14 +26,14 @@ public class BoulderController {
 		@RequestParam(required = false) Long cursor,
 		@RequestParam(required = false) String subCursor,
 		@RequestParam(defaultValue = "5") int size) {
-        BoulderPageResponse boulderPageResponse = boulderUseCase.getBoulderPage(userDetails.getUserId(), boulderSortType, cursor, subCursor, size);
+        BoulderPageResponse boulderPageResponse = boulderUseCase.getBoulderPage(userDetails.userId(), boulderSortType, cursor, subCursor, size);
 		return ResponseEntity.ok(ApiResponse.of(boulderPageResponse));
 	}
 
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<BoulderResponse>>> getAllBoulders(
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		List<BoulderResponse> boulderList = boulderUseCase.getAllBoulders(userDetails.getUserId());
+		List<BoulderResponse> boulderList = boulderUseCase.getAllBoulders(userDetails.userId());
 		return ResponseEntity.ok(ApiResponse.of(boulderList));
 	}
 
@@ -41,7 +41,7 @@ public class BoulderController {
 	public ResponseEntity<ApiResponse<BoulderResponse>> getBoulder(
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			@PathVariable Long boulderId) {
-		BoulderResponse boulder = boulderUseCase.getBoulderById(userDetails.getUserId(), boulderId);
+		BoulderResponse boulder = boulderUseCase.getBoulderById(userDetails.userId(), boulderId);
 		return ResponseEntity.ok(ApiResponse.of(boulder));
 	}
 }

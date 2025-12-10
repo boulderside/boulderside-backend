@@ -12,42 +12,32 @@ import com.line7studio.boulderside.domain.feature.user.enums.UserRole;
 
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
 
-@Getter
 @Builder(access = AccessLevel.PRIVATE)
-public class CustomUserDetails implements UserDetails {
-	private final Long userId;
-	private final String email;
-	private final String password;
-	private final String nickname;
-	private final String profileImageUrl;
-	private final UserRole userRole;
+public record CustomUserDetails(Long userId, String nickname, String profileImageUrl,
+                                UserRole userRole) implements UserDetails {
+    public static CustomUserDetails from(User user) {
+        return CustomUserDetails.builder()
+                .userId(user.getId())
+                .nickname(user.getNickname())
+                .profileImageUrl(user.getProfileImageUrl())
+                .userRole(user.getUserRole())
+                .build();
+    }
 
-	public static CustomUserDetails from(User user) {
-		return CustomUserDetails.builder()
-			.userId(user.getId())
-			.email(user.getEmail())
-			.password(user.getPassword())
-			.nickname(user.getNickname())
-			.profileImageUrl(user.getProfileImageUrl())
-			.userRole(user.getUserRole())
-			.build();
-	}
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(userRole.name()));
+    }
 
-	@Override
-	public String getUsername() {
-		return email;
-	}
+    @Override
+    public String getPassword() {
+        return null;
+    }
 
-	@Override
-	public String getPassword() {
-		return password;
-	}
-
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of(new SimpleGrantedAuthority(userRole.name()));
-	}
+    @Override
+    public String getUsername() {
+        return String.valueOf(userId);
+    }
 
 }

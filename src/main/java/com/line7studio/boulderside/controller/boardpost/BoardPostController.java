@@ -32,7 +32,7 @@ public class BoardPostController {
         @RequestParam(defaultValue = "LATEST_CREATED") BoardPostSortType postSortType,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        BoardPostPageResponse response = boardPostUseCase.getBoardPostPage(cursor, subCursor, size, postSortType, userDetails.getUserId());
+        BoardPostPageResponse response = boardPostUseCase.getBoardPostPage(cursor, subCursor, size, postSortType, userDetails.userId());
         return ResponseEntity.ok(ApiResponse.of(response));
     }
 
@@ -42,7 +42,7 @@ public class BoardPostController {
         @RequestParam(defaultValue = "10") int size,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        BoardPostPageResponse response = boardPostUseCase.getMyBoardPosts(cursor, size, userDetails.getUserId());
+        BoardPostPageResponse response = boardPostUseCase.getMyBoardPosts(cursor, size, userDetails.userId());
         return ResponseEntity.ok(ApiResponse.of(response));
     }
 
@@ -51,7 +51,7 @@ public class BoardPostController {
         @PathVariable Long id,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        BoardPostResponse response = boardPostUseCase.getBoardPost(id, userDetails.getUserId());
+        BoardPostResponse response = boardPostUseCase.getBoardPost(id, userDetails.userId());
         return ResponseEntity.ok(ApiResponse.of(response));
     }
 
@@ -60,7 +60,7 @@ public class BoardPostController {
         @Valid @RequestBody CreateBoardPostRequest request,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        BoardPostResponse response = boardPostUseCase.createBoardPost(request, userDetails.getUserId());
+        BoardPostResponse response = boardPostUseCase.createBoardPost(request, userDetails.userId());
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(response));
     }
 
@@ -70,7 +70,7 @@ public class BoardPostController {
         @Valid @RequestBody UpdateBoardPostRequest request,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        BoardPostResponse response = boardPostUseCase.updateBoardPost(id, request, userDetails.getUserId());
+        BoardPostResponse response = boardPostUseCase.updateBoardPost(id, request, userDetails.userId());
         return ResponseEntity.ok(ApiResponse.of(response));
     }
 
@@ -79,7 +79,7 @@ public class BoardPostController {
         @PathVariable Long id,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        boardPostUseCase.deleteBoardPost(id, userDetails.getUserId());
+        boardPostUseCase.deleteBoardPost(id, userDetails.userId());
         return ResponseEntity.ok(ApiResponse.success());
     }
 }
