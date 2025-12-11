@@ -46,6 +46,23 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
     }
 
     @Override
+    public List<Comment> findCommentsByUserWithCursor(Long cursor, int size, Long userId) {
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(comment.userId.eq(userId));
+
+        if (cursor != null) {
+            builder.and(comment.id.gt(cursor));
+        }
+
+        return jpaQueryFactory
+                .selectFrom(comment)
+                .where(builder)
+                .orderBy(comment.id.asc())
+                .limit(size)
+                .fetch();
+    }
+
+    @Override
     public Map<Long, Long> countCommentsByDomainIdsAndType(List<Long> domainIds, CommentDomainType commentDomainType) {
         List<Comment> comments = jpaQueryFactory
                 .selectFrom(comment)

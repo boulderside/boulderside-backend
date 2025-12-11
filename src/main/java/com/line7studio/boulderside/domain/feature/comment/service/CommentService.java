@@ -8,6 +8,7 @@ import java.util.Map;
 
 public interface CommentService {
     List<Comment> getCommentsWithCursor(Long cursor, int size, Long domainId, CommentDomainType commentDomainType);
+    List<Comment> getCommentsByUserWithCursor(Long cursor, int size, Long userId);
     Comment createComment(Long userId, Long domainId, CommentDomainType commentDomainType, String content);
     Comment updateComment(Long commentId, String content, Long userId);
     void deleteComment(Long commentId, Long userId);

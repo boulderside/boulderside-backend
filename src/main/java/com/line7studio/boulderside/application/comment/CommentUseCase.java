@@ -66,6 +66,27 @@ public class CommentUseCase {
         return CommentPageResponse.of(commentResponses, nextCursor, hasNext, size);
     }
 
+    @Transactional(readOnly = true)
+    public CommentPageResponse getMyComments(Long cursor, int size, Long userId) {
+        List<Comment> commentList = commentService.getCommentsByUserWithCursor(cursor, size + 1, userId);
+
+        boolean hasNext = commentList.size() > size;
+        if (hasNext) {
+            commentList = commentList.subList(0, size);
+        }
+
+        Long nextCursor = hasNext && !commentList.isEmpty() ? commentList.getLast().getId() : null;
+
+        User user = userService.getUserById(userId);
+        UserInfo userInfo = UserInfo.from(user);
+
+        List<CommentResponse> commentResponses = commentList.stream()
+                .map(comment -> CommentResponse.of(comment, userInfo, true))
+                .toList();
+
+        return CommentPageResponse.of(commentResponses, nextCursor, hasNext, size);
+    }
+
     @Transactional
     public CommentResponse createComment(Long postId, CommentDomainType commentDomainType, CreateCommentRequest request, Long userId) {
         User user = userService.getUserById(userId);
