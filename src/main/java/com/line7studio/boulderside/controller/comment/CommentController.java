@@ -34,6 +34,16 @@ public class CommentController {
         return ResponseEntity.ok(ApiResponse.of(response));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<CommentPageResponse>> getMyComments(
+            @RequestParam(required = false) Long cursor,
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        CommentPageResponse response = commentUseCase.getMyComments(cursor, size, userDetails.userId());
+        return ResponseEntity.ok(ApiResponse.of(response));
+    }
+
     @PostMapping("/{domainType}/{domainId}")
     public ResponseEntity<ApiResponse<CommentResponse>> createComment(
             @PathVariable String domainType,

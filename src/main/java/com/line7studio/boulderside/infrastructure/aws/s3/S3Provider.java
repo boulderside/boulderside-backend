@@ -1,27 +1,24 @@
 package com.line7studio.boulderside.infrastructure.aws.s3;
 
-import static com.line7studio.boulderside.infrastructure.aws.s3.S3FolderType.*;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3URI;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.line7studio.boulderside.common.exception.BusinessException;
+import com.line7studio.boulderside.common.exception.ErrorCode;
+import com.line7studio.boulderside.common.exception.ExternalApiException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3URI;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.line7studio.boulderside.common.exception.BusinessException;
-import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.common.exception.ExternalApiException;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import static com.line7studio.boulderside.infrastructure.aws.s3.S3FolderType.PROFILE;
 
 @RequiredArgsConstructor
 @Component
@@ -33,10 +30,10 @@ public class S3Provider {
 	private final AmazonS3 amazonS3;
 
 	// S3 이미지 업로드
-	public S3ObjectInfo imageUpload(MultipartFile file, S3FolderType folder) {
+	public S3ObjectInfo imageUpload(MultipartFile file, S3FolderType folder, Long userId) {
 		if (file == null || file.isEmpty()) {
 			// 기본 이미지 제공
-			if (folder.getPath().equals(PROFILE.getPath())) {
+			if (folder == PROFILE) {
 				return S3ObjectInfo.of(
 					"https://lhj-s3-1.s3.ap-northeast-2.amazonaws.com/profile/53ca0dcc-95db-4460-afcf-c352af4f89e7_logo.png",
 					null);
@@ -62,7 +59,7 @@ public class S3Provider {
 		}
 
 		String uuidFileName = UUID.randomUUID() + "_" + fileName;
-		String s3FilePathName = folder.getPath() + "/" + uuidFileName;
+		String s3FilePathName = resolveFolderPath(folder, userId) + "/" + uuidFileName;
 
 		try (InputStream inputStream = file.getInputStream()) {
 			ObjectMetadata metadata = new ObjectMetadata();
@@ -71,9 +68,10 @@ public class S3Provider {
 
 			amazonS3.putObject(
 				new PutObjectRequest(bucket, s3FilePathName, inputStream, metadata)
-					.withCannedAcl(CannedAccessControlList.PublicRead)
 			);
 		} catch (Exception e) {
+			log.error("[S3 UPLOAD FAILED] bucket={}, key={}, file={}, message={}", bucket, s3FilePathName, fileName,
+				e.getMessage(), e);
 			throw new BusinessException(ErrorCode.S3_UPLOAD_FAILED);
 		}
 
@@ -107,5 +105,11 @@ public class S3Provider {
 			throw new ExternalApiException(ErrorCode.S3_DELETE_FAILED);
 		}
 	}
-}
 
+	private String resolveFolderPath(S3FolderType folder, Long userId) {
+		if (folder == PROFILE && userId != null) {
+			return "users/" + userId + "/profile";
+		}
+		return folder.getPath();
+	}
+}
