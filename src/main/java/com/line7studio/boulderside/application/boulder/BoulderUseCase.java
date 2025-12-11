@@ -15,6 +15,7 @@ import com.line7studio.boulderside.domain.feature.region.entity.Region;
 import com.line7studio.boulderside.domain.feature.region.service.RegionService;
 import com.line7studio.boulderside.domain.feature.sector.Sector;
 import com.line7studio.boulderside.domain.feature.sector.service.SectorService;
+import com.line7studio.boulderside.domain.feature.route.service.RouteService;
 import com.line7studio.boulderside.domain.feature.boulder.interaction.like.service.UserBoulderLikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ public class BoulderUseCase {
 	private final RegionService regionService;
 	private final SectorService sectorService;
 	private final BoulderService boulderService;
+	private final RouteService routeService;
 	private final UserBoulderLikeService userBoulderLikeService;
 
     @Transactional(readOnly = true)
@@ -195,6 +197,12 @@ public class BoulderUseCase {
 			likeCount,
 			liked
 		);
+	}
+
+	@Transactional
+	public BoulderResponse getBoulderByRouteId(Long userId, Long routeId) {
+		Long boulderId = routeService.getRouteById(routeId).getBoulderId();
+		return getBoulderById(userId, boulderId);
 	}
 
     @Transactional

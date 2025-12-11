@@ -7,8 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.line7studio.boulderside.common.exception.DomainException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
+import com.line7studio.boulderside.domain.feature.route.Route;
 import com.line7studio.boulderside.domain.feature.route.interaction.completion.entity.UserRouteCompletion;
 import com.line7studio.boulderside.domain.feature.route.interaction.completion.repository.UserRouteCompletionRepository;
+import com.line7studio.boulderside.domain.feature.route.service.RouteService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class UserRouteCompletionServiceImpl implements UserRouteCompletionService {
 	private final UserRouteCompletionRepository userRouteCompletionRepository;
+	private final RouteService routeService;
 
 	@Override
 	public UserRouteCompletion create(Long userId, Long routeId, boolean completed, String memo) {
@@ -31,12 +34,24 @@ public class UserRouteCompletionServiceImpl implements UserRouteCompletionServic
 			.completed(completed)
 			.memo(memo)
 			.build();
-		return userRouteCompletionRepository.save(completion);
+		UserRouteCompletion savedCompletion = userRouteCompletionRepository.save(completion);
+		if (completed) {
+			incrementClimberCount(routeId);
+		}
+		return savedCompletion;
 	}
 
 	@Override
 	public UserRouteCompletion update(Long userId, Long routeId, boolean completed, String memo) {
 		UserRouteCompletion completion = get(userId, routeId);
+		boolean wasCompleted = Boolean.TRUE.equals(completion.getCompleted());
+		if (wasCompleted != completed) {
+			if (completed) {
+				incrementClimberCount(routeId);
+			} else if (wasCompleted) {
+				decrementClimberCount(routeId);
+			}
+		}
 		completion.update(completed, memo);
 		return completion;
 	}
@@ -58,5 +73,18 @@ public class UserRouteCompletionServiceImpl implements UserRouteCompletionServic
 	public void delete(Long userId, Long routeId) {
 		UserRouteCompletion completion = get(userId, routeId);
 		userRouteCompletionRepository.delete(completion);
+		if (Boolean.TRUE.equals(completion.getCompleted())) {
+			decrementClimberCount(routeId);
+		}
+	}
+
+	private void incrementClimberCount(Long routeId) {
+		Route route = routeService.getRouteById(routeId);
+		route.incrementClimberCount();
+	}
+
+	private void decrementClimberCount(Long routeId) {
+		Route route = routeService.getRouteById(routeId);
+		route.decrementClimberCount();
 	}
 }
