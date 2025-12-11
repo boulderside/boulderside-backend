@@ -34,7 +34,7 @@ public class RouteController {
 		return ResponseEntity.ok(ApiResponse.of(routePageResponse));
 	}
 
-	@GetMapping
+	@GetMapping(params = "boulderId")
 	public ResponseEntity<ApiResponse<List<RouteResponse>>> getRoutes(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestParam(required = false) Long boulderId) {

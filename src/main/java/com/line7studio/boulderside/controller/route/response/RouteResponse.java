@@ -18,6 +18,7 @@ import java.util.List;
 public class RouteResponse {
 	private Long routeId;
 	private Long boulderId;
+	private String boulderName;
 	private String province;
 	private String city;
 	private String name;
@@ -36,11 +37,12 @@ public class RouteResponse {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	public static RouteResponse of(Route route, String province, String city, String sectorName, String areaCode,
+	public static RouteResponse of(Route route, String province, String city, String boulderName, String sectorName, String areaCode,
 		List<ImageInfo> imageInfoList, Long likeCount, Boolean liked) {
 		return RouteResponse.builder()
 			.routeId(route.getId())
 			.boulderId(route.getBoulderId())
+			.boulderName(boulderName)
 			.province(province)
 			.city(city)
 			.name(route.getName())

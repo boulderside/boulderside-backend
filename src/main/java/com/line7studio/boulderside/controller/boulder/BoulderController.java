@@ -37,6 +37,14 @@ public class BoulderController {
 		return ResponseEntity.ok(ApiResponse.of(boulderList));
 	}
 
+	@GetMapping(params = "routeId")
+	public ResponseEntity<ApiResponse<BoulderResponse>> getBoulderByRouteId(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestParam Long routeId) {
+		BoulderResponse boulder = boulderUseCase.getBoulderByRouteId(userDetails.userId(), routeId);
+		return ResponseEntity.ok(ApiResponse.of(boulder));
+	}
+
 	@GetMapping("/{boulderId}")
 	public ResponseEntity<ApiResponse<BoulderResponse>> getBoulder(
 			@AuthenticationPrincipal CustomUserDetails userDetails,

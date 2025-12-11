@@ -68,6 +68,10 @@ public class RouteUseCase {
 					}))
 			));
 
+		List<Long> boulderIdList = routeList.stream().map(Route::getBoulderId).distinct().toList();
+		Map<Long, Boulder> boulderMap = boulderService.getBouldersByIds(boulderIdList).stream()
+			.collect(Collectors.toMap(Boulder::getId, Function.identity()));
+
 		List<Long> regionIdList = routeList.stream().map(Route::getRegionId).distinct().toList();
 		Map<Long, Region> regionMap = regionService.getRegionsByIds(regionIdList).stream()
 			.collect(Collectors.toMap(Region::getId, Function.identity()));
@@ -81,12 +85,14 @@ public class RouteUseCase {
 				long likeCount = route.getLikeCount() != null ? route.getLikeCount() : 0L;
 				boolean liked = userLikeMap.getOrDefault(route.getId(), false);
 				Region region = regionMap.get(route.getRegionId());
+				Boulder boulder = boulderMap.get(route.getBoulderId());
 				Sector sector = sectorMap.get(route.getSectorId());
 				List<ImageInfo> imageInfoList = routeImageInfoMap.getOrDefault(route.getId(), Collections.emptyList());
 				return RouteResponse.of(
 					route,
 					region != null ? region.getProvince() : null,
 					region != null ? region.getCity() : null,
+					boulder != null ? boulder.getName() : null,
 					sector != null ? sector.getSectorName() : null,
 					sector != null ? sector.getAreaCode() : null,
 					imageInfoList,
@@ -129,6 +135,7 @@ public class RouteUseCase {
 		route.incrementViewCount();
 		boolean liked = userRouteLikeService.existsIsLikedByUserId(routeId, userId);
 		long likeCount = route.getLikeCount() != null ? route.getLikeCount() : 0L;
+		Boulder boulder = boulderService.getBoulderById(route.getBoulderId());
 		Region region = regionService.getRegionById(route.getRegionId());
 		Sector sector = sectorService.getSectorById(route.getSectorId());
 		List<ImageInfo> imageInfoList = imageService.getImageListByImageDomainTypeAndDomainId(ImageDomainType.ROUTE, routeId)
@@ -141,6 +148,7 @@ public class RouteUseCase {
 			route,
 			region.getProvince(),
 			region.getCity(),
+			boulder.getName(),
 			sector.getSectorName(),
 			sector.getAreaCode(),
 			imageInfoList,
@@ -176,6 +184,7 @@ public class RouteUseCase {
 			savedRoute,
 			region.getProvince(),
 			region.getCity(),
+			boulder.getName(),
 			sector.getSectorName(),
 			sector.getAreaCode(),
 			imageInfoList,
@@ -214,6 +223,7 @@ public class RouteUseCase {
 			updatedRoute,
 			region.getProvince(),
 			region.getCity(),
+			boulder.getName(),
 			sector.getSectorName(),
 			sector.getAreaCode(),
 			imageInfoList,
@@ -250,6 +260,14 @@ public class RouteUseCase {
 					}))
 			));
 
+		List<Long> boulderIdList = routeList.stream()
+			.map(Route::getBoulderId)
+			.distinct()
+			.toList();
+		Map<Long, Boulder> boulderMap = boulderService.getBouldersByIds(boulderIdList)
+			.stream()
+			.collect(Collectors.toMap(Boulder::getId, Function.identity()));
+
 		List<Long> regionIdList = routeList.stream()
 			.map(Route::getRegionId)
 			.distinct()
@@ -271,12 +289,14 @@ public class RouteUseCase {
 				long likeCount = route.getLikeCount() != null ? route.getLikeCount() : 0L;
 				boolean liked = userLikeMap.getOrDefault(route.getId(), false);
 				Region region = regionMap.get(route.getRegionId());
+				Boulder boulder = boulderMap.get(route.getBoulderId());
 				Sector sector = sectorMap.get(route.getSectorId());
 				List<ImageInfo> imageInfoList = routeImageInfoMap.getOrDefault(route.getId(), Collections.emptyList());
 				return RouteResponse.of(
 					route,
 					region != null ? region.getProvince() : null,
 					region != null ? region.getCity() : null,
+					boulder != null ? boulder.getName() : null,
 					sector != null ? sector.getSectorName() : null,
 					sector != null ? sector.getAreaCode() : null,
 					imageInfoList,
