@@ -16,6 +16,7 @@ public record ProjectResponse(Long projectId, Long routeId, Long userId, Boolean
                 ? Collections.emptyList()
                 : project.getAttemptHistories().stream()
                 .map(ProjectAttemptHistoryResponse::from)
+                .sorted(java.util.Comparator.comparing(ProjectAttemptHistoryResponse::getAttemptedDate).reversed())
                 .toList();
 
         return ProjectResponse.builder()
