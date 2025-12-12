@@ -1,20 +1,20 @@
 package com.line7studio.boulderside.common.security.exception;
 
-import java.io.IOException;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.line7studio.boulderside.common.response.ErrorResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.line7studio.boulderside.common.response.ErrorResponse;
-
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 // TODO: JWT 인증을 제외한 다양한 상황에 대한 예외도 처리하기
 @Component
+@Slf4j
 public class CustomEntryPoint implements AuthenticationEntryPoint {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -30,6 +30,15 @@ public class CustomEntryPoint implements AuthenticationEntryPoint {
 		if (authException instanceof AuthenticationFailureException authEx) {
 			errorCode = authEx.getErrorCode();
 		} else {
+            log.warn(
+                    "[AUTH][UNKNOWN] exceptionType={}, message={}, path={}, method={}, remoteAddr={}",
+                    authException.getClass().getName(),
+                    authException.getMessage(),
+                    request.getRequestURI(),
+                    request.getMethod(),
+                    request.getRemoteAddr(),
+                    authException
+            );
 			errorCode = SecurityErrorCode.UNKNOWN_AUTHENTICATION_ERROR;
 		}
 
