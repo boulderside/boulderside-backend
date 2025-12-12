@@ -1,24 +1,21 @@
 package com.line7studio.boulderside.application.interaction;
 
+import com.line7studio.boulderside.controller.route.response.LikedRouteItemResponse;
+import com.line7studio.boulderside.controller.route.response.LikedRoutePageResponse;
+import com.line7studio.boulderside.controller.route.response.RouteLikeResponse;
+import com.line7studio.boulderside.domain.feature.route.Route;
+import com.line7studio.boulderside.domain.feature.route.interaction.like.entity.UserRouteLike;
+import com.line7studio.boulderside.domain.feature.route.interaction.like.service.UserRouteLikeService;
+import com.line7studio.boulderside.domain.feature.route.service.RouteService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.line7studio.boulderside.controller.route.response.LikedRouteItemResponse;
-import com.line7studio.boulderside.controller.route.response.LikedRoutePageResponse;
-import com.line7studio.boulderside.controller.route.response.RouteCompletionResponse;
-import com.line7studio.boulderside.controller.route.response.RouteLikeResponse;
-import com.line7studio.boulderside.domain.feature.route.Route;
-import com.line7studio.boulderside.domain.feature.route.interaction.completion.service.UserRouteCompletionService;
-import com.line7studio.boulderside.domain.feature.route.interaction.like.entity.UserRouteLike;
-import com.line7studio.boulderside.domain.feature.route.interaction.like.service.UserRouteLikeService;
-import com.line7studio.boulderside.domain.feature.route.service.RouteService;
-import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -27,38 +24,7 @@ public class RouteInteractionUseCase {
 	private static final int MAX_PAGE_SIZE = 50;
 
 	private final RouteService routeService;
-	private final UserRouteCompletionService userRouteCompletionService;
 	private final UserRouteLikeService userRouteLikeService;
-
-	@Transactional(readOnly = true)
-	public RouteCompletionResponse getCompletion(Long userId, Long routeId) {
-		return RouteCompletionResponse.from(userRouteCompletionService.get(userId, routeId));
-	}
-
-	public RouteCompletionResponse createCompletion(Long userId, Long routeId, boolean completed, String memo) {
-		validateRoute(routeId);
-		return RouteCompletionResponse.from(
-			userRouteCompletionService.create(userId, routeId, completed, memo));
-	}
-
-	public RouteCompletionResponse updateCompletion(Long userId, Long routeId, boolean completed, String memo) {
-		validateRoute(routeId);
-		return RouteCompletionResponse.from(
-			userRouteCompletionService.update(userId, routeId, completed, memo));
-	}
-
-	public void deleteCompletion(Long userId, Long routeId) {
-		validateRoute(routeId);
-		userRouteCompletionService.delete(userId, routeId);
-	}
-
-	@Transactional(readOnly = true)
-	public List<RouteCompletionResponse> getAllCompletions(Long userId) {
-		return userRouteCompletionService.getAll(userId)
-			.stream()
-			.map(RouteCompletionResponse::from)
-			.toList();
-	}
 
 	public RouteLikeResponse toggleLike(Long userId, Long routeId) {
 		Route route = routeService.getRouteById(routeId);
@@ -108,10 +74,6 @@ public class RouteInteractionUseCase {
 			.toList();
 
 		return LikedRoutePageResponse.of(content, nextCursor, hasNext, content.size());
-	}
-
-	private void validateRoute(Long routeId) {
-		routeService.getRouteById(routeId);
 	}
 
 	private int normalizeSize(int size) {
