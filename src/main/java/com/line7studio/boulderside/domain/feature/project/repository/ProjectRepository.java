@@ -17,7 +17,12 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
 	void deleteByUserIdAndRouteId(Long userId, Long routeId);
 
-	List<Project> findByUserIdOrderByIdDesc(Long userId, Pageable pageable);
+	List<Project> findByUserId(Long userId, Pageable pageable);
 
-	List<Project> findByUserIdAndIdLessThanOrderByIdDesc(Long userId, Long id, Pageable pageable);
+	List<Project> findByUserIdAndIdLessThan(Long userId, Long id, Pageable pageable);
+
+	List<Project> findByUserIdAndCompleted(Long userId, Boolean completed, Pageable pageable);
+
+	List<Project> findByUserIdAndCompletedAndIdLessThan(Long userId, Boolean completed, Long id,
+		Pageable pageable);
 }

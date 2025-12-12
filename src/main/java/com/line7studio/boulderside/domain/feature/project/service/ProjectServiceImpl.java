@@ -4,6 +4,7 @@ import com.line7studio.boulderside.common.exception.DomainException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.domain.feature.project.entity.Project;
 import com.line7studio.boulderside.domain.feature.project.entity.ProjectAttemptHistory;
+import com.line7studio.boulderside.domain.feature.project.enums.ProjectSortType;
 import com.line7studio.boulderside.domain.feature.project.repository.ProjectRepository;
 import com.line7studio.boulderside.domain.feature.route.Route;
 import com.line7studio.boulderside.domain.feature.route.service.RouteService;
@@ -88,12 +89,27 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Project> getByUser(Long userId, Long cursor, int size) {
-		Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "id"));
-		if (cursor == null) {
-			return projectRepository.findByUserIdOrderByIdDesc(userId, pageable);
+	public List<Project> getByUser(Long userId, Boolean isCompleted, Long cursor, int size, ProjectSortType sortType) {
+		String sortField = getSortField(sortType);
+		Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, sortField).and(Sort.by(Sort.Direction.DESC, "id")));
+		if (isCompleted == null) {
+			if (cursor == null) {
+				return projectRepository.findByUserId(userId, pageable);
+			}
+			return projectRepository.findByUserIdAndIdLessThan(userId, cursor, pageable);
 		}
-		return projectRepository.findByUserIdAndIdLessThanOrderByIdDesc(userId, cursor, pageable);
+		if (cursor == null) {
+			return projectRepository.findByUserIdAndCompleted(userId, isCompleted, pageable);
+		}
+		return projectRepository.findByUserIdAndCompletedAndIdLessThan(userId, isCompleted, cursor,
+			pageable);
+	}
+
+	private String getSortField(ProjectSortType sortType) {
+		return switch (sortType) {
+			case LATEST_CREATED -> "createdAt";
+			case LATEST_UPDATED -> "updatedAt";
+		};
 	}
 
 	@Override

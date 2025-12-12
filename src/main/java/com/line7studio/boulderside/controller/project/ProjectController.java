@@ -20,6 +20,7 @@ import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.controller.project.request.ProjectRequest;
 import com.line7studio.boulderside.controller.project.response.ProjectPageResponse;
 import com.line7studio.boulderside.controller.project.response.ProjectResponse;
+import com.line7studio.boulderside.domain.feature.project.enums.ProjectSortType;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -79,9 +80,11 @@ public class ProjectController {
 	@GetMapping("/page")
 	public ResponseEntity<ApiResponse<ProjectPageResponse>> getProjectPage(
 		@RequestParam(required = false) Long cursor,
+		@RequestParam(required = false) Boolean isCompleted,
 		@RequestParam(defaultValue = "10") int size,
+		@RequestParam(defaultValue = "LATEST_UPDATED") ProjectSortType sortType,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		ProjectPageResponse response = projectUseCase.getProjectPage(userDetails.userId(), cursor, size);
+		ProjectPageResponse response = projectUseCase.getProjectPage(userDetails.userId(), isCompleted, cursor, size, sortType);
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 }

@@ -5,11 +5,13 @@ import com.line7studio.boulderside.controller.project.response.ProjectPageRespon
 import com.line7studio.boulderside.controller.project.response.ProjectResponse;
 import com.line7studio.boulderside.domain.feature.project.entity.Project;
 import com.line7studio.boulderside.domain.feature.project.entity.ProjectAttemptHistory;
+import com.line7studio.boulderside.domain.feature.project.enums.ProjectSortType;
 import com.line7studio.boulderside.domain.feature.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -47,9 +49,9 @@ public class ProjectUseCase {
 	}
 
 	@Transactional(readOnly = true)
-	public ProjectPageResponse getProjectPage(Long userId, Long cursor, int size) {
+	public ProjectPageResponse getProjectPage(Long userId, Boolean isCompleted, Long cursor, int size, ProjectSortType sortType) {
 		int pageSize = normalizeSize(size);
-		List<Project> projects = projectService.getByUser(userId, cursor, pageSize + 1);
+		List<Project> projects = projectService.getByUser(userId, isCompleted, cursor, pageSize + 1, sortType);
 
 		boolean hasNext = projects.size() > pageSize;
 		if (hasNext) {
@@ -59,9 +61,17 @@ public class ProjectUseCase {
 
 		List<ProjectResponse> content = projects.stream()
 			.map(ProjectResponse::from)
+			.sorted(getSortComparator(sortType))
 			.toList();
 
 		return ProjectPageResponse.of(content, nextCursor, hasNext, content.size());
+	}
+
+	private Comparator<ProjectResponse> getSortComparator(ProjectSortType sortType) {
+		return switch (sortType) {
+			case LATEST_CREATED -> Comparator.comparing(ProjectResponse::createdAt).reversed();
+			case LATEST_UPDATED -> Comparator.comparing(ProjectResponse::updatedAt).reversed();
+		};
 	}
 
 	private List<ProjectAttemptHistory> mapAttemptHistories(List<ProjectAttemptHistoryRequest> attemptHistories) {
