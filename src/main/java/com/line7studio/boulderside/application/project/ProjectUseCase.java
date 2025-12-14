@@ -7,12 +7,17 @@ import com.line7studio.boulderside.domain.feature.project.entity.Project;
 import com.line7studio.boulderside.domain.feature.project.entity.ProjectAttemptHistory;
 import com.line7studio.boulderside.domain.feature.project.enums.ProjectSortType;
 import com.line7studio.boulderside.domain.feature.project.service.ProjectService;
+import com.line7studio.boulderside.domain.feature.route.Route;
+import com.line7studio.boulderside.domain.feature.route.service.RouteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,27 +26,36 @@ public class ProjectUseCase {
 	private static final int MAX_PAGE_SIZE = 50;
 
 	private final ProjectService projectService;
+	private final RouteService routeService;
 
 	@Transactional(readOnly = true)
 	public ProjectResponse getProject(Long userId, Long projectId) {
-		return ProjectResponse.from(projectService.get(userId, projectId));
+		Project project = projectService.get(userId, projectId);
+		Route route = routeService.getRouteById(project.getRouteId());
+		return ProjectResponse.from(project, route);
 	}
 
 	@Transactional(readOnly = true)
 	public ProjectResponse getProjectByRoute(Long userId, Long routeId) {
-		return ProjectResponse.from(projectService.getByRoute(userId, routeId));
+		Project project = projectService.getByRoute(userId, routeId);
+		Route route = routeService.getRouteById(project.getRouteId());
+		return ProjectResponse.from(project, route);
 	}
 
 	public ProjectResponse createProject(Long userId, Long routeId, boolean completed, String memo,
 		List<ProjectAttemptHistoryRequest> attemptHistories) {
-		return ProjectResponse.from(projectService.create(
-			userId, routeId, completed, memo, mapAttemptHistories(attemptHistories)));
+		Project project = projectService.create(
+			userId, routeId, completed, memo, mapAttemptHistories(attemptHistories));
+		Route route = routeService.getRouteById(project.getRouteId());
+		return ProjectResponse.from(project, route);
 	}
 
 	public ProjectResponse updateProject(Long userId, Long projectId, boolean completed, String memo,
 		List<ProjectAttemptHistoryRequest> attemptHistories) {
-		return ProjectResponse.from(projectService.update(
-			userId, projectId, completed, memo, mapAttemptHistories(attemptHistories)));
+		Project project = projectService.update(
+			userId, projectId, completed, memo, mapAttemptHistories(attemptHistories));
+		Route route = routeService.getRouteById(project.getRouteId());
+		return ProjectResponse.from(project, route);
 	}
 
 	public void deleteProject(Long userId, Long projectId) {
@@ -59,8 +73,19 @@ public class ProjectUseCase {
 		}
 		Long nextCursor = hasNext && !projects.isEmpty() ? projects.getLast().getId() : null;
 
+		// N+1 방지: 모든 routeId를 수집하여 한 번에 조회
+		List<Long> routeIds = projects.stream()
+			.map(Project::getRouteId)
+			.distinct()
+			.toList();
+		Map<Long, Route> routeMap = routeService.getRoutesByIds(routeIds).stream()
+			.collect(Collectors.toMap(Route::getId, Function.identity()));
+
 		List<ProjectResponse> content = projects.stream()
-			.map(ProjectResponse::from)
+			.map(project -> {
+				Route route = routeMap.get(project.getRouteId());
+				return ProjectResponse.from(project, route);
+			})
 			.sorted(getSortComparator(sortType))
 			.toList();
 

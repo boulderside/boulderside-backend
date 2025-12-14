@@ -1,5 +1,6 @@
 package com.line7studio.boulderside.application.interaction;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -16,6 +17,8 @@ import com.line7studio.boulderside.domain.feature.boulder.entity.Boulder;
 import com.line7studio.boulderside.domain.feature.boulder.interaction.like.entity.UserBoulderLike;
 import com.line7studio.boulderside.domain.feature.boulder.interaction.like.service.UserBoulderLikeService;
 import com.line7studio.boulderside.domain.feature.boulder.service.BoulderService;
+import com.line7studio.boulderside.domain.feature.region.entity.Region;
+import com.line7studio.boulderside.domain.feature.region.service.RegionService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +30,7 @@ public class BoulderInteractionUseCase {
 
 	private final BoulderService boulderService;
 	private final UserBoulderLikeService userBoulderLikeService;
+	private final RegionService regionService;
 
 	public BoulderLikeResponse toggleLike(Long userId, Long boulderId) {
 		Boulder boulder = boulderService.getBoulderById(boulderId);
@@ -59,6 +63,11 @@ public class BoulderInteractionUseCase {
 		}
 		Long nextCursor = hasNext && !likes.isEmpty() ? likes.get(likes.size() - 1).getId() : null;
 
+		if (likes.isEmpty()) {
+			return LikedBoulderPageResponse.of(Collections.emptyList(), nextCursor, hasNext, 0);
+		}
+
+		// Boulder 정보 조회
 		List<Long> boulderIds = likes.stream()
 			.map(UserBoulderLike::getBoulderId)
 			.distinct()
@@ -67,10 +76,29 @@ public class BoulderInteractionUseCase {
 		Map<Long, Boulder> boulderMap = boulderService.getBouldersByIds(boulderIds).stream()
 			.collect(Collectors.toMap(Boulder::getId, Function.identity()));
 
+		// Region 정보 조회 (province, city)
+		List<Long> regionIds = boulderMap.values().stream()
+			.map(Boulder::getRegionId)
+			.distinct()
+			.toList();
+		Map<Long, Region> regionMap = regionService.getRegionsByIds(regionIds).stream()
+			.collect(Collectors.toMap(Region::getId, Function.identity()));
+
+		// Response 생성
 		List<LikedBoulderItemResponse> content = likes.stream()
 			.map(like -> {
 				Boulder boulder = boulderMap.get(like.getBoulderId());
-				return boulder != null ? LikedBoulderItemResponse.of(like, boulder) : null;
+				if (boulder == null) {
+					return null;
+				}
+				Region region = regionMap.get(boulder.getRegionId());
+
+				return LikedBoulderItemResponse.of(
+					like,
+					boulder,
+					region != null ? region.getProvince() : null,
+					region != null ? region.getCity() : null
+				);
 			})
 			.filter(Objects::nonNull)
 			.toList();

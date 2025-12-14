@@ -3,6 +3,8 @@ package com.line7studio.boulderside.application.interaction;
 import com.line7studio.boulderside.controller.route.response.LikedRouteItemResponse;
 import com.line7studio.boulderside.controller.route.response.LikedRoutePageResponse;
 import com.line7studio.boulderside.controller.route.response.RouteLikeResponse;
+import com.line7studio.boulderside.domain.feature.boulder.entity.Boulder;
+import com.line7studio.boulderside.domain.feature.boulder.service.BoulderService;
 import com.line7studio.boulderside.domain.feature.route.Route;
 import com.line7studio.boulderside.domain.feature.route.interaction.like.entity.UserRouteLike;
 import com.line7studio.boulderside.domain.feature.route.interaction.like.service.UserRouteLikeService;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -25,6 +28,7 @@ public class RouteInteractionUseCase {
 
 	private final RouteService routeService;
 	private final UserRouteLikeService userRouteLikeService;
+	private final BoulderService boulderService;
 
 	public RouteLikeResponse toggleLike(Long userId, Long routeId) {
 		Route route = routeService.getRouteById(routeId);
@@ -57,6 +61,11 @@ public class RouteInteractionUseCase {
 		}
 		Long nextCursor = hasNext && !likes.isEmpty() ? likes.get(likes.size() - 1).getId() : null;
 
+		if (likes.isEmpty()) {
+			return LikedRoutePageResponse.of(Collections.emptyList(), nextCursor, hasNext, 0);
+		}
+
+		// Route 정보 조회
 		List<Long> routeIds = likes.stream()
 			.map(UserRouteLike::getRouteId)
 			.distinct()
@@ -65,10 +74,25 @@ public class RouteInteractionUseCase {
 		Map<Long, Route> routeMap = routeService.getRoutesByIds(routeIds).stream()
 			.collect(Collectors.toMap(Route::getId, Function.identity()));
 
+		// Boulder 정보 조회 (바위 이름)
+		List<Long> boulderIds = routeMap.values().stream()
+			.map(Route::getBoulderId)
+			.distinct()
+			.toList();
+		Map<Long, Boulder> boulderMap = boulderService.getBouldersByIds(boulderIds).stream()
+			.collect(Collectors.toMap(Boulder::getId, Function.identity()));
+
+		// Response 생성
 		List<LikedRouteItemResponse> content = likes.stream()
 			.map(like -> {
 				Route route = routeMap.get(like.getRouteId());
-				return route != null ? LikedRouteItemResponse.of(like, route) : null;
+				if (route == null) {
+					return null;
+				}
+				Boulder boulder = boulderMap.get(route.getBoulderId());
+				String boulderName = boulder != null ? boulder.getName() : null;
+
+				return LikedRouteItemResponse.of(like, route, boulderName);
 			})
 			.filter(Objects::nonNull)
 			.toList();
