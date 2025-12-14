@@ -7,6 +7,7 @@ import com.line7studio.boulderside.controller.comment.request.CreateCommentReque
 import com.line7studio.boulderside.controller.comment.request.UpdateCommentRequest;
 import com.line7studio.boulderside.controller.comment.response.CommentPageResponse;
 import com.line7studio.boulderside.controller.comment.response.CommentResponse;
+import com.line7studio.boulderside.controller.comment.response.MyCommentPageResponse;
 import com.line7studio.boulderside.domain.feature.comment.enums.CommentDomainType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,12 +36,13 @@ public class CommentController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<CommentPageResponse>> getMyComments(
+    public ResponseEntity<ApiResponse<MyCommentPageResponse>> getMyComments(
             @RequestParam(required = false) Long cursor,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String domainType,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        CommentPageResponse response = commentUseCase.getMyComments(cursor, size, userDetails.userId());
+        MyCommentPageResponse response = commentUseCase.getMyComments(cursor, size, userDetails.userId(), domainType);
         return ResponseEntity.ok(ApiResponse.of(response));
     }
 

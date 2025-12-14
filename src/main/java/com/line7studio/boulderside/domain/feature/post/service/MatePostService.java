@@ -9,6 +9,8 @@ import java.util.List;
 public interface MatePostService {
     MatePost getMatePostById(Long postId);
 
+    List<MatePost> getMatePostsByIds(List<Long> postIds);
+
     List<MatePost> getMatePostsWithCursor(Long cursor, String subCursor, int size, MatePostSortType postSortType);
 
     List<MatePost> getMatePostsByUser(Long userId, Long cursor, int size);

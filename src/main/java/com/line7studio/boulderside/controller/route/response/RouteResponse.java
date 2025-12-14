@@ -17,8 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class RouteResponse {
 	private Long routeId;
-	private Long boulderId;
-	private String boulderName;
+	private BoulderInfo boulderInfo;
 	private String province;
 	private String city;
 	private String name;
@@ -37,12 +36,24 @@ public class RouteResponse {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
+	@Builder
+	public record BoulderInfo(
+		Long boulderId,
+		String name
+	) {
+		public static BoulderInfo of(Long boulderId, String name) {
+			return BoulderInfo.builder()
+				.boulderId(boulderId)
+				.name(name)
+				.build();
+		}
+	}
+
 	public static RouteResponse of(Route route, String province, String city, String boulderName, String sectorName, String areaCode,
 		List<ImageInfo> imageInfoList, Long likeCount, Boolean liked) {
 		return RouteResponse.builder()
 			.routeId(route.getId())
-			.boulderId(route.getBoulderId())
-			.boulderName(boulderName)
+			.boulderInfo(BoulderInfo.of(route.getBoulderId(), boulderName))
 			.province(province)
 			.city(city)
 			.name(route.getName())

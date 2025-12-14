@@ -34,13 +34,13 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
 
         // 커서 기반 페이징 (등록순)
         if (cursor != null) {
-            builder.and(comment.id.gt(cursor));
+            builder.and(comment.id.lt(cursor));
         }
 
         return jpaQueryFactory
                 .selectFrom(comment)
                 .where(builder)
-                .orderBy(comment.id.asc())
+                .orderBy(comment.createdAt.desc(), comment.id.desc())
                 .limit(size)
                 .fetch();
     }
@@ -51,13 +51,31 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
         builder.and(comment.userId.eq(userId));
 
         if (cursor != null) {
-            builder.and(comment.id.gt(cursor));
+            builder.and(comment.id.lt(cursor));
         }
 
         return jpaQueryFactory
                 .selectFrom(comment)
                 .where(builder)
-                .orderBy(comment.id.asc())
+                .orderBy(comment.createdAt.desc(), comment.id.desc())
+                .limit(size)
+                .fetch();
+    }
+
+    @Override
+    public List<Comment> findCommentsByUserAndTypeWithCursor(Long cursor, int size, Long userId, CommentDomainType commentDomainType) {
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(comment.userId.eq(userId));
+        builder.and(comment.commentDomainType.eq(commentDomainType));
+
+        if (cursor != null) {
+            builder.and(comment.id.lt(cursor));
+        }
+
+        return jpaQueryFactory
+                .selectFrom(comment)
+                .where(builder)
+                .orderBy(comment.createdAt.desc(), comment.id.desc())
                 .limit(size)
                 .fetch();
     }
