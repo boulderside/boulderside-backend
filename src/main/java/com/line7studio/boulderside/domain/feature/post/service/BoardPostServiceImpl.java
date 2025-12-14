@@ -28,6 +28,11 @@ public class BoardPostServiceImpl implements BoardPostService {
     }
 
     @Override
+    public List<BoardPost> getBoardPostsByIds(List<Long> postIds) {
+        return boardPostRepository.findAllById(postIds);
+    }
+
+    @Override
     public List<BoardPost> getBoardPostsWithCursor(Long cursor, String subCursor, int size, BoardPostSortType postSortType) {
         if (postSortType == null) {
             throw new BusinessException(ErrorCode.NOT_SUPPORT_SORT_TYPE);

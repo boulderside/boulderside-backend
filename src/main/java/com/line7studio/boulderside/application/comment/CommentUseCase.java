@@ -6,18 +6,26 @@ import com.line7studio.boulderside.controller.comment.request.CreateCommentReque
 import com.line7studio.boulderside.controller.comment.request.UpdateCommentRequest;
 import com.line7studio.boulderside.controller.comment.response.CommentPageResponse;
 import com.line7studio.boulderside.controller.comment.response.CommentResponse;
+import com.line7studio.boulderside.controller.comment.response.MyCommentPageResponse;
+import com.line7studio.boulderside.controller.comment.response.MyCommentResponse;
 import com.line7studio.boulderside.domain.feature.comment.entity.Comment;
 import com.line7studio.boulderside.domain.feature.comment.enums.CommentDomainType;
 import com.line7studio.boulderside.domain.feature.comment.service.CommentService;
-import com.line7studio.boulderside.domain.feature.user.entity.User;
-import com.line7studio.boulderside.domain.feature.user.service.UserService;
+import com.line7studio.boulderside.domain.feature.post.entity.BoardPost;
+import com.line7studio.boulderside.domain.feature.post.entity.MatePost;
+import com.line7studio.boulderside.domain.feature.post.service.BoardPostService;
+import com.line7studio.boulderside.domain.feature.post.service.MatePostService;
 import com.line7studio.boulderside.domain.feature.post.service.PostReadService;
 import com.line7studio.boulderside.domain.feature.route.Route;
 import com.line7studio.boulderside.domain.feature.route.service.RouteService;
+import com.line7studio.boulderside.domain.feature.user.entity.User;
+import com.line7studio.boulderside.domain.feature.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,6 +37,8 @@ public class CommentUseCase {
     private final UserService userService;
     private final PostReadService postReadService;
     private final RouteService routeService;
+    private final BoardPostService boardPostService;
+    private final MatePostService matePostService;
 
     @Transactional(readOnly = true)
     public CommentPageResponse getCommentPage(Long cursor, int size, Long domainId, CommentDomainType commentDomainType, Long userId) {
@@ -67,8 +77,15 @@ public class CommentUseCase {
     }
 
     @Transactional(readOnly = true)
-    public CommentPageResponse getMyComments(Long cursor, int size, Long userId) {
-        List<Comment> commentList = commentService.getCommentsByUserWithCursor(cursor, size + 1, userId);
+    public MyCommentPageResponse getMyComments(Long cursor, int size, Long userId, String domainType) {
+        List<Comment> commentList;
+
+        if (domainType != null) {
+            CommentDomainType type = CommentDomainType.fromPath(domainType);
+            commentList = commentService.getCommentsByUserAndTypeWithCursor(cursor, size + 1, userId, type);
+        } else {
+            commentList = commentService.getCommentsByUserWithCursor(cursor, size + 1, userId);
+        }
 
         boolean hasNext = commentList.size() > size;
         if (hasNext) {
@@ -80,11 +97,50 @@ public class CommentUseCase {
         User user = userService.getUserById(userId);
         UserInfo userInfo = UserInfo.from(user);
 
-        List<CommentResponse> commentResponses = commentList.stream()
-                .map(comment -> CommentResponse.of(comment, userInfo, true))
+        // Group comments by DomainType and collect IDs
+        List<Long> routeIds = new ArrayList<>();
+        List<Long> boardPostIds = new ArrayList<>();
+        List<Long> matePostIds = new ArrayList<>();
+
+        for (Comment comment : commentList) {
+            if (comment.getCommentDomainType() == CommentDomainType.ROUTE) {
+                routeIds.add(comment.getDomainId());
+            } else if (comment.getCommentDomainType() == CommentDomainType.BOARD_POST) {
+                boardPostIds.add(comment.getDomainId());
+            } else if (comment.getCommentDomainType() == CommentDomainType.MATE_POST) {
+                matePostIds.add(comment.getDomainId());
+            }
+        }
+
+        // Fetch Titles/Names
+        Map<Long, String> routeNames = routeIds.isEmpty() ? Collections.emptyMap() :
+                routeService.getRoutesByIds(routeIds).stream()
+                        .collect(Collectors.toMap(Route::getId, Route::getName));
+        
+        Map<Long, String> boardPostTitles = boardPostIds.isEmpty() ? Collections.emptyMap() :
+                boardPostService.getBoardPostsByIds(boardPostIds).stream()
+                        .collect(Collectors.toMap(BoardPost::getId, BoardPost::getTitle));
+
+        Map<Long, String> matePostTitles = matePostIds.isEmpty() ? Collections.emptyMap() :
+                matePostService.getMatePostsByIds(matePostIds).stream()
+                        .collect(Collectors.toMap(MatePost::getId, MatePost::getTitle));
+
+        // Map response
+        List<MyCommentResponse> commentResponses = commentList.stream()
+                .map(comment -> {
+                    String title = null;
+                    if (comment.getCommentDomainType() == CommentDomainType.ROUTE) {
+                        title = routeNames.get(comment.getDomainId());
+                    } else if (comment.getCommentDomainType() == CommentDomainType.BOARD_POST) {
+                        title = boardPostTitles.get(comment.getDomainId());
+                    } else if (comment.getCommentDomainType() == CommentDomainType.MATE_POST) {
+                        title = matePostTitles.get(comment.getDomainId());
+                    }
+                    return MyCommentResponse.of(comment, userInfo, true, title);
+                })
                 .toList();
 
-        return CommentPageResponse.of(commentResponses, nextCursor, hasNext, size);
+        return MyCommentPageResponse.of(commentResponses, nextCursor, hasNext, size);
     }
 
     @Transactional

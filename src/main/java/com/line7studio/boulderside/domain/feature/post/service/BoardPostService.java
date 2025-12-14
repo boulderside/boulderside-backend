@@ -8,6 +8,8 @@ import java.util.List;
 public interface BoardPostService {
     BoardPost getBoardPostById(Long postId);
 
+    List<BoardPost> getBoardPostsByIds(List<Long> postIds);
+
     List<BoardPost> getBoardPostsWithCursor(Long cursor, String subCursor, int size, BoardPostSortType postSortType);
 
     List<BoardPost> getBoardPostsByUser(Long userId, Long cursor, int size);

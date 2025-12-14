@@ -32,6 +32,11 @@ public class MatePostServiceImpl implements MatePostService {
     }
 
     @Override
+    public List<MatePost> getMatePostsByIds(List<Long> postIds) {
+        return matePostRepository.findAllById(postIds);
+    }
+
+    @Override
     public List<MatePost> getMatePostsWithCursor(Long cursor, String subCursor, int size, MatePostSortType postSortType) {
         if (postSortType == null) {
             throw new BusinessException(ErrorCode.NOT_SUPPORT_SORT_TYPE);

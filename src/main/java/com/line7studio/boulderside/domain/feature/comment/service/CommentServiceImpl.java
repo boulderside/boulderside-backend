@@ -29,6 +29,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public List<Comment> getCommentsByUserAndTypeWithCursor(Long cursor, int size, Long userId, CommentDomainType commentDomainType) {
+        return commentQueryRepository.findCommentsByUserAndTypeWithCursor(cursor, size, userId, commentDomainType);
+    }
+
+    @Override
     public Comment createComment(Long userId, Long domainId, CommentDomainType commentDomainType, String content) {
         Comment comment = Comment.builder()
                 .userId(userId)
