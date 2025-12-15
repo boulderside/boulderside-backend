@@ -23,8 +23,9 @@ public class CommentResponse {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long commentCount;
 
-    public static CommentResponse of(Comment comment, UserInfo userInfo, Boolean isMine) {
+    public static CommentResponse of(Comment comment, UserInfo userInfo, Boolean isMine, Long commentCount) {
         return CommentResponse.builder()
                 .commentId(comment.getId())
                 .commentDomainType(comment.getCommentDomainType())
@@ -34,6 +35,11 @@ public class CommentResponse {
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())
+                .commentCount(commentCount)
                 .build();
+    }
+
+    public static CommentResponse of(Comment comment, UserInfo userInfo, Boolean isMine) {
+        return of(comment, userInfo, isMine, null);
     }
 }

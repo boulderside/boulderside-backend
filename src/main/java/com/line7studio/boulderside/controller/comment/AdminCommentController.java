@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.domain.feature.comment.enums.CommentDomainType;
 
+import com.line7studio.boulderside.controller.comment.response.CommentCountResponse;
+
 @RestController
 @RequestMapping("/admin/comments")
 @RequiredArgsConstructor
@@ -56,8 +58,8 @@ public class AdminCommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<ApiResponse<Void>> deleteComment(@PathVariable Long commentId) {
-        commentUseCase.adminDeleteComment(commentId);
-        return ResponseEntity.ok(ApiResponse.success());
+    public ResponseEntity<ApiResponse<CommentCountResponse>> deleteComment(@PathVariable Long commentId) {
+        Integer count = commentUseCase.adminDeleteComment(commentId);
+        return ResponseEntity.ok(ApiResponse.of(CommentCountResponse.of(count)));
     }
 }

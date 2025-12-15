@@ -1,7 +1,6 @@
 package com.line7studio.boulderside.domain.feature.search.repository;
 
-import com.line7studio.boulderside.application.search.dto.SearchItemResponse;
-import com.line7studio.boulderside.application.search.dto.UnifiedSearchResponse;
+import com.line7studio.boulderside.application.search.dto.*;
 import com.line7studio.boulderside.domain.feature.boulder.entity.QBoulder;
 import com.line7studio.boulderside.domain.feature.image.entity.QImage;
 import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;
@@ -19,14 +18,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Stream;
+import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -118,13 +110,21 @@ public class SearchRepositoryImpl implements SearchRepository {
             .build());
         totalCounts.put(DocumentDomainType.ROUTE, routeCount);
 
-        List<SearchItemResponse> postItems = fetchPostSearchItems(keyword, UNIFIED_DOMAIN_LIMIT);
-        long postCount = countPosts(keyword);
-        domainResults.put(DocumentDomainType.POST, UnifiedSearchResponse.DomainSearchResult.builder()
-            .items(postItems)
-            .hasMore(postCount > UNIFIED_DOMAIN_LIMIT)
+        List<SearchItemResponse> boardPostItems = fetchBoardPostSearchItems(keyword, UNIFIED_DOMAIN_LIMIT);
+        long boardPostCount = countBoardPosts(keyword);
+        domainResults.put(DocumentDomainType.BOARD_POST, UnifiedSearchResponse.DomainSearchResult.builder()
+            .items(boardPostItems)
+            .hasMore(boardPostCount > UNIFIED_DOMAIN_LIMIT)
             .build());
-        totalCounts.put(DocumentDomainType.POST, postCount);
+        totalCounts.put(DocumentDomainType.BOARD_POST, boardPostCount);
+
+        List<SearchItemResponse> matePostItems = fetchMatePostSearchItems(keyword, UNIFIED_DOMAIN_LIMIT);
+        long matePostCount = countMatePosts(keyword);
+        domainResults.put(DocumentDomainType.MATE_POST, UnifiedSearchResponse.DomainSearchResult.builder()
+            .items(matePostItems)
+            .hasMore(matePostCount > UNIFIED_DOMAIN_LIMIT)
+            .build());
+        totalCounts.put(DocumentDomainType.MATE_POST, matePostCount);
 
         return UnifiedSearchResponse.builder()
             .domainResults(domainResults)
@@ -137,7 +137,8 @@ public class SearchRepositoryImpl implements SearchRepository {
         return switch (domain) {
             case BOULDER -> fetchBoulderSearchItems(keyword, size);
             case ROUTE -> fetchRouteSearchItems(keyword, size);
-            case POST -> fetchPostSearchItems(keyword, size);
+            case BOARD_POST -> fetchBoardPostSearchItems(keyword, size);
+            case MATE_POST -> fetchMatePostSearchItems(keyword, size);
         };
     }
 
@@ -146,14 +147,15 @@ public class SearchRepositoryImpl implements SearchRepository {
         return switch (domain) {
             case BOULDER -> countBoulders(keyword);
             case ROUTE -> countRoutes(keyword);
-            case POST -> countPosts(keyword);
+            case BOARD_POST -> countBoardPosts(keyword);
+            case MATE_POST -> countMatePosts(keyword);
         };
     }
 
     private List<SearchItemResponse> fetchBoulderSearchItems(String keyword, int size) {
         List<Tuple> tuples = queryFactory
             .select(BOULDER.id, BOULDER.name, BOULDER.likeCount, BOULDER.viewCount, BOULDER.createdAt,
-                REGION.province, REGION.city, IMAGE.imageUrl)
+                BOULDER.updatedAt, REGION.province, REGION.city, IMAGE.imageUrl)
             .from(BOULDER)
             .leftJoin(REGION).on(REGION.id.eq(BOULDER.regionId))
             .leftJoin(IMAGE).on(
@@ -167,45 +169,63 @@ public class SearchRepositoryImpl implements SearchRepository {
             .fetch();
 
         return tuples.stream()
-            .map(tuple -> SearchItemResponse.builder()
-                .id(String.valueOf(tuple.get(BOULDER.id)))
-                .title(tuple.get(BOULDER.name))
-                .domainType(DocumentDomainType.BOULDER)
-                .thumbnailUrl(tuple.get(IMAGE.imageUrl))
-                .province(tuple.get(REGION.province))
-                .city(tuple.get(REGION.city))
-                .likeCount(defaultLong(tuple.get(BOULDER.likeCount)))
-                .viewCount(defaultLong(tuple.get(BOULDER.viewCount)))
-                .createdAt(tuple.get(BOULDER.createdAt))
-                .build())
+            .map(tuple -> {
+                BoulderDetails details = BoulderDetails.builder()
+                    .thumbnailUrl(tuple.get(IMAGE.imageUrl))
+                    .province(tuple.get(REGION.province))
+                    .city(tuple.get(REGION.city))
+                    .likeCount(defaultLong(tuple.get(BOULDER.likeCount)))
+                    .viewCount(defaultLong(tuple.get(BOULDER.viewCount)))
+                    .boulderName(tuple.get(BOULDER.name))
+                    .build();
+
+                return SearchItemResponse.builder()
+                    .id(String.valueOf(tuple.get(BOULDER.id)))
+                    .domainType(DocumentDomainType.BOULDER)
+                    .createdAt(tuple.get(BOULDER.createdAt))
+                    .updatedAt(tuple.get(BOULDER.updatedAt))
+                    .details(details)
+                    .build();
+            })
             .toList();
     }
 
     private List<SearchItemResponse> fetchRouteSearchItems(String keyword, int size) {
-        List<Route> routes = queryFactory
-            .selectFrom(ROUTE)
+        List<Tuple> tuples = queryFactory
+            .select(ROUTE, BOULDER.name)
+            .from(ROUTE)
+            .leftJoin(BOULDER).on(BOULDER.id.eq(ROUTE.boulderId))
             .where(ROUTE.name.containsIgnoreCase(keyword))
             .orderBy(ROUTE.createdAt.desc(), ROUTE.id.desc())
             .limit(size)
             .fetch();
 
-        return routes.stream()
-            .map(route -> SearchItemResponse.builder()
-                .id(String.valueOf(route.getId()))
-                .title(route.getName())
-                .domainType(DocumentDomainType.ROUTE)
-                .level(route.getRouteLevel())
-                .likeCount(defaultLong(route.getLikeCount()))
-                .climberCount(defaultLong(route.getClimberCount()))
-                .commentCount(defaultLong(route.getCommentCount()))
-                .viewCount(defaultLong(route.getViewCount()))
-                .createdAt(route.getCreatedAt())
-                .build())
+        return tuples.stream()
+            .map(tuple -> {
+                Route route = tuple.get(ROUTE);
+                String boulderName = tuple.get(BOULDER.name);
+
+                RouteDetails details = RouteDetails.builder()
+                    .routeName(route.getName())
+                    .level(route.getRouteLevel())
+                    .likeCount(defaultLong(route.getLikeCount()))
+                    .climberCount(defaultLong(route.getClimberCount()))
+                    .boulderName(boulderName)
+                    .build();
+
+                return SearchItemResponse.builder()
+                    .id(String.valueOf(route.getId()))
+                    .domainType(DocumentDomainType.ROUTE)
+                    .createdAt(route.getCreatedAt())
+                    .updatedAt(route.getUpdatedAt())
+                    .details(details)
+                    .build();
+            })
             .toList();
     }
 
-    private List<SearchItemResponse> fetchPostSearchItems(String keyword, int size) {
-        List<PostSearchResult> mateResults = queryFactory
+    private List<SearchItemResponse> fetchMatePostSearchItems(String keyword, int size) {
+        return queryFactory
             .select(MATE_POST, USER.nickname)
             .from(MATE_POST)
             .leftJoin(USER).on(USER.id.eq(MATE_POST.userId))
@@ -217,21 +237,28 @@ public class SearchRepositoryImpl implements SearchRepository {
             .map(tuple -> {
                 MatePost post = tuple.get(MATE_POST);
                 String authorName = tuple.get(USER.nickname);
-                SearchItemResponse response = SearchItemResponse.builder()
-                    .id(String.valueOf(post.getId()))
+
+                MatePostDetails details = MatePostDetails.builder()
                     .title(post.getTitle())
-                    .domainType(DocumentDomainType.POST)
                     .authorName(authorName)
-                    .viewCount(defaultLong(post.getViewCount()))
                     .commentCount(defaultLong(post.getCommentCount()))
+                    .viewCount(defaultLong(post.getViewCount()))
                     .meetingDate(post.getMeetingDate())
-                    .createdAt(post.getCreatedAt())
                     .build();
-                return new PostSearchResult(response, post.getCreatedAt(), post.getId());
+
+                return SearchItemResponse.builder()
+                    .id(String.valueOf(post.getId()))
+                    .domainType(DocumentDomainType.MATE_POST)
+                    .createdAt(post.getCreatedAt())
+                    .updatedAt(post.getUpdatedAt())
+                    .details(details)
+                    .build();
             })
             .toList();
+    }
 
-        List<PostSearchResult> boardResults = queryFactory
+    private List<SearchItemResponse> fetchBoardPostSearchItems(String keyword, int size) {
+        return queryFactory
             .select(BOARD_POST, USER.nickname)
             .from(BOARD_POST)
             .leftJoin(USER).on(USER.id.eq(BOARD_POST.userId))
@@ -243,24 +270,22 @@ public class SearchRepositoryImpl implements SearchRepository {
             .map(tuple -> {
                 BoardPost post = tuple.get(BOARD_POST);
                 String authorName = tuple.get(USER.nickname);
-                SearchItemResponse response = SearchItemResponse.builder()
-                    .id(String.valueOf(post.getId()))
-                    .title(post.getTitle())
-                    .domainType(DocumentDomainType.POST)
-                    .authorName(authorName)
-                    .viewCount(defaultLong(post.getViewCount()))
-                    .commentCount(defaultLong(post.getCommentCount()))
-                    .createdAt(post.getCreatedAt())
-                    .build();
-                return new PostSearchResult(response, post.getCreatedAt(), post.getId());
-            })
-            .toList();
 
-        return Stream.concat(mateResults.stream(), boardResults.stream())
-            .sorted(Comparator.comparing(PostSearchResult::createdAt).reversed()
-                .thenComparing(PostSearchResult::id, Comparator.reverseOrder()))
-            .limit(size)
-            .map(PostSearchResult::response)
+                BoardPostDetails details = BoardPostDetails.builder()
+                    .title(post.getTitle())
+                    .authorName(authorName)
+                    .commentCount(defaultLong(post.getCommentCount()))
+                    .viewCount(defaultLong(post.getViewCount()))
+                    .build();
+
+                return SearchItemResponse.builder()
+                    .id(String.valueOf(post.getId()))
+                    .domainType(DocumentDomainType.BOARD_POST)
+                    .createdAt(post.getCreatedAt())
+                    .updatedAt(post.getUpdatedAt())
+                    .details(details)
+                    .build();
+            })
             .toList();
     }
 
@@ -280,10 +305,6 @@ public class SearchRepositoryImpl implements SearchRepository {
             .where(ROUTE.name.containsIgnoreCase(keyword))
             .fetchOne();
         return count != null ? count : 0L;
-    }
-
-    private long countPosts(String keyword) {
-        return countMatePosts(keyword) + countBoardPosts(keyword);
     }
 
     private long countMatePosts(String keyword) {
@@ -306,7 +327,5 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private long defaultLong(Long value) {
         return value == null ? 0L : value;
-    }
-    private record PostSearchResult(SearchItemResponse response, LocalDateTime createdAt, Long id) {
     }
 }
