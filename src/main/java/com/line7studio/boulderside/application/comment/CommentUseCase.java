@@ -13,9 +13,10 @@ import com.line7studio.boulderside.domain.feature.comment.enums.CommentDomainTyp
 import com.line7studio.boulderside.domain.feature.comment.service.CommentService;
 import com.line7studio.boulderside.domain.feature.post.entity.BoardPost;
 import com.line7studio.boulderside.domain.feature.post.entity.MatePost;
+import com.line7studio.boulderside.domain.feature.post.service.BoardPostReadService;
 import com.line7studio.boulderside.domain.feature.post.service.BoardPostService;
+import com.line7studio.boulderside.domain.feature.post.service.MatePostReadService;
 import com.line7studio.boulderside.domain.feature.post.service.MatePostService;
-import com.line7studio.boulderside.domain.feature.post.service.PostReadService;
 import com.line7studio.boulderside.domain.feature.route.Route;
 import com.line7studio.boulderside.domain.feature.route.service.RouteService;
 import com.line7studio.boulderside.domain.feature.user.entity.User;
@@ -35,10 +36,11 @@ import java.util.stream.Collectors;
 public class CommentUseCase {
     private final CommentService commentService;
     private final UserService userService;
-    private final PostReadService postReadService;
     private final RouteService routeService;
     private final BoardPostService boardPostService;
     private final MatePostService matePostService;
+    private final BoardPostReadService boardPostReadService;
+    private final MatePostReadService matePostReadService;
 
     @Transactional(readOnly = true)
     public CommentPageResponse getCommentPage(Long cursor, int size, Long domainId, CommentDomainType commentDomainType, Long userId) {
@@ -155,14 +157,18 @@ public class CommentUseCase {
                 request.getContent()
         );
 
-        if (commentDomainType == CommentDomainType.BOARD_POST || commentDomainType == CommentDomainType.MATE_POST) {
-            postReadService.incrementCommentCount(postId);
+        Long commentCount = 0L;
+        if (commentDomainType == CommentDomainType.BOARD_POST) {
+            commentCount = boardPostReadService.incrementCommentCount(postId);
+        } else if (commentDomainType == CommentDomainType.MATE_POST) {
+            commentCount = matePostReadService.incrementCommentCount(postId);
         } else if (commentDomainType == CommentDomainType.ROUTE) {
             Route route = routeService.getRouteById(postId);
             route.incrementCommentCount();
+            commentCount = route.getCommentCount();
         }
 
-        return CommentResponse.of(savedComment, userInfo, true);
+        return CommentResponse.of(savedComment, userInfo, true, commentCount);
     }
 
     @Transactional
@@ -176,25 +182,40 @@ public class CommentUseCase {
                 user.getId()
         );
 
+        Long commentCount = 0L;
+        if (comment.getCommentDomainType() == CommentDomainType.BOARD_POST) {
+            commentCount = boardPostReadService.getCommentCount(comment.getDomainId());
+        } else if (comment.getCommentDomainType() == CommentDomainType.MATE_POST) {
+            commentCount = matePostReadService.getCommentCount(comment.getDomainId());
+        } else if (comment.getCommentDomainType() == CommentDomainType.ROUTE) {
+            Route route = routeService.getRouteById(comment.getDomainId());
+            commentCount = route.getCommentCount();
+        }
+
         Boolean isMine = comment.getUserId().equals(userId);
 
-        return CommentResponse.of(comment, userInfo, isMine);
+        return CommentResponse.of(comment, userInfo, isMine, commentCount);
     }
 
     @Transactional
-    public void deleteComment(Long commentId, Long userId) {
+    public Integer deleteComment(Long commentId, Long userId) {
         User user = userService.getUserById(userId);
 
         Comment comment = commentService.getCommentById(commentId);
         
         commentService.deleteComment(commentId, user.getId());
 
-        if (comment.getCommentDomainType() == CommentDomainType.BOARD_POST || comment.getCommentDomainType() == CommentDomainType.MATE_POST) {
-            postReadService.decrementCommentCount(comment.getDomainId());
+        Long commentCount = 0L;
+        if (comment.getCommentDomainType() == CommentDomainType.BOARD_POST) {
+            commentCount = boardPostReadService.decrementCommentCount(comment.getDomainId());
+        } else if (comment.getCommentDomainType() == CommentDomainType.MATE_POST) {
+            commentCount = matePostReadService.decrementCommentCount(comment.getDomainId());
         } else if (comment.getCommentDomainType() == CommentDomainType.ROUTE) {
             Route route = routeService.getRouteById(comment.getDomainId());
             route.decrementCommentCount();
+            commentCount = route.getCommentCount();
         }
+        return commentCount.intValue();
     }
 
     @Transactional
@@ -202,20 +223,36 @@ public class CommentUseCase {
         Comment comment = commentService.updateCommentAsAdmin(commentId, request.getContent());
         User user = userService.getUserById(comment.getUserId());
         UserInfo userInfo = UserInfo.from(user);
-        return CommentResponse.of(comment, userInfo, false);
+
+        Long commentCount = 0L;
+        if (comment.getCommentDomainType() == CommentDomainType.BOARD_POST) {
+            commentCount = boardPostReadService.getCommentCount(comment.getDomainId());
+        } else if (comment.getCommentDomainType() == CommentDomainType.MATE_POST) {
+            commentCount = matePostReadService.getCommentCount(comment.getDomainId());
+        } else if (comment.getCommentDomainType() == CommentDomainType.ROUTE) {
+            Route route = routeService.getRouteById(comment.getDomainId());
+            commentCount = route.getCommentCount();
+        }
+
+        return CommentResponse.of(comment, userInfo, false, commentCount);
     }
 
     @Transactional
-    public void adminDeleteComment(Long commentId) {
+    public Integer adminDeleteComment(Long commentId) {
         Comment comment = commentService.getCommentById(commentId);
         commentService.deleteCommentAsAdmin(commentId);
 
-        if (comment.getCommentDomainType() == CommentDomainType.BOARD_POST || comment.getCommentDomainType() == CommentDomainType.MATE_POST) {
-            postReadService.decrementCommentCount(comment.getDomainId());
+        Long commentCount = 0L;
+        if (comment.getCommentDomainType() == CommentDomainType.BOARD_POST) {
+            commentCount = boardPostReadService.decrementCommentCount(comment.getDomainId());
+        } else if (comment.getCommentDomainType() == CommentDomainType.MATE_POST) {
+            commentCount = matePostReadService.decrementCommentCount(comment.getDomainId());
         } else if (comment.getCommentDomainType() == CommentDomainType.ROUTE) {
             Route route = routeService.getRouteById(comment.getDomainId());
             route.decrementCommentCount();
+            commentCount = route.getCommentCount();
         }
+        return commentCount.intValue();
     }
 
     @Transactional
@@ -233,14 +270,18 @@ public class CommentUseCase {
             request.getContent()
         );
 
-        if (domainType == CommentDomainType.BOARD_POST || domainType == CommentDomainType.MATE_POST) {
-            postReadService.incrementCommentCount(request.getDomainId());
+        Long commentCount = 0L;
+        if (domainType == CommentDomainType.BOARD_POST) {
+            commentCount = boardPostReadService.incrementCommentCount(request.getDomainId());
+        } else if (domainType == CommentDomainType.MATE_POST) {
+            commentCount = matePostReadService.incrementCommentCount(request.getDomainId());
         } else if (domainType == CommentDomainType.ROUTE) {
             Route route = routeService.getRouteById(request.getDomainId());
             route.incrementCommentCount();
+            commentCount = route.getCommentCount();
         }
 
         boolean isMine = targetUserId.equals(adminUserId);
-        return CommentResponse.of(savedComment, userInfo, isMine);
+        return CommentResponse.of(savedComment, userInfo, isMine, commentCount);
     }
 }

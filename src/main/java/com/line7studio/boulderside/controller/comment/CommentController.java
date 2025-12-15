@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import com.line7studio.boulderside.controller.comment.response.CommentCountResponse;
+
 @RestController
 @RequestMapping("/comments")
 @RequiredArgsConstructor
@@ -70,12 +72,12 @@ public class CommentController {
     }
 
     @DeleteMapping("/{domainType}/{domainId}/{commentId}")
-    public ResponseEntity<ApiResponse<Void>> deleteComment(
+    public ResponseEntity<ApiResponse<CommentCountResponse>> deleteComment(
             @PathVariable String domainType,
             @PathVariable Long domainId,
             @PathVariable Long commentId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        commentUseCase.deleteComment(commentId, userDetails.userId());
-        return ResponseEntity.ok(ApiResponse.success());
+        Integer count = commentUseCase.deleteComment(commentId, userDetails.userId());
+        return ResponseEntity.ok(ApiResponse.of(CommentCountResponse.of(count)));
     }
 }
