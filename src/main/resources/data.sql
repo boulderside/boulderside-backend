@@ -189,11 +189,11 @@ VALUES ('bouldertiger', -- nickname
         NOW() -- updated_at
        );
 
-INSERT INTO sectors (id, sector_name, area_code)
+INSERT INTO sectors (id, sector_name, area_code, created_at, updated_at)
 VALUES
-    (1, '을왕리', 'A-1'),
-    (2, '을왕리', 'A-2'),
-    (3, '을왕리', 'A-3');
+    (1, '을왕리', 'A-1', now(), now()),
+    (2, '을왕리', 'A-2', now(), now()),
+    (3, '을왕리', 'A-3', now(), now());
 
 INSERT INTO boulders (id, region_id, sector_id, name, description,
                       latitude, longitude, like_count, view_count, created_at, updated_at)
