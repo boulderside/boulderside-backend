@@ -30,15 +30,15 @@ public class SectorUseCase {
     @Transactional
     public SectorResponse createSector(CreateAdminSectorRequest request) {
         Sector sector = Sector.builder()
-            .sectorName(request.getSectorName())
-            .areaCode(request.getAreaCode())
+            .sectorName(request.sectorName())
+            .areaCode(request.areaCode())
             .build();
         return SectorResponse.from(sectorService.saveSector(sector));
     }
 
     @Transactional
     public SectorResponse updateSector(Long sectorId, UpdateAdminSectorRequest request) {
-        Sector updated = sectorService.updateSector(sectorId, request.getSectorName(), request.getAreaCode());
+        Sector updated = sectorService.updateSector(sectorId, request.sectorName(), request.areaCode());
         return SectorResponse.from(updated);
     }
 

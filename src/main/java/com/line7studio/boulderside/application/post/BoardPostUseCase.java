@@ -125,8 +125,8 @@ public class BoardPostUseCase {
 
         BoardPost savedPost = boardPostService.createBoardPost(
             user.getId(),
-            request.getTitle(),
-            request.getContent()
+            request.title(),
+            request.content()
         );
 
         return BoardPostResponse.of(savedPost, userInfo, true, 0L);
@@ -139,8 +139,8 @@ public class BoardPostUseCase {
 
         BoardPost post = boardPostService.updateBoardPost(
             postId,
-            request.getTitle(),
-            request.getContent(),
+            request.title(),
+            request.content(),
             user.getId()
         );
 
@@ -158,7 +158,7 @@ public class BoardPostUseCase {
 
     @Transactional
     public BoardPostResponse adminUpdateBoardPost(Long postId, UpdateBoardPostRequest request) {
-        BoardPost post = boardPostService.updateBoardPostAsAdmin(postId, request.getTitle(), request.getContent());
+        BoardPost post = boardPostService.updateBoardPostAsAdmin(postId, request.title(), request.content());
         User user = userService.getUserById(post.getUserId());
         UserInfo userInfo = UserInfo.from(user);
         Long commentCount = commentService.countCommentsByDomainIdAndCommentDomainType(postId, CommentDomainType.BOARD_POST);
@@ -177,8 +177,8 @@ public class BoardPostUseCase {
 
         BoardPost savedPost = boardPostService.createBoardPost(
             adminUser.getId(),
-            request.getTitle(),
-            request.getContent()
+            request.title(),
+            request.content()
         );
 
         return BoardPostResponse.of(savedPost, userInfo, true, 0L);

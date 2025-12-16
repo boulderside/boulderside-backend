@@ -3,74 +3,62 @@ package com.line7studio.boulderside.controller.route.response;
 import com.line7studio.boulderside.common.dto.ImageInfo;
 import com.line7studio.boulderside.common.enums.Level;
 import com.line7studio.boulderside.domain.feature.route.entity.Route;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class RouteResponse {
-	private Long routeId;
-	private BoulderInfo boulderInfo;
-	private String province;
-	private String city;
-	private String name;
-	private String pioneerName;
-	private Double latitude;
-	private Double longitude;
-	private String sectorName;
-	private String areaCode;
-	private Level routeLevel;
-	private Long likeCount;
-	private Boolean liked;
-	private Long viewCount;
-	private Long climberCount;
-	private Long commentCount;
-	private List<ImageInfo> imageInfoList;
-	private LocalDateTime createdAt;
-	private LocalDateTime updatedAt;
+public record RouteResponse(
+    Long routeId,
+    BoulderInfo boulderInfo,
+    String province,
+    String city,
+    String name,
+    String pioneerName,
+    Double latitude,
+    Double longitude,
+    String sectorName,
+    String areaCode,
+    Level routeLevel,
+    Long likeCount,
+    Boolean liked,
+    Long viewCount,
+    Long climberCount,
+    Long commentCount,
+    List<ImageInfo> imageInfoList,
+    LocalDateTime createdAt,
+    LocalDateTime updatedAt
+) {
+    public record BoulderInfo(
+        Long boulderId,
+        String name
+    ) {
+        public static BoulderInfo of(Long boulderId, String name) {
+            return new BoulderInfo(boulderId, name);
+        }
+    }
 
-	@Builder
-	public record BoulderInfo(
-		Long boulderId,
-		String name
-	) {
-		public static BoulderInfo of(Long boulderId, String name) {
-			return BoulderInfo.builder()
-				.boulderId(boulderId)
-				.name(name)
-				.build();
-		}
-	}
-
-	public static RouteResponse of(Route route, String province, String city, String boulderName, String sectorName, String areaCode,
-		List<ImageInfo> imageInfoList, Long likeCount, Boolean liked) {
-		return RouteResponse.builder()
-			.routeId(route.getId())
-			.boulderInfo(BoulderInfo.of(route.getBoulderId(), boulderName))
-			.province(province)
-			.city(city)
-			.name(route.getName())
-			.pioneerName(route.getPioneerName())
-			.latitude(route.getLatitude())
-			.longitude(route.getLongitude())
-			.sectorName(sectorName)
-			.areaCode(areaCode)
-			.routeLevel(route.getRouteLevel())
-			.likeCount(likeCount)
-			.liked(liked)
-			.viewCount(route.getViewCount())
-			.climberCount(route.getClimberCount())
-			.commentCount(route.getCommentCount())
-			.imageInfoList(imageInfoList)
-			.createdAt(route.getCreatedAt())
-			.updatedAt(route.getUpdatedAt())
-			.build();
-	}
+    public static RouteResponse of(Route route, String province, String city, String boulderName, String sectorName, String areaCode,
+        List<ImageInfo> imageInfoList, Long likeCount, Boolean liked) {
+        return new RouteResponse(
+            route.getId(),
+            BoulderInfo.of(route.getBoulderId(), boulderName),
+            province,
+            city,
+            route.getName(),
+            route.getPioneerName(),
+            route.getLatitude(),
+            route.getLongitude(),
+            sectorName,
+            areaCode,
+            route.getRouteLevel(),
+            likeCount,
+            liked,
+            route.getViewCount(),
+            route.getClimberCount(),
+            route.getCommentCount(),
+            imageInfoList,
+            route.getCreatedAt(),
+            route.getUpdatedAt()
+        );
+    }
 }

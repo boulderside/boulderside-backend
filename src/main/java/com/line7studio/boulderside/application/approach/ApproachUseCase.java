@@ -30,16 +30,16 @@ public class ApproachUseCase {
     @Transactional
     public ApproachResponse createApproach(CreateApproachRequest request) {
         Approach approach = Approach.builder()
-            .boulderId(request.getBoulderId())
-            .orderIndex(request.getOrderIndex())
-            .transportInfo(request.getTransportInfo())
-            .parkingInfo(request.getParkingInfo())
-            .duration(request.getDuration())
-            .tip(request.getTip())
+            .boulderId(request.boulderId())
+            .orderIndex(request.orderIndex())
+            .transportInfo(request.transportInfo())
+            .parkingInfo(request.parkingInfo())
+            .duration(request.duration())
+            .tip(request.tip())
             .build();
 
         Approach savedApproach = approachService.save(approach);
-        List<PointInfo> pointInfos = createPoints(savedApproach.getId(), request.getPoints());
+        List<PointInfo> pointInfos = createPoints(savedApproach.getId(), request.points());
         return ApproachResponse.of(savedApproach, pointInfos);
     }
 
@@ -47,19 +47,19 @@ public class ApproachUseCase {
     public ApproachResponse updateApproach(Long approachId, UpdateApproachRequest request) {
         Approach approach = approachService.getById(approachId);
         approach.update(
-            request.getBoulderId(),
-            request.getOrderIndex(),
-            request.getTransportInfo(),
-            request.getParkingInfo(),
-            request.getDuration(),
-            request.getTip()
+            request.boulderId(),
+            request.orderIndex(),
+            request.transportInfo(),
+            request.parkingInfo(),
+            request.duration(),
+            request.tip()
         );
 
         List<Point> existingPoints = pointService.findByApproachIdOrderByOrderIndexAsc(approachId);
         deletePointResources(existingPoints);
         pointService.deleteByApproachId(approachId);
 
-        List<PointInfo> pointInfos = createPoints(approachId, request.getPoints());
+        List<PointInfo> pointInfos = createPoints(approachId, request.points());
         return ApproachResponse.of(approach, pointInfos);
     }
 
@@ -127,10 +127,10 @@ public class ApproachUseCase {
         List<Point> points = pointRequests.stream()
             .map(pointRequest -> Point.builder()
                 .approachId(approachId)
-                .orderIndex(pointRequest.getOrderIndex())
-                .name(pointRequest.getName())
-                .description(pointRequest.getDescription())
-                .note(pointRequest.getNote())
+                .orderIndex(pointRequest.orderIndex())
+                .name(pointRequest.name())
+                .description(pointRequest.description())
+                .note(pointRequest.note())
                 .build())
             .toList();
 

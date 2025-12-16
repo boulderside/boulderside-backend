@@ -35,7 +35,7 @@ public class AdminUserController {
 	public ResponseEntity<ApiResponse<AdminUserResponse>> updateUserRole(
 		@PathVariable Long userId,
 		@Valid @RequestBody UpdateUserRoleRequest request) {
-		AdminUserResponse response = userUseCase.updateUserRole(userId, request.getUserRole());
+		AdminUserResponse response = userUseCase.updateUserRole(userId, request.userRole());
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 }

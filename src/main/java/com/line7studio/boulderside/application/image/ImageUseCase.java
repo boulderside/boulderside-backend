@@ -44,11 +44,11 @@ public class ImageUseCase {
 	@Transactional
 	public AdminImageResponse createImage(CreateAdminImageRequest request) {
 		Image image = Image.builder()
-			.domainId(request.getDomainId())
-			.imageDomainType(request.getImageDomainType())
-			.imageUrl(request.getImageUrl())
-			.orderIndex(request.getOrderIndex())
-			.originalFileName(request.getOriginalFileName())
+			.domainId(request.domainId())
+			.imageDomainType(request.imageDomainType())
+			.imageUrl(request.imageUrl())
+			.orderIndex(request.orderIndex())
+			.originalFileName(request.originalFileName())
 			.build();
 		Image saved = imageService.save(image);
 		return AdminImageResponse.from(saved);
@@ -57,8 +57,8 @@ public class ImageUseCase {
 	@Transactional
 	public AdminImageResponse updateImage(Long imageId, UpdateAdminImageRequest request) {
 		Image image = imageService.getById(imageId);
-		image.update(request.getDomainId(), request.getImageDomainType(), request.getImageUrl(), request.getOrderIndex(),
-			request.getOriginalFileName());
+		image.update(request.domainId(), request.imageDomainType(), request.imageUrl(), request.orderIndex(),
+			request.originalFileName());
 		return AdminImageResponse.from(image);
 	}
 

@@ -159,17 +159,17 @@ public class RouteUseCase {
 
 	@Transactional
 	public RouteResponse createRoute(CreateRouteRequest request) {
-		Boulder boulder = boulderService.getBoulderById(request.getBoulderId());
+		Boulder boulder = boulderService.getBoulderById(request.boulderId());
 		Region region = regionService.getRegionById(boulder.getRegionId());
 		Sector sector = sectorService.getSectorById(boulder.getSectorId());
 
 		Route route = Route.builder()
-			.boulderId(request.getBoulderId())
+			.boulderId(request.boulderId())
 			.regionId(boulder.getRegionId())
 			.sectorId(boulder.getSectorId())
-			.name(request.getName())
-			.pioneerName(request.getPioneerName())
-			.routeLevel(request.getRouteLevel())
+			.name(request.name())
+			.pioneerName(request.pioneerName())
+			.routeLevel(request.routeLevel())
 			.latitude(boulder.getLatitude())
 			.longitude(boulder.getLongitude())
 			.likeCount(0L)
@@ -195,17 +195,17 @@ public class RouteUseCase {
 
 	@Transactional
 	public RouteResponse updateRoute(Long userId, Long routeId, UpdateRouteRequest request) {
-		Boulder boulder = boulderService.getBoulderById(request.getBoulderId());
+		Boulder boulder = boulderService.getBoulderById(request.boulderId());
 		Region region = regionService.getRegionById(boulder.getRegionId());
 		Sector sector = sectorService.getSectorById(boulder.getSectorId());
 
 		Route routeDetails = Route.builder()
-			.boulderId(request.getBoulderId())
+			.boulderId(request.boulderId())
 			.regionId(boulder.getRegionId())
 			.sectorId(boulder.getSectorId())
-			.name(request.getName())
-			.pioneerName(request.getPioneerName())
-			.routeLevel(request.getRouteLevel())
+			.name(request.name())
+			.pioneerName(request.pioneerName())
+			.routeLevel(request.routeLevel())
 			.latitude(boulder.getLatitude())
 			.longitude(boulder.getLongitude())
 			.build();

@@ -126,9 +126,9 @@ public class MatePostUseCase {
 
         MatePost savedPost = matePostService.createMatePost(
             user.getId(),
-            request.getTitle(),
-            request.getContent(),
-            request.getMeetingDate()
+            request.title(),
+            request.content(),
+            request.meetingDate()
         );
 
         return MatePostResponse.of(savedPost, userInfo, true, 0L);
@@ -141,9 +141,9 @@ public class MatePostUseCase {
 
         MatePost post = matePostService.updateMatePost(
             postId,
-            request.getTitle(),
-            request.getContent(),
-            request.getMeetingDate(),
+            request.title(),
+            request.content(),
+            request.meetingDate(),
             user.getId()
         );
 
@@ -166,9 +166,9 @@ public class MatePostUseCase {
 
         MatePost savedPost = matePostService.createMatePost(
             adminUser.getId(),
-            request.getTitle(),
-            request.getContent(),
-            request.getMeetingDate()
+            request.title(),
+            request.content(),
+            request.meetingDate()
         );
 
         return MatePostResponse.of(savedPost, userInfo, true, 0L);
@@ -178,9 +178,9 @@ public class MatePostUseCase {
     public MatePostResponse adminUpdateMatePost(Long postId, UpdateMatePostRequest request) {
         MatePost post = matePostService.updateMatePostAsAdmin(
             postId,
-            request.getTitle(),
-            request.getContent(),
-            request.getMeetingDate()
+            request.title(),
+            request.content(),
+            request.meetingDate()
         );
 
         User user = userService.getUserById(post.getUserId());

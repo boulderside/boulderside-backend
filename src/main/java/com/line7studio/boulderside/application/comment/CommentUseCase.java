@@ -154,7 +154,7 @@ public class CommentUseCase {
                 user.getId(),
                 postId,
                 commentDomainType,
-                request.getContent()
+                request.content()
         );
 
         Long commentCount = 0L;
@@ -178,7 +178,7 @@ public class CommentUseCase {
 
         Comment comment = commentService.updateComment(
                 commentId,
-                request.getContent(),
+                request.content(),
                 user.getId()
         );
 
@@ -220,7 +220,7 @@ public class CommentUseCase {
 
     @Transactional
     public CommentResponse adminUpdateComment(Long commentId, UpdateCommentRequest request) {
-        Comment comment = commentService.updateCommentAsAdmin(commentId, request.getContent());
+        Comment comment = commentService.updateCommentAsAdmin(commentId, request.content());
         User user = userService.getUserById(comment.getUserId());
         UserInfo userInfo = UserInfo.from(user);
 
@@ -257,26 +257,26 @@ public class CommentUseCase {
 
     @Transactional
     public CommentResponse adminCreateComment(CreateAdminCommentRequest request, Long adminUserId) {
-        Long targetUserId = request.getUserId() != null ? request.getUserId() : adminUserId;
+        Long targetUserId = request.userId() != null ? request.userId() : adminUserId;
         User user = userService.getUserById(targetUserId);
         UserInfo userInfo = UserInfo.from(user);
 
-        CommentDomainType domainType = CommentDomainType.fromPath(request.getDomainType());
+        CommentDomainType domainType = CommentDomainType.fromPath(request.domainType());
 
         Comment savedComment = commentService.createComment(
             user.getId(),
-            request.getDomainId(),
+            request.domainId(),
             domainType,
-            request.getContent()
+            request.content()
         );
 
         Long commentCount = 0L;
         if (domainType == CommentDomainType.BOARD_POST) {
-            commentCount = boardPostReadService.incrementCommentCount(request.getDomainId());
+            commentCount = boardPostReadService.incrementCommentCount(request.domainId());
         } else if (domainType == CommentDomainType.MATE_POST) {
-            commentCount = matePostReadService.incrementCommentCount(request.getDomainId());
+            commentCount = matePostReadService.incrementCommentCount(request.domainId());
         } else if (domainType == CommentDomainType.ROUTE) {
-            Route route = routeService.getRouteById(request.getDomainId());
+            Route route = routeService.getRouteById(request.domainId());
             route.incrementCommentCount();
             commentCount = route.getCommentCount();
         }

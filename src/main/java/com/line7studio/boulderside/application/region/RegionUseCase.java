@@ -30,10 +30,10 @@ public class RegionUseCase {
     @Transactional
     public RegionResponse createRegion(CreateAdminRegionRequest request) {
         Region region = Region.builder()
-            .officialDistrictCode(request.getOfficialDistrictCode())
-            .province(request.getProvince())
-            .city(request.getCity())
-            .regionCode(request.getRegionCode())
+            .officialDistrictCode(request.officialDistrictCode())
+            .province(request.province())
+            .city(request.city())
+            .regionCode(request.regionCode())
             .build();
         Region saved = regionService.saveRegion(region);
         return RegionResponse.from(saved);
@@ -43,10 +43,10 @@ public class RegionUseCase {
     public RegionResponse updateRegion(Long regionId, UpdateAdminRegionRequest request) {
         Region updated = regionService.updateRegion(
             regionId,
-            request.getOfficialDistrictCode(),
-            request.getProvince(),
-            request.getCity(),
-            request.getRegionCode());
+            request.officialDistrictCode(),
+            request.province(),
+            request.city(),
+            request.regionCode());
         return RegionResponse.from(updated);
     }
 

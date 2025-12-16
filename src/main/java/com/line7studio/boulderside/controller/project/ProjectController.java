@@ -51,11 +51,11 @@ public class ProjectController {
 	public ResponseEntity<ApiResponse<ProjectResponse>> createProject(
 		@Valid @RequestBody ProjectRequest request,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		if (request.getRouteId() == null) {
+		if (request.routeId() == null) {
 			throw new ValidationException(ErrorCode.MISSING_REQUIRED_FIELD);
 		}
 		ProjectResponse response = projectUseCase.createProject(
-			userDetails.userId(), request.getRouteId(), request.getCompleted(), request.getMemo(), request.getAttemptHistories());
+			userDetails.userId(), request.routeId(), request.completed(), request.memo(), request.attemptHistories());
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
@@ -65,7 +65,7 @@ public class ProjectController {
 		@Valid @RequestBody ProjectRequest request,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 		ProjectResponse response = projectUseCase.updateProject(
-			userDetails.userId(), projectId, request.getCompleted(), request.getMemo(), request.getAttemptHistories());
+			userDetails.userId(), projectId, request.completed(), request.memo(), request.attemptHistories());
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 

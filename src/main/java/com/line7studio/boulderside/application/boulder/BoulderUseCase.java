@@ -207,30 +207,30 @@ public class BoulderUseCase {
 
     @Transactional
 	public BoulderResponse createBoulder(CreateBoulderRequest request) {
-		Region region = regionService.getRegionByProvinceAndCity(request.getProvince(), request.getCity());
+		Region region = regionService.getRegionByProvinceAndCity(request.province(), request.city());
 
-		Sector sector = sectorService.getSectorById(request.getSectorId());
+		Sector sector = sectorService.getSectorById(request.sectorId());
 
 		Boulder boulder = Boulder.builder()
 			.regionId(region.getId())
-			.sectorId(request.getSectorId())
-			.name(request.getName())
-			.description(request.getDescription())
-			.latitude(request.getLatitude())
-			.longitude(request.getLongitude())
+			.sectorId(request.sectorId())
+			.name(request.name())
+			.description(request.description())
+			.latitude(request.latitude())
+			.longitude(request.longitude())
 			.likeCount(0L)
 			.viewCount(0L)
 			.build();
 
 		Boulder savedBoulder = boulderService.createBoulder(boulder);
 		List<ImageInfo> imageInfoList = Collections.emptyList();
-		if (request.getImageUrlList() != null && !request.getImageUrlList().isEmpty()) {
+		if (request.imageUrlList() != null && !request.imageUrlList().isEmpty()) {
 			List<Image> newImageList = new ArrayList<>();
-			for (int i = 0; i < request.getImageUrlList().size(); i++) {
+			for (int i = 0; i < request.imageUrlList().size(); i++) {
 				Image image = Image.builder()
                     .imageDomainType(ImageDomainType.BOULDER)
                     .domainId(savedBoulder.getId())
-					.imageUrl(request.getImageUrlList().get(i))
+					.imageUrl(request.imageUrlList().get(i))
 					.orderIndex(i)
 					.build();
 				newImageList.add(image);
@@ -257,30 +257,30 @@ public class BoulderUseCase {
 
     @Transactional
 	public BoulderResponse updateBoulder(Long userId, Long boulderId, UpdateBoulderRequest request) {
-		Region region = regionService.getRegionByProvinceAndCity(request.getProvince(), request.getCity());
+		Region region = regionService.getRegionByProvinceAndCity(request.province(), request.city());
 
-		Sector sector = sectorService.getSectorById(request.getSectorId());
+		Sector sector = sectorService.getSectorById(request.sectorId());
 
 		Boulder boulder = boulderService.updateBoulder(
 			boulderId,
 			region.getId(),
-			request.getSectorId(),
-			request.getName(),
-			request.getDescription(),
-			request.getLatitude(),
-			request.getLongitude()
+			request.sectorId(),
+			request.name(),
+			request.description(),
+			request.latitude(),
+			request.longitude()
 		);
 
 		imageService.deleteAllImagesByImageDomainTypeAndDomainId(ImageDomainType.BOULDER, boulderId);
 
 		List<ImageInfo> imageInfoList = Collections.emptyList();
-		if (request.getImageUrlList() != null && !request.getImageUrlList().isEmpty()) {
+		if (request.imageUrlList() != null && !request.imageUrlList().isEmpty()) {
 			List<Image> newImageList = new ArrayList<>();
-			for (int i = 0; i < request.getImageUrlList().size(); i++) {
+			for (int i = 0; i < request.imageUrlList().size(); i++) {
 				Image image = Image.builder()
                     .imageDomainType(ImageDomainType.BOULDER)
                     .domainId(boulderId)
-					.imageUrl(request.getImageUrlList().get(i))
+					.imageUrl(request.imageUrlList().get(i))
 					.orderIndex(i)
 					.build();
 				newImageList.add(image);

@@ -105,8 +105,8 @@ public class ProjectUseCase {
 		}
 		return attemptHistories.stream()
 			.map(history -> ProjectAttemptHistory.builder()
-				.attemptedDate(history.getAttemptedDate())
-				.attemptCount(history.getAttemptCount())
+				.attemptedDate(history.attemptedDate())
+				.attemptCount(history.attemptCount())
 				.build())
 			.toList();
 	}
