@@ -1,8 +1,8 @@
-package com.line7studio.boulderside.domain.feature.weather.external.mapper;
+package com.line7studio.boulderside.infrastructure.weather.mapper;
 
 import com.line7studio.boulderside.application.weather.dto.DailyWeatherInfoDto;
 import com.line7studio.boulderside.common.util.TimeUtil;
-import com.line7studio.boulderside.domain.feature.weather.external.dto.OneCallResponse;
+import com.line7studio.boulderside.infrastructure.weather.dto.OneCallResponse;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.domain.feature.weather.external.dto;
+package com.line7studio.boulderside.infrastructure.weather.dto;
 
 import java.util.List;
 

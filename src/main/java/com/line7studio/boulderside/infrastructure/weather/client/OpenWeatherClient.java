@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.domain.feature.weather.external.client;
+package com.line7studio.boulderside.infrastructure.weather.client;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
@@ -9,7 +9,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.common.exception.ExternalApiException;
-import com.line7studio.boulderside.domain.feature.weather.external.dto.OneCallResponse;
+import com.line7studio.boulderside.infrastructure.weather.dto.OneCallResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

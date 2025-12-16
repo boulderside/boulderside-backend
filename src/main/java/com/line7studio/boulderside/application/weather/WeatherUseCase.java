@@ -6,9 +6,9 @@ import com.line7studio.boulderside.domain.feature.boulder.service.BoulderService
 import com.line7studio.boulderside.domain.feature.weather.entity.Weather;
 import com.line7studio.boulderside.domain.feature.weather.mapper.WeatherMapper;
 import com.line7studio.boulderside.domain.feature.weather.service.WeatherService;
-import com.line7studio.boulderside.domain.feature.weather.external.client.OpenWeatherClient;
-import com.line7studio.boulderside.domain.feature.weather.external.dto.OneCallResponse;
-import com.line7studio.boulderside.domain.feature.weather.external.mapper.WeatherApiMapper;
+import com.line7studio.boulderside.infrastructure.weather.client.OpenWeatherClient;
+import com.line7studio.boulderside.infrastructure.weather.dto.OneCallResponse;
+import com.line7studio.boulderside.infrastructure.weather.mapper.WeatherApiMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
