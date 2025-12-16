@@ -17,7 +17,7 @@ import com.line7studio.boulderside.domain.feature.post.service.BoardPostReadServ
 import com.line7studio.boulderside.domain.feature.post.service.BoardPostService;
 import com.line7studio.boulderside.domain.feature.post.service.MatePostReadService;
 import com.line7studio.boulderside.domain.feature.post.service.MatePostService;
-import com.line7studio.boulderside.domain.feature.route.Route;
+import com.line7studio.boulderside.domain.feature.route.entity.Route;
 import com.line7studio.boulderside.domain.feature.route.service.RouteService;
 import com.line7studio.boulderside.domain.feature.user.entity.User;
 import com.line7studio.boulderside.domain.feature.user.service.UserService;

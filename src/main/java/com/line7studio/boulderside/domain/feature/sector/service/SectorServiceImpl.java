@@ -2,7 +2,7 @@ package com.line7studio.boulderside.domain.feature.sector.service;
 
 import com.line7studio.boulderside.common.exception.DomainException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.domain.feature.sector.Sector;
+import com.line7studio.boulderside.domain.feature.sector.entity.Sector;
 import com.line7studio.boulderside.domain.feature.sector.repository.SectorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;

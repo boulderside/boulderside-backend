@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.sector.service;
 
-import com.line7studio.boulderside.domain.feature.sector.Sector;
+import com.line7studio.boulderside.domain.feature.sector.entity.Sector;
 
 import java.util.List;
 

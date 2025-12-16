@@ -2,7 +2,7 @@ package com.line7studio.boulderside.controller.route.response;
 
 import com.line7studio.boulderside.common.dto.ImageInfo;
 import com.line7studio.boulderside.common.enums.Level;
-import com.line7studio.boulderside.domain.feature.route.Route;
+import com.line7studio.boulderside.domain.feature.route.entity.Route;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

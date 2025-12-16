@@ -1,5 +1,6 @@
-package com.line7studio.boulderside.domain.feature.sector;
+package com.line7studio.boulderside.domain.feature.sector.entity;
 
+import com.line7studio.boulderside.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Sector {
+public class Sector extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

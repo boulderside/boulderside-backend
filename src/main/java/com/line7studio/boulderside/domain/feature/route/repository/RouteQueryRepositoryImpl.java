@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.route.repository;
 
-import com.line7studio.boulderside.domain.feature.route.Route;
+import com.line7studio.boulderside.domain.feature.route.entity.Route;
 import com.line7studio.boulderside.domain.feature.route.enums.RouteSortType;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Objects;
 
-import static com.line7studio.boulderside.domain.feature.route.QRoute.route;
+import static com.line7studio.boulderside.domain.feature.route.entity.QRoute.route;
 
 @Repository
 @RequiredArgsConstructor

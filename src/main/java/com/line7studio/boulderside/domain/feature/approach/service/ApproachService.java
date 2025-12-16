@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.approach.service;
 
-import com.line7studio.boulderside.domain.feature.approach.Approach;
+import com.line7studio.boulderside.domain.feature.approach.entity.Approach;
 
 import java.util.List;
 

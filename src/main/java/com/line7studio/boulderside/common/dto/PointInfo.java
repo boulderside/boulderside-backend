@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.common.dto;
 
-import com.line7studio.boulderside.domain.feature.point.Point;
+import com.line7studio.boulderside.domain.feature.point.entity.Point;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

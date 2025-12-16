@@ -13,7 +13,7 @@ import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;
 import com.line7studio.boulderside.domain.feature.image.service.ImageService;
 import com.line7studio.boulderside.domain.feature.region.entity.Region;
 import com.line7studio.boulderside.domain.feature.region.service.RegionService;
-import com.line7studio.boulderside.domain.feature.sector.Sector;
+import com.line7studio.boulderside.domain.feature.sector.entity.Sector;
 import com.line7studio.boulderside.domain.feature.sector.service.SectorService;
 import com.line7studio.boulderside.domain.feature.route.service.RouteService;
 import com.line7studio.boulderside.domain.feature.boulder.interaction.like.service.UserBoulderLikeService;

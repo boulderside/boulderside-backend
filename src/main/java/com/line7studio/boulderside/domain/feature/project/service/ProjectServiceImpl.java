@@ -6,7 +6,7 @@ import com.line7studio.boulderside.domain.feature.project.entity.Project;
 import com.line7studio.boulderside.domain.feature.project.entity.ProjectAttemptHistory;
 import com.line7studio.boulderside.domain.feature.project.enums.ProjectSortType;
 import com.line7studio.boulderside.domain.feature.project.repository.ProjectRepository;
-import com.line7studio.boulderside.domain.feature.route.Route;
+import com.line7studio.boulderside.domain.feature.route.entity.Route;
 import com.line7studio.boulderside.domain.feature.route.service.RouteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;

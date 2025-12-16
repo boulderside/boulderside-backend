@@ -2,7 +2,7 @@ package com.line7studio.boulderside.domain.feature.approach.service;
 
 import com.line7studio.boulderside.common.exception.DatabaseException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.domain.feature.approach.Approach;
+import com.line7studio.boulderside.domain.feature.approach.entity.Approach;
 import com.line7studio.boulderside.domain.feature.approach.repository.ApproachRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -3,7 +3,7 @@ package com.line7studio.boulderside.application.sector;
 import com.line7studio.boulderside.controller.sector.request.CreateAdminSectorRequest;
 import com.line7studio.boulderside.controller.sector.request.UpdateAdminSectorRequest;
 import com.line7studio.boulderside.controller.sector.response.SectorResponse;
-import com.line7studio.boulderside.domain.feature.sector.Sector;
+import com.line7studio.boulderside.domain.feature.sector.entity.Sector;
 import com.line7studio.boulderside.domain.feature.sector.service.SectorService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.route.service;
 
-import com.line7studio.boulderside.domain.feature.route.Route;
+import com.line7studio.boulderside.domain.feature.route.entity.Route;
 import com.line7studio.boulderside.domain.feature.route.enums.RouteSortType;
 
 import java.util.List;

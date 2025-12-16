@@ -6,11 +6,11 @@ import com.line7studio.boulderside.controller.approach.request.CreateApproachReq
 import com.line7studio.boulderside.controller.approach.request.CreatePointRequest;
 import com.line7studio.boulderside.controller.approach.request.UpdateApproachRequest;
 import com.line7studio.boulderside.controller.approach.response.ApproachResponse;
-import com.line7studio.boulderside.domain.feature.approach.Approach;
+import com.line7studio.boulderside.domain.feature.approach.entity.Approach;
 import com.line7studio.boulderside.domain.feature.approach.service.ApproachService;
 import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;
 import com.line7studio.boulderside.domain.feature.image.service.ImageService;
-import com.line7studio.boulderside.domain.feature.point.Point;
+import com.line7studio.boulderside.domain.feature.point.entity.Point;
 import com.line7studio.boulderside.domain.feature.point.service.PointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

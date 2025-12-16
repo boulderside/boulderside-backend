@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.sector.response;
 
-import com.line7studio.boulderside.domain.feature.sector.Sector;
+import com.line7studio.boulderside.domain.feature.sector.entity.Sector;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -5,7 +5,7 @@ import com.line7studio.boulderside.controller.route.response.LikedRoutePageRespo
 import com.line7studio.boulderside.controller.route.response.RouteLikeResponse;
 import com.line7studio.boulderside.domain.feature.boulder.entity.Boulder;
 import com.line7studio.boulderside.domain.feature.boulder.service.BoulderService;
-import com.line7studio.boulderside.domain.feature.route.Route;
+import com.line7studio.boulderside.domain.feature.route.entity.Route;
 import com.line7studio.boulderside.domain.feature.route.interaction.like.entity.UserRouteLike;
 import com.line7studio.boulderside.domain.feature.route.interaction.like.service.UserRouteLikeService;
 import com.line7studio.boulderside.domain.feature.route.service.RouteService;
