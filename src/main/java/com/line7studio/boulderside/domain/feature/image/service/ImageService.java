@@ -1,28 +1,62 @@
 package com.line7studio.boulderside.domain.feature.image.service;
 
+import com.line7studio.boulderside.common.exception.DomainException;
+import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.domain.feature.image.entity.Image;
 import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;
+import com.line7studio.boulderside.domain.feature.image.repository.ImageRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-public interface ImageService {
-	List<Image> getAllImages();
+@Service
+@RequiredArgsConstructor
+public class ImageService {
 
-	Image getById(Long imageId);
+	private final ImageRepository imageRepository;
 
-	List<Image> getImageListByImageDomainTypeAndDomainIdList(ImageDomainType imageDomainType, List<Long> targetIdList);
+	public List<Image> getAllImages() {
+		return imageRepository.findAll();
+	}
 
-	List<Image> getImageListByImageDomainTypeAndDomainId(ImageDomainType imageDomainType, Long targetId);
+	public Image getById(Long imageId) {
+		return imageRepository.findById(imageId)
+			.orElseThrow(() -> new DomainException(ErrorCode.IMAGE_NOT_FOUND));
+	}
 
-	List<Image> getImageListByImageDomainTypeAndDomainIdAndOrderIndex(ImageDomainType imageDomainType, Long targetId, Integer orderIndex);
+	public List<Image> getImageListByImageDomainTypeAndDomainIdList(ImageDomainType imageDomainType, List<Long> domainIdList) {
+		return imageRepository.findByImageDomainTypeAndDomainIdIn(imageDomainType, domainIdList);
+	}
 
-	List<Image> getImageListByImageDomainType(ImageDomainType imageDomainType);
+	public List<Image> getImageListByImageDomainTypeAndDomainId(ImageDomainType imageDomainType, Long domainId) {
+		return imageRepository.findByImageDomainTypeAndDomainId(imageDomainType, domainId);
+	}
 
-	List<Image> createImages(List<Image> imageList);
+	public List<Image> getImageListByImageDomainTypeAndDomainIdAndOrderIndex(ImageDomainType imageDomainType, Long domainId, Integer orderIndex) {
+		return imageRepository.findByImageDomainTypeAndDomainIdAndOrderIndex(imageDomainType, domainId, orderIndex);
+	}
 
-	Image save(Image image);
+	public List<Image> getImageListByImageDomainType(ImageDomainType imageDomainType) {
+		return imageRepository.findByImageDomainType(imageDomainType);
+	}
 
-	void deleteById(Long imageId);
+	public List<Image> createImages(List<Image> imageList) {
+		return imageRepository.saveAll(imageList);
+	}
 
-	void deleteAllImagesByImageDomainTypeAndDomainId(ImageDomainType imageDomainType, Long targetId);
+	public Image save(Image image) {
+		return imageRepository.save(image);
+	}
+
+	public void deleteById(Long imageId) {
+		if (!imageRepository.existsById(imageId)) {
+			throw new DomainException(ErrorCode.IMAGE_NOT_FOUND);
+		}
+		imageRepository.deleteById(imageId);
+	}
+
+	public void deleteAllImagesByImageDomainTypeAndDomainId(ImageDomainType imageDomainType, Long domainId) {
+		imageRepository.deleteByImageDomainTypeAndDomainId(imageDomainType, domainId);
+	}
 }

@@ -1,25 +1,125 @@
 package com.line7studio.boulderside.domain.feature.project.service;
 
-import java.util.List;
-
+import com.line7studio.boulderside.common.exception.DomainException;
+import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.domain.feature.project.entity.Project;
 import com.line7studio.boulderside.domain.feature.project.entity.ProjectAttemptHistory;
 import com.line7studio.boulderside.domain.feature.project.enums.ProjectSortType;
+import com.line7studio.boulderside.domain.feature.project.repository.ProjectRepository;
+import com.line7studio.boulderside.domain.feature.route.entity.Route;
+import com.line7studio.boulderside.domain.feature.route.service.RouteService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-public interface ProjectService {
-	Project create(Long userId, Long routeId, boolean completed, String memo,
-		List<ProjectAttemptHistory> attemptHistories);
+import java.util.ArrayList;
+import java.util.List;
 
-	Project update(Long userId, Long projectId, boolean completed, String memo,
-		List<ProjectAttemptHistory> attemptHistories);
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class ProjectService {
+	private final ProjectRepository projectRepository;
+	private final RouteService routeService;
 
-	Project get(Long userId, Long projectId);
+	public Project create(Long userId, Long routeId, boolean completed, String memo,
+		List<ProjectAttemptHistory> attemptHistories) {
+		projectRepository.findByUserIdAndRouteId(userId, routeId)
+			.ifPresent(existing -> {
+				throw new DomainException(ErrorCode.ROUTE_COMPLETION_ALREADY_EXISTS);
+			});
 
-	Project getByRoute(Long userId, Long routeId);
+		Project project = Project.builder()
+			.userId(userId)
+			.routeId(routeId)
+			.completed(completed)
+			.memo(memo)
+			.attemptHistories(copyAttemptsOrDefault(attemptHistories))
+			.build();
 
-	List<Project> getAll(Long userId);
+		Route route = routeService.getRouteById(routeId);
+		Project saved = projectRepository.save(project);
+		if (completed) {
+			route.incrementClimberCount();
+		}
+		return saved;
+	}
 
-	List<Project> getByUser(Long userId, Boolean isCompleted, Long cursor, int size, ProjectSortType sortType);
+	public Project update(Long userId, Long projectId, boolean completed, String memo,
+		List<ProjectAttemptHistory> attemptHistories) {
+		Project project = get(userId, projectId);
+		Long routeId = project.getRouteId();
+		boolean wasCompleted = Boolean.TRUE.equals(project.getCompleted());
+		if (wasCompleted != completed) {
+			Route route = routeService.getRouteById(routeId);
+			if (completed) {
+				route.incrementClimberCount();
+			} else if (wasCompleted) {
+				route.decrementClimberCount();
+			}
+		}
+		project.update(completed, memo, copyAttempts(attemptHistories));
+		return project;
+	}
 
-	void delete(Long userId, Long projectId);
+	@Transactional(readOnly = true)
+	public Project get(Long userId, Long projectId) {
+		return projectRepository.findByIdAndUserId(projectId, userId)
+			.orElseThrow(() -> new DomainException(ErrorCode.ROUTE_COMPLETION_NOT_FOUND));
+	}
+
+	@Transactional(readOnly = true)
+	public Project getByRoute(Long userId, Long routeId) {
+		return projectRepository.findByUserIdAndRouteId(userId, routeId)
+			.orElseThrow(() -> new DomainException(ErrorCode.ROUTE_COMPLETION_NOT_FOUND));
+	}
+
+	@Transactional(readOnly = true)
+	public List<Project> getAll(Long userId) {
+		return projectRepository.findAllByUserId(userId);
+	}
+
+	@Transactional(readOnly = true)
+	public List<Project> getByUser(Long userId, Boolean isCompleted, Long cursor, int size, ProjectSortType sortType) {
+		String sortField = getSortField(sortType);
+		Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, sortField).and(Sort.by(Sort.Direction.DESC, "id")));
+		if (isCompleted == null) {
+			if (cursor == null) {
+				return projectRepository.findByUserId(userId, pageable);
+			}
+			return projectRepository.findByUserIdAndIdLessThan(userId, cursor, pageable);
+		}
+		if (cursor == null) {
+			return projectRepository.findByUserIdAndCompleted(userId, isCompleted, pageable);
+		}
+		return projectRepository.findByUserIdAndCompletedAndIdLessThan(userId, isCompleted, cursor,
+			pageable);
+	}
+
+	private String getSortField(ProjectSortType sortType) {
+		return switch (sortType) {
+			case LATEST_CREATED -> "createdAt";
+			case LATEST_UPDATED -> "updatedAt";
+		};
+	}
+
+	public void delete(Long userId, Long projectId) {
+		Project project = get(userId, projectId);
+		Long routeId = project.getRouteId();
+		projectRepository.delete(project);
+		if (Boolean.TRUE.equals(project.getCompleted())) {
+			routeService.getRouteById(routeId).decrementClimberCount();
+		}
+	}
+
+	private List<ProjectAttemptHistory> copyAttempts(List<ProjectAttemptHistory> attemptHistories) {
+		return attemptHistories == null ? null : new ArrayList<>(attemptHistories);
+	}
+
+	private List<ProjectAttemptHistory> copyAttemptsOrDefault(List<ProjectAttemptHistory> attemptHistories) {
+		return attemptHistories == null ? new ArrayList<>() : new ArrayList<>(attemptHistories);
+	}
 }

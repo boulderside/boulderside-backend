@@ -1,13 +1,29 @@
 package com.line7studio.boulderside.domain.feature.weather.service;
 
 import com.line7studio.boulderside.domain.feature.weather.entity.Weather;
+import com.line7studio.boulderside.domain.feature.weather.repository.WeatherRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-public interface WeatherService {
-    List<Weather> getAllWeatherByBoulderId(Long boulderId);
+@Service
+@RequiredArgsConstructor
+public class WeatherService {
+    private final WeatherRepository weatherRepository;
 
-    void deleteAll();
+    public List<Weather> getAllWeatherByBoulderId(Long boulderId) {
+        return weatherRepository.findAllByBoulderId(boulderId);
+    }
 
-    void saveAll(List<Weather> allWeatherData);
+    @Transactional
+    public void deleteAll() {
+        weatherRepository.deleteAll();
+    }
+
+    @Transactional
+    public void saveAll(List<Weather> weatherList) {
+        weatherRepository.saveAll(weatherList);
+    }
 }
