@@ -50,7 +50,7 @@ public class MatePostService {
     }
 
     public MatePost createMatePost(Long userId, String title, String content, LocalDate meetingDate) {
-        validateMeetingDate(meetingDate);
+        // Entity의 정적 팩토리 메서드가 검증을 수행
         MatePost matePost = MatePost.create(userId, title, content, meetingDate);
         return matePostRepository.save(matePost);
     }
@@ -59,10 +59,10 @@ public class MatePostService {
         MatePost matePost = matePostRepository.findById(postId)
             .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
-        validateOwner(matePost.getUserId(), userId);
-        validateMeetingDate(meetingDate);
-
+        // Entity가 소유자 검증 및 업데이트 검증 수행
+        matePost.verifyOwner(userId);
         matePost.update(title, content, meetingDate);
+
         return matePostRepository.save(matePost);
     }
 
@@ -70,7 +70,8 @@ public class MatePostService {
         MatePost matePost = matePostRepository.findById(postId)
             .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
-        validateOwner(matePost.getUserId(), userId);
+        // Entity가 소유자 검증 수행
+        matePost.verifyOwner(userId);
         matePostRepository.deleteById(postId);
     }
 
@@ -78,7 +79,7 @@ public class MatePostService {
         MatePost matePost = matePostRepository.findById(postId)
             .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
-        validateMeetingDate(meetingDate);
+        // Entity의 update가 검증 수행
         matePost.update(title, content, meetingDate);
         return matePostRepository.save(matePost);
     }
@@ -88,21 +89,5 @@ public class MatePostService {
             .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
         matePostRepository.delete(matePost);
-    }
-
-    private void validateOwner(Long ownerId, Long userId) {
-        if (!ownerId.equals(userId)) {
-            throw new BusinessException(ErrorCode.NO_PERMISSION, "게시글 작업은 작성자만 가능합니다.");
-        }
-    }
-
-    private void validateMeetingDate(LocalDate meetingDate) {
-        if (meetingDate == null) {
-            throw new BusinessException(ErrorCode.MISSING_REQUIRED_FIELD, "동행 게시글에는 meetingDate가 필요합니다.");
-        }
-
-        if (meetingDate.isBefore(LocalDate.now())) {
-            throw new BusinessException(ErrorCode.CONSTRAINT_VIOLATION, "meetingDate는 현재 시간보다 이후여야 합니다.");
-        }
     }
 }

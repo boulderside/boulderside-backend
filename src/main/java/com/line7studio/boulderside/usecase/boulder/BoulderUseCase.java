@@ -84,17 +84,15 @@ public class BoulderUseCase {
 		Region region = regionService.getRegionByProvinceAndCity(request.province(), request.city());
 		Sector sector = sectorService.getSectorById(request.sectorId());
 
-		// Request → Domain 변환
-		Boulder boulder = Boulder.builder()
-			.regionId(region.getId())
-			.sectorId(request.sectorId())
-			.name(request.name())
-			.description(request.description())
-			.latitude(request.latitude())
-			.longitude(request.longitude())
-			.likeCount(0L)
-			.viewCount(0L)
-			.build();
+		// Request → Domain 변환 (정적 팩토리 메서드 사용)
+		Boulder boulder = Boulder.create(
+			region.getId(),
+			request.sectorId(),
+			request.name(),
+			request.description(),
+			request.latitude(),
+			request.longitude()
+		);
 
 		// 저장
 		Boulder savedBoulder = boulderService.save(boulder);

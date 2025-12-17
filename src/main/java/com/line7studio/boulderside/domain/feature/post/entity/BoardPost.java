@@ -27,14 +27,14 @@ public class BoardPost extends BaseEntity {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "view_count", nullable = false)
+    @Column(name = "view_count")
     private Long viewCount;
 
-    @Column(name = "comment_count", nullable = false)
+    @Column(name = "comment_count")
     private Long commentCount;
 
-    @Builder
-    public BoardPost(Long id, Long userId, String title, String content, Long viewCount, Long commentCount) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private BoardPost(Long id, Long userId, String title, String content, Long viewCount, Long commentCount) {
         this.id = id;
         this.userId = userId;
         this.title = title;
@@ -43,7 +43,14 @@ public class BoardPost extends BaseEntity {
         this.commentCount = commentCount == null ? 0L : commentCount;
     }
 
+    /**
+     * 정적 팩토리 메서드 - 일반 게시글 생성
+     */
     public static BoardPost create(Long userId, String title, String content) {
+        validateUserId(userId);
+        validateTitle(title);
+        validateContent(content);
+
         return BoardPost.builder()
             .userId(userId)
             .title(title)
@@ -53,9 +60,31 @@ public class BoardPost extends BaseEntity {
             .build();
     }
 
+    /**
+     * 게시글 정보 업데이트 (검증 포함)
+     */
     public void update(String title, String content) {
+        validateTitle(title);
+        validateContent(content);
+
         this.title = title;
         this.content = content;
+    }
+
+    /**
+     * 소유자 확인
+     */
+    public boolean isOwner(Long userId) {
+        return this.userId.equals(userId);
+    }
+
+    /**
+     * 소유자 검증 (아니면 예외 발생)
+     */
+    public void verifyOwner(Long userId) {
+        if (!isOwner(userId)) {
+            throw new IllegalStateException("게시글 작업은 작성자만 가능합니다.");
+        }
     }
 
     public void incrementViewCount() {
@@ -68,5 +97,29 @@ public class BoardPost extends BaseEntity {
 
     public void decrementCommentCount() {
         this.commentCount = this.commentCount <= 0 ? 0 : this.commentCount - 1;
+    }
+
+    // === Private 검증 메서드들 ===
+
+    private static void validateUserId(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("작성자 ID는 필수입니다.");
+        }
+    }
+
+    private static void validateTitle(String title) {
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("제목은 필수입니다.");
+        }
+        if (title.length() > 100) {
+            throw new IllegalArgumentException("제목은 100자를 초과할 수 없습니다.");
+        }
+    }
+
+    private static void validateContent(String content) {
+        // content는 nullable이므로 null 체크만
+        if (content != null && content.length() > 5000) {
+            throw new IllegalArgumentException("내용은 5000자를 초과할 수 없습니다.");
+        }
     }
 }

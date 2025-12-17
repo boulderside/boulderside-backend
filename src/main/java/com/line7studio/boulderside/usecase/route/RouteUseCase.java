@@ -81,21 +81,19 @@ public class RouteUseCase {
 		Region region = regionService.getRegionById(boulder.getRegionId());
 		Sector sector = sectorService.getSectorById(boulder.getSectorId());
 
-		// Request → Domain 변환
-		Route route = Route.builder()
-			.boulderId(request.boulderId())
-			.regionId(boulder.getRegionId())
-			.sectorId(boulder.getSectorId())
-			.name(request.name())
-			.pioneerName(request.pioneerName())
-			.routeLevel(request.routeLevel())
-			.latitude(boulder.getLatitude())
-			.longitude(boulder.getLongitude())
-			.likeCount(0L)
-			.viewCount(0L)
-			.climberCount(0L)
-			.commentCount(0L)
-			.build();
+		// Request → Domain 변환 (정적 팩토리 메서드 사용)
+		Route route = Route.create(
+			request.boulderId(),
+			boulder.getRegionId(),
+			boulder.getSectorId(),
+			request.name(),
+			null, // description
+			request.routeLevel(),
+			request.pioneerName(),
+			null, // firstAscentYear
+			boulder.getLatitude(),
+			boulder.getLongitude()
+		);
 
 		// 저장
 		Route savedRoute = routeService.save(route);
@@ -128,8 +126,10 @@ public class RouteUseCase {
 			boulder.getRegionId(),
 			boulder.getSectorId(),
 			request.name(),
+			null, // description
+			request.routeLevel() != null ? request.routeLevel().name() : null,
 			request.pioneerName(),
-			request.routeLevel(),
+			null, // firstAscentYear
 			boulder.getLatitude(),
 			boulder.getLongitude()
 		);

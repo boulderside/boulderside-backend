@@ -46,6 +46,7 @@ public class BoardPostService {
     }
 
     public BoardPost createBoardPost(Long userId, String title, String content) {
+        // Entity의 정적 팩토리 메서드가 검증을 수행
         BoardPost boardPost = BoardPost.create(userId, title, content);
         return boardPostRepository.save(boardPost);
     }
@@ -54,8 +55,10 @@ public class BoardPostService {
         BoardPost boardPost = boardPostRepository.findById(postId)
             .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
-        validateOwner(boardPost.getUserId(), userId);
+        // Entity가 소유자 검증 및 업데이트 검증 수행
+        boardPost.verifyOwner(userId);
         boardPost.update(title, content);
+
         return boardPostRepository.save(boardPost);
     }
 
@@ -63,7 +66,8 @@ public class BoardPostService {
         BoardPost boardPost = boardPostRepository.findById(postId)
             .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
-        validateOwner(boardPost.getUserId(), userId);
+        // Entity가 소유자 검증 수행
+        boardPost.verifyOwner(userId);
         boardPostRepository.deleteById(postId);
     }
 
@@ -71,6 +75,7 @@ public class BoardPostService {
         BoardPost boardPost = boardPostRepository.findById(postId)
             .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
+        // Entity의 update가 검증 수행
         boardPost.update(title, content);
         return boardPostRepository.save(boardPost);
     }
@@ -80,11 +85,5 @@ public class BoardPostService {
             .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
         boardPostRepository.delete(boardPost);
-    }
-
-    private void validateOwner(Long ownerId, Long userId) {
-        if (!ownerId.equals(userId)) {
-            throw new BusinessException(ErrorCode.NO_PERMISSION, "게시글 작업은 작성자만 가능합니다.");
-        }
     }
 }

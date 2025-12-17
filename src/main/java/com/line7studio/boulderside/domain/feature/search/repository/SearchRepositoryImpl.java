@@ -1,6 +1,5 @@
 package com.line7studio.boulderside.domain.feature.search.repository;
 
-import com.line7studio.boulderside.usecase.search.dto.*;
 import com.line7studio.boulderside.domain.feature.boulder.entity.QBoulder;
 import com.line7studio.boulderside.domain.feature.image.entity.QImage;
 import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;
@@ -13,6 +12,7 @@ import com.line7studio.boulderside.domain.feature.route.entity.QRoute;
 import com.line7studio.boulderside.domain.feature.route.entity.Route;
 import com.line7studio.boulderside.domain.feature.search.enums.DocumentDomainType;
 import com.line7studio.boulderside.domain.feature.user.entity.QUser;
+import com.line7studio.boulderside.usecase.search.dto.*;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
