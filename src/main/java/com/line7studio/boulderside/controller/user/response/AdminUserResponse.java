@@ -3,9 +3,9 @@ package com.line7studio.boulderside.controller.user.response;
 import java.time.LocalDateTime;
 
 import com.line7studio.boulderside.common.enums.Level;
-import com.line7studio.boulderside.domain.feature.user.User;
-import com.line7studio.boulderside.domain.feature.user.enums.UserRole;
-import com.line7studio.boulderside.domain.feature.user.enums.UserSex;
+import com.line7studio.boulderside.domain.user.User;
+import com.line7studio.boulderside.domain.user.enums.UserRole;
+import com.line7studio.boulderside.domain.user.enums.UserSex;
 
 public record AdminUserResponse(
     Long userId,

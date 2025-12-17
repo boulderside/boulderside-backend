@@ -1,7 +1,7 @@
 package com.line7studio.boulderside.controller.boardpost.response;
 
 import com.line7studio.boulderside.common.dto.UserInfo;
-import com.line7studio.boulderside.domain.feature.post.entity.BoardPost;
+import com.line7studio.boulderside.domain.post.entity.BoardPost;
 
 import java.time.LocalDateTime;
 

@@ -20,7 +20,7 @@ import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.controller.project.request.ProjectRequest;
 import com.line7studio.boulderside.controller.project.response.ProjectPageResponse;
 import com.line7studio.boulderside.controller.project.response.ProjectResponse;
-import com.line7studio.boulderside.domain.feature.project.enums.ProjectSortType;
+import com.line7studio.boulderside.domain.project.enums.ProjectSortType;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

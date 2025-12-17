@@ -5,7 +5,7 @@ import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.controller.boulder.response.BoulderPageResponse;
 import com.line7studio.boulderside.controller.boulder.response.BoulderResponse;
-import com.line7studio.boulderside.domain.feature.boulder.enums.BoulderSortType;
+import com.line7studio.boulderside.domain.boulder.enums.BoulderSortType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

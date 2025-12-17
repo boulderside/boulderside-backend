@@ -2,7 +2,7 @@ package com.line7studio.boulderside.controller.boulder.response;
 
 import com.line7studio.boulderside.usecase.boulder.dto.BoulderWithRegion;
 import com.line7studio.boulderside.common.dto.ImageInfo;
-import com.line7studio.boulderside.domain.feature.boulder.Boulder;
+import com.line7studio.boulderside.domain.boulder.Boulder;
 
 import java.time.LocalDateTime;
 import java.util.List;

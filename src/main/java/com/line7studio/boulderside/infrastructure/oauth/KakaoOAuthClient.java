@@ -4,7 +4,7 @@ import com.line7studio.boulderside.usecase.auth.oauth.OAuthClient;
 import com.line7studio.boulderside.usecase.auth.oauth.OAuthUserProfile;
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.domain.feature.user.enums.AuthProviderType;
+import com.line7studio.boulderside.domain.user.enums.AuthProviderType;
 
 import reactor.core.publisher.Mono;
 

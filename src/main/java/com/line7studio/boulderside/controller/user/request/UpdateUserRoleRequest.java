@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.user.request;
 
-import com.line7studio.boulderside.domain.feature.user.enums.UserRole;
+import com.line7studio.boulderside.domain.user.enums.UserRole;
 import jakarta.validation.constraints.NotNull;
 
 public record UpdateUserRoleRequest(

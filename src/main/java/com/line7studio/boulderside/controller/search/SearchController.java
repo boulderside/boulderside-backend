@@ -5,7 +5,7 @@ import com.line7studio.boulderside.usecase.search.dto.AutocompleteResponse;
 import com.line7studio.boulderside.usecase.search.dto.DomainSearchResponse;
 import com.line7studio.boulderside.usecase.search.dto.UnifiedSearchResponse;
 import com.line7studio.boulderside.common.response.ApiResponse;
-import com.line7studio.boulderside.domain.feature.search.enums.DocumentDomainType;
+import com.line7studio.boulderside.domain.search.enums.DocumentDomainType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

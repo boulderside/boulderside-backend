@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.image.request;
 
-import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;
+import com.line7studio.boulderside.domain.image.enums.ImageDomainType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

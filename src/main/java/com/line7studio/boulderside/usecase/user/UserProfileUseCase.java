@@ -1,7 +1,7 @@
 package com.line7studio.boulderside.usecase.user;
 
 import com.line7studio.boulderside.controller.user.response.ProfileImageResponse;
-import com.line7studio.boulderside.domain.feature.user.service.UserService;
+import com.line7studio.boulderside.domain.user.service.UserService;
 import com.line7studio.boulderside.infrastructure.aws.s3.S3FolderType;
 import com.line7studio.boulderside.infrastructure.aws.s3.S3ObjectInfo;
 import com.line7studio.boulderside.infrastructure.aws.s3.S3Provider;

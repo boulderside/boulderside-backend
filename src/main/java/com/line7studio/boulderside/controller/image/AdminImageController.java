@@ -5,7 +5,7 @@ import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.controller.image.request.CreateAdminImageRequest;
 import com.line7studio.boulderside.controller.image.request.UpdateAdminImageRequest;
 import com.line7studio.boulderside.controller.image.response.AdminImageResponse;
-import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;
+import com.line7studio.boulderside.domain.image.enums.ImageDomainType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

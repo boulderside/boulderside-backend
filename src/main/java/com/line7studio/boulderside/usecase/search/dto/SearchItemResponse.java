@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.usecase.search.dto;
 
-import com.line7studio.boulderside.domain.feature.search.enums.DocumentDomainType;
+import com.line7studio.boulderside.domain.search.enums.DocumentDomainType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -19,7 +19,7 @@ import com.line7studio.boulderside.controller.user.request.UpdateNicknameRequest
 import com.line7studio.boulderside.controller.user.response.MeResponse;
 import com.line7studio.boulderside.controller.user.response.NicknameAvailabilityResponse;
 import com.line7studio.boulderside.controller.user.response.ProfileImageResponse;
-import com.line7studio.boulderside.domain.feature.user.service.UserService;
+import com.line7studio.boulderside.domain.user.service.UserService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

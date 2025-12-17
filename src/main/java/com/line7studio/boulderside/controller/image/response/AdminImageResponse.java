@@ -1,7 +1,7 @@
 package com.line7studio.boulderside.controller.image.response;
 
-import com.line7studio.boulderside.domain.feature.image.Image;
-import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;
+import com.line7studio.boulderside.domain.image.Image;
+import com.line7studio.boulderside.domain.image.enums.ImageDomainType;
 
 public record AdminImageResponse(
     Long id,

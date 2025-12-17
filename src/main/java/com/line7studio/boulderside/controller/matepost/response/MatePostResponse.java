@@ -1,7 +1,7 @@
 package com.line7studio.boulderside.controller.matepost.response;
 
 import com.line7studio.boulderside.common.dto.UserInfo;
-import com.line7studio.boulderside.domain.feature.post.entity.MatePost;
+import com.line7studio.boulderside.domain.post.entity.MatePost;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

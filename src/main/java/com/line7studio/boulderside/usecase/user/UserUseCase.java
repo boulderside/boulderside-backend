@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.line7studio.boulderside.controller.user.response.AdminUserResponse;
-import com.line7studio.boulderside.domain.feature.user.User;
-import com.line7studio.boulderside.domain.feature.user.enums.UserRole;
-import com.line7studio.boulderside.domain.feature.user.service.UserService;
+import com.line7studio.boulderside.domain.user.User;
+import com.line7studio.boulderside.domain.user.enums.UserRole;
+import com.line7studio.boulderside.domain.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 

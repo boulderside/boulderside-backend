@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.domain.feature.user.enums.AuthProviderType;
+import com.line7studio.boulderside.domain.user.enums.AuthProviderType;
 
 @Component
 public class OAuthClientRegistry {

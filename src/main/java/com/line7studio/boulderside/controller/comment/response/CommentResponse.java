@@ -1,8 +1,8 @@
 package com.line7studio.boulderside.controller.comment.response;
 
 import com.line7studio.boulderside.common.dto.UserInfo;
-import com.line7studio.boulderside.domain.feature.comment.Comment;
-import com.line7studio.boulderside.domain.feature.comment.enums.CommentDomainType;
+import com.line7studio.boulderside.domain.comment.Comment;
+import com.line7studio.boulderside.domain.comment.enums.CommentDomainType;
 
 import java.time.LocalDateTime;
 
