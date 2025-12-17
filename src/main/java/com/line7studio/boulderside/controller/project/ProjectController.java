@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.line7studio.boulderside.application.project.ProjectUseCase;
+import com.line7studio.boulderside.usecase.project.ProjectUseCase;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.common.exception.ValidationException;
 import com.line7studio.boulderside.common.response.ApiResponse;

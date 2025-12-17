@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.user.service;
 
-import com.line7studio.boulderside.application.user.dto.response.CreateUserCommand;
+import com.line7studio.boulderside.usecase.user.dto.response.CreateUserCommand;
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.domain.feature.user.entity.User;

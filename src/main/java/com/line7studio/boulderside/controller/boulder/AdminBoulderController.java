@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.boulder;
 
-import com.line7studio.boulderside.application.boulder.BoulderUseCase;
+import com.line7studio.boulderside.usecase.boulder.BoulderUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.controller.boulder.request.CreateBoulderRequest;

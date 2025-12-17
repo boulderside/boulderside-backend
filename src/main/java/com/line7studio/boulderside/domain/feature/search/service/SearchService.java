@@ -1,7 +1,7 @@
 package com.line7studio.boulderside.domain.feature.search.service;
 
-import com.line7studio.boulderside.application.search.dto.SearchItemResponse;
-import com.line7studio.boulderside.application.search.dto.UnifiedSearchResponse;
+import com.line7studio.boulderside.usecase.search.dto.SearchItemResponse;
+import com.line7studio.boulderside.usecase.search.dto.UnifiedSearchResponse;
 import com.line7studio.boulderside.domain.feature.search.repository.SearchRepository;
 import com.line7studio.boulderside.domain.feature.search.enums.DocumentDomainType;
 import lombok.RequiredArgsConstructor;

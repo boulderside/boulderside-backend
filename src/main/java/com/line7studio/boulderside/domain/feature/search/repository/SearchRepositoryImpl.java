@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.search.repository;
 
-import com.line7studio.boulderside.application.search.dto.*;
+import com.line7studio.boulderside.usecase.search.dto.*;
 import com.line7studio.boulderside.domain.feature.boulder.entity.QBoulder;
 import com.line7studio.boulderside.domain.feature.image.entity.QImage;
 import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;

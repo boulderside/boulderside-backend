@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.route;
 
-import com.line7studio.boulderside.application.route.RouteUseCase;
+import com.line7studio.boulderside.usecase.route.RouteUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.controller.route.response.RoutePageResponse;

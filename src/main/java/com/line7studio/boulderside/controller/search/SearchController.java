@@ -1,9 +1,9 @@
 package com.line7studio.boulderside.controller.search;
 
-import com.line7studio.boulderside.application.search.SearchUseCase;
-import com.line7studio.boulderside.application.search.dto.AutocompleteResponse;
-import com.line7studio.boulderside.application.search.dto.DomainSearchResponse;
-import com.line7studio.boulderside.application.search.dto.UnifiedSearchResponse;
+import com.line7studio.boulderside.usecase.search.SearchUseCase;
+import com.line7studio.boulderside.usecase.search.dto.AutocompleteResponse;
+import com.line7studio.boulderside.usecase.search.dto.DomainSearchResponse;
+import com.line7studio.boulderside.usecase.search.dto.UnifiedSearchResponse;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.domain.feature.search.enums.DocumentDomainType;
 import lombok.RequiredArgsConstructor;

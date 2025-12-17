@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.image;
 
-import com.line7studio.boulderside.application.image.ImageUseCase;
+import com.line7studio.boulderside.usecase.image.ImageUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.controller.image.request.CreateAdminImageRequest;
 import com.line7studio.boulderside.controller.image.request.UpdateAdminImageRequest;

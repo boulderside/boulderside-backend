@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.line7studio.boulderside.application.interaction.BoulderInteractionUseCase;
+import com.line7studio.boulderside.usecase.interaction.BoulderInteractionUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.controller.boulder.response.BoulderLikeResponse;

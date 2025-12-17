@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.comment;
 
-import com.line7studio.boulderside.application.comment.CommentUseCase;
+import com.line7studio.boulderside.usecase.comment.CommentUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.controller.comment.request.CreateAdminCommentRequest;
 import com.line7studio.boulderside.controller.comment.request.UpdateCommentRequest;

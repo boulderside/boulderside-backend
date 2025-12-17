@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.weather.mapper;
 
-import com.line7studio.boulderside.application.weather.dto.DailyWeatherInfoDto;
+import com.line7studio.boulderside.usecase.weather.dto.DailyWeatherInfoDto;
 import com.line7studio.boulderside.domain.feature.weather.entity.Weather;
 import lombok.experimental.UtilityClass;
 

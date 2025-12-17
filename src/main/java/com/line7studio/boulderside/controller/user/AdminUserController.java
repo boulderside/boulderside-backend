@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.line7studio.boulderside.application.user.UserUseCase;
+import com.line7studio.boulderside.usecase.user.UserUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.controller.user.request.UpdateUserRoleRequest;
 import com.line7studio.boulderside.controller.user.response.AdminUserResponse;

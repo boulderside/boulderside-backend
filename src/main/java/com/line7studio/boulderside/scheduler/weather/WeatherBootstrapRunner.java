@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.scheduler.weather;
 
-import com.line7studio.boulderside.application.weather.WeatherUseCase;
+import com.line7studio.boulderside.usecase.weather.WeatherUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
