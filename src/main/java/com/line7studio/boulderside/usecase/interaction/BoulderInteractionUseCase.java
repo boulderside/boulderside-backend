@@ -1,15 +1,5 @@
 package com.line7studio.boulderside.usecase.interaction;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.line7studio.boulderside.controller.boulder.response.BoulderLikeResponse;
 import com.line7studio.boulderside.controller.boulder.response.LikedBoulderItemResponse;
 import com.line7studio.boulderside.controller.boulder.response.LikedBoulderPageResponse;
@@ -19,8 +9,16 @@ import com.line7studio.boulderside.domain.feature.boulder.interaction.like.servi
 import com.line7studio.boulderside.domain.feature.boulder.service.BoulderService;
 import com.line7studio.boulderside.domain.feature.region.entity.Region;
 import com.line7studio.boulderside.domain.feature.region.service.RegionService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,7 +59,7 @@ public class BoulderInteractionUseCase {
 		if (hasNext) {
 			likes = likes.subList(0, pageSize);
 		}
-		Long nextCursor = hasNext && !likes.isEmpty() ? likes.get(likes.size() - 1).getId() : null;
+		Long nextCursor = hasNext && !likes.isEmpty() ? likes.getLast().getId() : null;
 
 		if (likes.isEmpty()) {
 			return LikedBoulderPageResponse.of(Collections.emptyList(), nextCursor, hasNext, 0);

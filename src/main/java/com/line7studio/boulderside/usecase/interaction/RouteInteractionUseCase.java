@@ -59,7 +59,7 @@ public class RouteInteractionUseCase {
 		if (hasNext) {
 			likes = likes.subList(0, pageSize);
 		}
-		Long nextCursor = hasNext && !likes.isEmpty() ? likes.get(likes.size() - 1).getId() : null;
+		Long nextCursor = hasNext && !likes.isEmpty() ? likes.getLast().getId() : null;
 
 		if (likes.isEmpty()) {
 			return LikedRoutePageResponse.of(Collections.emptyList(), nextCursor, hasNext, 0);
