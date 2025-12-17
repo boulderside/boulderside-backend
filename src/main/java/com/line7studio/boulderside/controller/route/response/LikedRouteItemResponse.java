@@ -2,7 +2,7 @@ package com.line7studio.boulderside.controller.route.response;
 
 import com.line7studio.boulderside.common.enums.Level;
 import com.line7studio.boulderside.domain.route.Route;
-import com.line7studio.boulderside.domain.route.interaction.like.entity.UserRouteLike;
+import com.line7studio.boulderside.domain.route.interaction.like.UserRouteLike;
 
 import java.time.LocalDateTime;
 

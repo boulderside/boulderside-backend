@@ -27,10 +27,6 @@ public class Image extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	/** 업로드된 원본 파일명 */
-	@Column(name = "original_filename")
-	private String originalFileName;
-
 	/** 연관 대상 ID (FK) */
 	@Column(name = "domain_id", nullable = false)
 	private Long domainId;
@@ -47,6 +43,10 @@ public class Image extends BaseEntity {
 	/** 이미지 인덱스 (순서) */
 	@Column(name = "order_index")
 	private Integer orderIndex;
+
+    /** 업로드된 원본 파일명 */
+    @Column(name = "original_filename")
+    private String originalFileName;
 
 	public void update(Long domainId, ImageDomainType imageDomainType, String imageUrl, Integer orderIndex,
 		String originalFileName) {

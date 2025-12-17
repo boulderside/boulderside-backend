@@ -6,7 +6,7 @@ import com.line7studio.boulderside.controller.route.response.RouteLikeResponse;
 import com.line7studio.boulderside.domain.boulder.Boulder;
 import com.line7studio.boulderside.domain.boulder.service.BoulderService;
 import com.line7studio.boulderside.domain.route.Route;
-import com.line7studio.boulderside.domain.route.interaction.like.entity.UserRouteLike;
+import com.line7studio.boulderside.domain.route.interaction.like.UserRouteLike;
 import com.line7studio.boulderside.domain.route.interaction.like.service.UserRouteLikeService;
 import com.line7studio.boulderside.domain.route.service.RouteService;
 import lombok.RequiredArgsConstructor;

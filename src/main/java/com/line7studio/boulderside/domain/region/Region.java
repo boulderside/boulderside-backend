@@ -35,7 +35,7 @@ public class Region {
 	private String city;
 
 	/** 지역코드 */
-	@Column(name = "region_code", nullable = false)
+	@Column(name = "region_code")
 	private String regionCode;
 
 	public void update(String officialDistrictCode, String province, String city, String regionCode) {

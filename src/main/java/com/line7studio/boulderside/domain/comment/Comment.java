@@ -33,7 +33,7 @@ public class Comment extends BaseEntity {
     @Column(name = "comment_domain_type", nullable = false)
     private CommentDomainType commentDomainType;
 
-    /** 게시글 내용 */
+    /** 댓글 내용 */
     @Column(name = "content")
     private String content;
 

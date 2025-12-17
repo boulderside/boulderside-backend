@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.line7studio.boulderside.domain.feature.comment.entity.QComment.comment;
+import static com.line7studio.boulderside.domain.comment.QComment.comment;
 
 @Repository
 @RequiredArgsConstructor

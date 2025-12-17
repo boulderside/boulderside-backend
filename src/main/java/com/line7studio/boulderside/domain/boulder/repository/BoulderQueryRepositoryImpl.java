@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-import static com.line7studio.boulderside.domain.feature.boulder.entity.QBoulder.boulder;
+import static com.line7studio.boulderside.domain.boulder.QBoulder.boulder;
 
 @Repository
 @RequiredArgsConstructor

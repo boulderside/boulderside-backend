@@ -4,7 +4,7 @@ import com.line7studio.boulderside.controller.boulder.response.BoulderLikeRespon
 import com.line7studio.boulderside.controller.boulder.response.LikedBoulderItemResponse;
 import com.line7studio.boulderside.controller.boulder.response.LikedBoulderPageResponse;
 import com.line7studio.boulderside.domain.boulder.Boulder;
-import com.line7studio.boulderside.domain.boulder.interaction.like.entity.UserBoulderLike;
+import com.line7studio.boulderside.domain.boulder.interaction.like.UserBoulderLike;
 import com.line7studio.boulderside.domain.boulder.interaction.like.service.UserBoulderLikeService;
 import com.line7studio.boulderside.domain.boulder.service.BoulderService;
 import com.line7studio.boulderside.domain.region.Region;

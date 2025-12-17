@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.line7studio.boulderside.domain.boulder.interaction.like.entity.UserBoulderLike;
+import com.line7studio.boulderside.domain.boulder.interaction.like.UserBoulderLike;
 
 public interface UserBoulderLikeRepository extends JpaRepository<UserBoulderLike, Long> {
 	boolean existsByUserIdAndBoulderId(Long userId, Long boulderId);

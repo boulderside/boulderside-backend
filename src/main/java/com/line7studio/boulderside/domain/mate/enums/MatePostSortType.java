@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.domain.post.enums;
+package com.line7studio.boulderside.domain.mate.enums;
 
 public enum MatePostSortType {
     LATEST_CREATED,

@@ -1,9 +1,9 @@
-package com.line7studio.boulderside.domain.post.service;
+package com.line7studio.boulderside.domain.board.service;
 
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.domain.post.entity.BoardPost;
-import com.line7studio.boulderside.domain.post.repository.BoardPostRepository;
+import com.line7studio.boulderside.domain.board.BoardPost;
+import com.line7studio.boulderside.domain.board.repository.BoardPostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

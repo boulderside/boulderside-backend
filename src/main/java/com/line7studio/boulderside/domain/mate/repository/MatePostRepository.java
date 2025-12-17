@@ -1,6 +1,6 @@
-package com.line7studio.boulderside.domain.post.repository;
+package com.line7studio.boulderside.domain.mate.repository;
 
-import com.line7studio.boulderside.domain.post.entity.MatePost;
+import com.line7studio.boulderside.domain.mate.MatePost;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 

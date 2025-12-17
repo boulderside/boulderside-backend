@@ -24,10 +24,10 @@ INSERT INTO boulders (id, region_id, sector_id, name, description, latitude, lon
     (2, 2, 2, 'Shadow Peak', '그림자가 길게 드리워지는 고독한 암석', 35.179554, 129.075642, 0, 0, '2025-01-10 11:15:00', '2025-01-10 11:15:00'),
     (3, 3, 3, 'Mossy Boulder', '이끼로 덮인 습한 바위, 촉감이 부드러움', 37.566535, 126.977969, 0, 0, '2025-01-10 11:30:00', '2025-01-10 11:30:00');
 
-INSERT INTO routes (id, boulder_id, region_id, sector_id, name, description, route_level, pioneer_name, like_count, view_count, climber_count, comment_count, created_at, updated_at) VALUES
-    (1, 1, 1, 1, 'Beginners Edge', '루트 설명이 없습니다.', 'V0', 'jaehoon lee', 0, 0, 0, 0, '2025-01-15 12:00:00', '2025-01-15 12:00:00'),
-    (2, 1, 1, 1, 'Sunrise Traverse', '루트 설명이 없습니다.', 'V1', 'Sunrise Crew',  0, 0, 0, 0, '2025-01-15 12:15:00', '2025-01-15 12:15:00'),
-    (3, 2, 2, 2, 'Shadow Crack', '루트 설명이 없습니다.', 'V2', 'Shadow Crew', 0, 0, 0, 0, '2025-01-15 12:30:00', '2025-01-15 12:30:00');
+INSERT INTO routes (id, boulder_id, name, description, route_level, pioneer_name, like_count, view_count, climber_count, comment_count, created_at, updated_at) VALUES
+    (1, 1,  'Beginners Edge', '루트 설명이 없습니다.', 'V0', 'jaehoon lee', 0, 0, 0, 0, '2025-01-15 12:00:00', '2025-01-15 12:00:00'),
+    (2, 1,  'Sunrise Traverse', '루트 설명이 없습니다.', 'V1', 'Sunrise Crew',  0, 0, 0, 0, '2025-01-15 12:15:00', '2025-01-15 12:15:00'),
+    (3, 2,  'Shadow Crack', '루트 설명이 없습니다.', 'V2', 'Shadow Crew', 0, 0, 0, 0, '2025-01-15 12:30:00', '2025-01-15 12:30:00');
 
 INSERT INTO approaches (id, boulder_id, order_index, transport_info, parking_info, duration, tip, distance, created_at, updated_at) VALUES
     (1, 1, 0, '서울역에서 버스 402번 환승 후 하차, 도보 10분', '주차장: 북악산 공영주차장 이용', 20, '해뜨기 30분 전에 도착하면 좋습니다.', 1.4, '2025-01-20 13:00:00', '2025-01-20 13:00:00'),

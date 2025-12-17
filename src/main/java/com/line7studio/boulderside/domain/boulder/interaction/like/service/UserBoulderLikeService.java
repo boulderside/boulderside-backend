@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.common.exception.InvalidValueException;
-import com.line7studio.boulderside.domain.boulder.interaction.like.entity.UserBoulderLike;
+import com.line7studio.boulderside.domain.boulder.interaction.like.UserBoulderLike;
 import com.line7studio.boulderside.domain.boulder.interaction.like.repository.UserBoulderLikeRepository;
 
 import lombok.RequiredArgsConstructor;

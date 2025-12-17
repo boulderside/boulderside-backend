@@ -26,14 +26,6 @@ public class Route extends BaseEntity {
 	@Column(name = "boulder_id", nullable = false)
 	private Long boulderId;
 
-	/** 연관 지역 ID (FK) */
-	@Column(name = "region_id", nullable = false)
-	private Long regionId;
-
-	/** 연관 섹터 ID (FK) */
-	@Column(name = "sector_id", nullable = false)
-	private Long sectorId;
-
 	/** 루트 이름 */
 	@Column(name = "name")
 	private String name;
@@ -68,11 +60,9 @@ public class Route extends BaseEntity {
 	private Long commentCount;
 
 	@Builder(access = AccessLevel.PRIVATE)
-	private Route(Long boulderId, Long regionId, Long sectorId, String name, String description, Level routeLevel,
+	private Route(Long boulderId, String name, String description, Level routeLevel,
 	              String pioneerName) {
 		this.boulderId = boulderId;
-		this.regionId = regionId;
-		this.sectorId = sectorId;
 		this.name = name;
 		this.description = description;
 		this.routeLevel = routeLevel;
@@ -86,19 +76,15 @@ public class Route extends BaseEntity {
 	/**
 	 * 정적 팩토리 메서드 - 루트 생성
 	 */
-	public static Route create(Long boulderId, Long regionId, Long sectorId, String name, String description, Level routeLevel,
+	public static Route create(Long boulderId, String name, String description, Level routeLevel,
 	                            String pioneerName) {
 		validateBoulderId(boulderId);
-		validateRegionId(regionId);
-		validateSectorId(sectorId);
 		validateName(name);
 		validateDescription(description);
 		validatePioneerName(pioneerName);
 
 		return Route.builder()
 			.boulderId(boulderId)
-			.regionId(regionId)
-			.sectorId(sectorId)
 			.name(name)
 			.description(description)
 			.routeLevel(routeLevel)
@@ -109,18 +95,14 @@ public class Route extends BaseEntity {
 	/**
 	 * 루트 정보 업데이트 (검증 포함)
 	 */
-	public void update(Long boulderId, Long regionId, Long sectorId, String name, String description, Level routeLevel,
-	                   String pioneerName, Double latitude, Double longitude) {
+	public void update(Long boulderId, String name, String description, Level routeLevel,
+	                   String pioneerName) {
 		validateBoulderId(boulderId);
-		validateRegionId(regionId);
-		validateSectorId(sectorId);
 		validateName(name);
 		validateDescription(description);
 		validatePioneerName(pioneerName);
 
 		this.boulderId = boulderId;
-		this.regionId = regionId;
-		this.sectorId = sectorId;
 		this.name = name;
 		this.description = description;
 		this.routeLevel = routeLevel;
@@ -160,18 +142,6 @@ public class Route extends BaseEntity {
 	private static void validateBoulderId(Long boulderId) {
 		if (boulderId == null) {
 			throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD, "바위 ID는 필수입니다.");
-		}
-	}
-
-	private static void validateRegionId(Long regionId) {
-		if (regionId == null) {
-			throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD, "지역 ID는 필수입니다.");
-		}
-	}
-
-	private static void validateSectorId(Long sectorId) {
-		if (sectorId == null) {
-			throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD, "섹터 ID는 필수입니다.");
 		}
 	}
 

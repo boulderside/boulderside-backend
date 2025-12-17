@@ -1,9 +1,9 @@
-package com.line7studio.boulderside.domain.post.service;
+package com.line7studio.boulderside.domain.mate.service;
 
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.domain.post.entity.MatePost;
-import com.line7studio.boulderside.domain.post.repository.MatePostRepository;
+import com.line7studio.boulderside.domain.mate.MatePost;
+import com.line7studio.boulderside.domain.mate.repository.MatePostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

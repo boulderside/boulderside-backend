@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.domain.boulder.interaction.like.entity;
+package com.line7studio.boulderside.domain.boulder.interaction.like;
 
 import com.line7studio.boulderside.domain.BaseEntity;
 

@@ -58,11 +58,11 @@ public class RouteService {
     /**
      * Route 정보를 업데이트합니다.
      */
-    public Route update(Long routeId, Long boulderId, Long regionId, Long sectorId,
+    public Route update(Long routeId, Long boulderId,
                         String name, String description, Level routeLevel,
-                        String pioneerName, Double latitude, Double longitude) {
+                        String pioneerName) {
         Route route = getById(routeId);
-        route.update(boulderId, regionId, sectorId, name, description, routeLevel, pioneerName, latitude, longitude);
+        route.update(boulderId, name, description, routeLevel, pioneerName);
         return route;
     }
 

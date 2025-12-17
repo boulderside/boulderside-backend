@@ -7,9 +7,9 @@ import com.line7studio.boulderside.controller.matepost.response.MatePostPageResp
 import com.line7studio.boulderside.controller.matepost.response.MatePostResponse;
 import com.line7studio.boulderside.domain.comment.enums.CommentDomainType;
 import com.line7studio.boulderside.domain.comment.service.CommentService;
-import com.line7studio.boulderside.domain.post.entity.MatePost;
-import com.line7studio.boulderside.domain.post.enums.MatePostSortType;
-import com.line7studio.boulderside.domain.post.service.MatePostService;
+import com.line7studio.boulderside.domain.mate.MatePost;
+import com.line7studio.boulderside.domain.mate.enums.MatePostSortType;
+import com.line7studio.boulderside.domain.mate.service.MatePostService;
 import com.line7studio.boulderside.domain.user.User;
 import com.line7studio.boulderside.domain.user.service.UserService;
 import com.line7studio.boulderside.common.util.CursorPageUtil;

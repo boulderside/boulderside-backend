@@ -31,7 +31,7 @@ public class Project extends BaseEntity {
 	private Long userId;
 
 	/** 완료 여부 */
-	@Column(name = "is_completed", nullable = false)
+	@Column(name = "is_completed")
 	@Default
 	private Boolean completed = Boolean.FALSE;
 

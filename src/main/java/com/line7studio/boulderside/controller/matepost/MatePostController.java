@@ -7,7 +7,7 @@ import com.line7studio.boulderside.controller.matepost.request.CreateMatePostReq
 import com.line7studio.boulderside.controller.matepost.request.UpdateMatePostRequest;
 import com.line7studio.boulderside.controller.matepost.response.MatePostPageResponse;
 import com.line7studio.boulderside.controller.matepost.response.MatePostResponse;
-import com.line7studio.boulderside.domain.post.enums.MatePostSortType;
+import com.line7studio.boulderside.domain.mate.enums.MatePostSortType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

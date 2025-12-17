@@ -7,9 +7,9 @@ import com.line7studio.boulderside.controller.boardpost.response.BoardPostPageRe
 import com.line7studio.boulderside.controller.boardpost.response.BoardPostResponse;
 import com.line7studio.boulderside.domain.comment.enums.CommentDomainType;
 import com.line7studio.boulderside.domain.comment.service.CommentService;
-import com.line7studio.boulderside.domain.post.entity.BoardPost;
-import com.line7studio.boulderside.domain.post.enums.BoardPostSortType;
-import com.line7studio.boulderside.domain.post.service.BoardPostService;
+import com.line7studio.boulderside.domain.board.BoardPost;
+import com.line7studio.boulderside.domain.board.enums.BoardPostSortType;
+import com.line7studio.boulderside.domain.board.service.BoardPostService;
 import com.line7studio.boulderside.domain.user.User;
 import com.line7studio.boulderside.domain.user.service.UserService;
 import com.line7studio.boulderside.common.util.CursorPageUtil;

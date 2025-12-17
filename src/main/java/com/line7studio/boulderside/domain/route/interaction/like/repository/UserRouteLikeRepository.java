@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.line7studio.boulderside.domain.route.interaction.like.entity.UserRouteLike;
+import com.line7studio.boulderside.domain.route.interaction.like.UserRouteLike;
 
 public interface UserRouteLikeRepository extends JpaRepository<UserRouteLike, Long> {
 	boolean existsByUserIdAndRouteId(Long userId, Long routeId);

@@ -7,7 +7,7 @@ import com.line7studio.boulderside.controller.boardpost.request.CreateBoardPostR
 import com.line7studio.boulderside.controller.boardpost.request.UpdateBoardPostRequest;
 import com.line7studio.boulderside.controller.boardpost.response.BoardPostPageResponse;
 import com.line7studio.boulderside.controller.boardpost.response.BoardPostResponse;
-import com.line7studio.boulderside.domain.post.enums.BoardPostSortType;
+import com.line7studio.boulderside.domain.board.enums.BoardPostSortType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

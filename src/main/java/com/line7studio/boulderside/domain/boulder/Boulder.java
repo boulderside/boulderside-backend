@@ -50,13 +50,13 @@ public class Boulder extends BaseEntity {
 	@Column(name = "longitude")
 	private Double longitude;
 
-	/** 좋아요 수 */
-	@Column(name = "like_count")
-	private Long likeCount;
-
 	/** 조회 수 */
 	@Column(name = "view_count")
 	private Long viewCount;
+
+    /** 좋아요 수 */
+    @Column(name = "like_count")
+    private Long likeCount;
 
 	@Builder(access = AccessLevel.PRIVATE)
 	private Boulder(Long regionId, Long sectorId, String name, String description, Double latitude, Double longitude) {

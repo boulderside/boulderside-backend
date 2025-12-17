@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Objects;
 
-import static com.line7studio.boulderside.domain.feature.route.entity.QRoute.route;
+import static com.line7studio.boulderside.domain.route.QRoute.route;
 
 @Repository
 @RequiredArgsConstructor

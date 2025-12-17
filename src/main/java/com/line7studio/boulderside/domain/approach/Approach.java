@@ -40,6 +40,10 @@ public class Approach extends BaseEntity {
 	@Column(name = "parking_info")
 	private String parkingInfo;
 
+    /** 팁 */
+    @Column(name = "tip")
+    private String tip;
+
 	/** 이동 시간 (분) */
 	@Column(name = "duration")
 	private Integer duration;
@@ -47,10 +51,6 @@ public class Approach extends BaseEntity {
     /** 이동 거리 (km) */
     @Column(name = "distance")
     private Double distance;
-
-	/** 팁 */
-	@Column(name = "tip")
-	private String tip;
 
 	public void update(Long boulderId, Integer orderIndex, String transportInfo, String parkingInfo, Integer duration,
 		String tip) {

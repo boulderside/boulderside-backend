@@ -26,11 +26,11 @@ public class Sector extends BaseEntity {
 	private Long id;
 
 	/** 섹터 이름 */
-	@Column(name = "sector_name", nullable = false)
+	@Column(name = "sector_name")
 	private String sectorName;
 
 	/** 구역 */
-	@Column(name = "area_code", nullable = false)
+	@Column(name = "area_code")
 	private String areaCode;
 
 	public void update(String sectorName, String areaCode) {

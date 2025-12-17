@@ -1,19 +1,13 @@
 package com.line7studio.boulderside.domain.user;
 
-import java.time.LocalDateTime;
-
 import com.line7studio.boulderside.domain.BaseEntity;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -32,11 +26,11 @@ public class UserMeta extends BaseEntity {
 	private Long userId;
 
 	/** 푸시 알림 ON/OFF */
-	@Column(name = "push_enabled", nullable = false)
+	@Column(name = "push_enabled")
 	private Boolean pushEnabled;
 
 	/** 마케팅 수신 동의 */
-	@Column(name = "marketing_agreed", nullable = false)
+	@Column(name = "marketing_agreed")
 	private Boolean marketingAgreed;
 
 	/** 마케팅 수신 동의 생성 시각 */
@@ -44,7 +38,7 @@ public class UserMeta extends BaseEntity {
 	private LocalDateTime marketingAgreedCreatedAt;
 
 	/** 개인정보 수집 및 활용 동의 */
-	@Column(name = "privacy_agreed", nullable = false)
+	@Column(name = "privacy_agreed")
 	private Boolean privacyAgreed;
 
 	/** 개인정보 수집 및 활용 동의 생성 시각 */

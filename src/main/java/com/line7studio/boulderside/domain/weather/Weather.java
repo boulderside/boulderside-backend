@@ -34,35 +34,35 @@ public class Weather extends BaseEntity {
 
     /** 아침 기온 */
     @Column(name = "temp_morn")
-    private double tempMorn;
+    private Double tempMorn;
 
     /** 낮 기온 */
     @Column(name = "temp_day")
-    private double tempDay;
+    private Double tempDay;
 
     /** 저녁 기온 */
     @Column(name = "temp_eve")
-    private double tempEve;
+    private Double tempEve;
 
     /** 밤 기온 */
     @Column(name = "temp_night")
-    private double tempNight;
+    private Double tempNight;
 
     /** 최저 기온 */
     @Column(name = "temp_min")
-    private double tempMin;
+    private Double tempMin;
 
     /** 최고 기온 */
     @Column(name = "temp_max")
-    private double tempMax;
+    private Double tempMax;
 
     /** 습도 (%) */
     @Column(name = "humidity")
-    private int humidity;
+    private Integer humidity;
 
     /** 풍속 (m/s) */
     @Column(name = "wind_speed")
-    private double windSpeed;
+    private Double windSpeed;
 
     /** 강수량 (mm) */
     @Column(name = "rain_volume")
@@ -78,7 +78,7 @@ public class Weather extends BaseEntity {
 
     /** 날씨 식별자(ID) */
     @Column(name = "weather_id")
-    private int weatherId;
+    private Integer weatherId;
 
     /** 날씨 주요 분류 (예: Clear, Clouds) */
     @Column(name = "weather_main")

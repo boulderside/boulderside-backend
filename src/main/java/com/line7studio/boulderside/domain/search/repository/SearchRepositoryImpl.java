@@ -1,17 +1,17 @@
 package com.line7studio.boulderside.domain.search.repository;
 
-import com.line7studio.boulderside.domain.feature.boulder.entity.QBoulder;
-import com.line7studio.boulderside.domain.feature.image.entity.QImage;
+import com.line7studio.boulderside.domain.boulder.QBoulder;
+import com.line7studio.boulderside.domain.image.QImage;
 import com.line7studio.boulderside.domain.image.enums.ImageDomainType;
-import com.line7studio.boulderside.domain.post.entity.BoardPost;
-import com.line7studio.boulderside.domain.post.entity.MatePost;
-import com.line7studio.boulderside.domain.feature.post.entity.QBoardPost;
-import com.line7studio.boulderside.domain.feature.post.entity.QMatePost;
-import com.line7studio.boulderside.domain.feature.region.entity.QRegion;
-import com.line7studio.boulderside.domain.feature.route.entity.QRoute;
+import com.line7studio.boulderside.domain.board.BoardPost;
+import com.line7studio.boulderside.domain.mate.MatePost;
+import com.line7studio.boulderside.domain.board.QBoardPost;
+import com.line7studio.boulderside.domain.mate.QMatePost;
+import com.line7studio.boulderside.domain.region.QRegion;
+import com.line7studio.boulderside.domain.route.QRoute;
 import com.line7studio.boulderside.domain.route.Route;
 import com.line7studio.boulderside.domain.search.enums.DocumentDomainType;
-import com.line7studio.boulderside.domain.feature.user.entity.QUser;
+import com.line7studio.boulderside.domain.user.QUser;
 import com.line7studio.boulderside.usecase.search.dto.*;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;

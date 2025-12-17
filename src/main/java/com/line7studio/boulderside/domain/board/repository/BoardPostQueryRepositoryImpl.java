@@ -1,7 +1,7 @@
-package com.line7studio.boulderside.domain.post.repository;
+package com.line7studio.boulderside.domain.board.repository;
 
-import com.line7studio.boulderside.domain.post.entity.BoardPost;
-import com.line7studio.boulderside.domain.post.enums.BoardPostSortType;
+import com.line7studio.boulderside.domain.board.BoardPost;
+import com.line7studio.boulderside.domain.board.enums.BoardPostSortType;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-import static com.line7studio.boulderside.domain.feature.post.entity.QBoardPost.boardPost;
+import static com.line7studio.boulderside.domain.board.QBoardPost.boardPost;
 
 @Repository
 @RequiredArgsConstructor
