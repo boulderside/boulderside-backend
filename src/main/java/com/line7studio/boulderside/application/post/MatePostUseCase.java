@@ -12,6 +12,8 @@ import com.line7studio.boulderside.domain.feature.post.enums.MatePostSortType;
 import com.line7studio.boulderside.domain.feature.post.service.MatePostService;
 import com.line7studio.boulderside.domain.feature.user.entity.User;
 import com.line7studio.boulderside.domain.feature.user.service.UserService;
+import com.line7studio.boulderside.common.util.CursorPageUtil;
+import com.line7studio.boulderside.common.util.CursorPageUtil.CursorPageWithSubCursor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -42,34 +44,14 @@ public class MatePostUseCase {
     }
 
     private MatePostPageResponse buildCursorPageResponse(List<MatePost> posts, int size, MatePostSortType sortType, Long userId) {
-        boolean hasNext = posts.size() > size;
-        if (hasNext) {
-            posts = posts.subList(0, size);
-        }
-
-        Long nextCursor = null;
-        String nextSubCursor = null;
-        if (hasNext && !posts.isEmpty()) {
-            MatePost lastPost = posts.getLast();
-            nextCursor = lastPost.getId();
-            nextSubCursor = getNextSubCursor(lastPost, sortType);
-        }
-
-        return buildPostPageResponse(posts, nextCursor, nextSubCursor, hasNext, userId);
+        CursorPageWithSubCursor<MatePost> page = CursorPageUtil.ofWithSubCursor(
+            posts, size, MatePost::getId, p -> getNextSubCursor(p, sortType));
+        return buildPostPageResponse(page.content(), page.nextCursor(), page.nextSubCursor(), page.hasNext(), userId);
     }
 
     private MatePostPageResponse buildMyPostPageResponse(List<MatePost> posts, int size, Long userId) {
-        boolean hasNext = posts.size() > size;
-        if (hasNext) {
-            posts = posts.subList(0, size);
-        }
-
-        Long nextCursor = null;
-        if (hasNext && !posts.isEmpty()) {
-            nextCursor = posts.getLast().getId();
-        }
-
-        return buildPostPageResponse(posts, nextCursor, null, hasNext, userId);
+        CursorPageUtil<MatePost> page = CursorPageUtil.of(posts, size, MatePost::getId);
+        return buildPostPageResponse(page.content(), page.nextCursor(), null, page.hasNext(), userId);
     }
 
     private MatePostPageResponse buildPostPageResponse(List<MatePost> posts, Long nextCursor, String nextSubCursor, boolean hasNext, Long viewerId) {

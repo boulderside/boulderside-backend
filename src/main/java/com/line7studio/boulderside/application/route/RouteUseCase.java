@@ -18,6 +18,8 @@ import com.line7studio.boulderside.domain.feature.route.service.RouteService;
 import com.line7studio.boulderside.domain.feature.sector.entity.Sector;
 import com.line7studio.boulderside.domain.feature.sector.service.SectorService;
 import com.line7studio.boulderside.domain.feature.route.interaction.like.service.UserRouteLikeService;
+import com.line7studio.boulderside.common.util.CursorPageUtil;
+import com.line7studio.boulderside.common.util.CursorPageUtil.CursorPageWithSubCursor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,26 +47,16 @@ public class RouteUseCase {
 	public RoutePageResponse getRoutePage(Long userId, RouteSortType sortType, Long cursor, String subCursor, int size) {
 		List<Route> routeList = routeService.getRoutesWithCursor(cursor, subCursor, size + 1, sortType);
 
-		boolean hasNext = routeList.size() > size;
-		if (hasNext) {
-			routeList = routeList.subList(0, size);
-		}
+		CursorPageWithSubCursor<Route> page = CursorPageUtil.ofWithSubCursor(
+			routeList, size, Route::getId, r -> getNextSubCursor(r, sortType));
 
-		if (routeList.isEmpty()) {
+		if (page.content().isEmpty()) {
 			return RoutePageResponse.of(Collections.emptyList(), null, null, false, 0);
 		}
 
-		List<RouteResponse> routeResponseList = buildRouteResponseList(routeList, userId);
+		List<RouteResponse> routeResponseList = buildRouteResponseList(page.content(), userId);
 
-		Long nextCursor = null;
-		String nextSubCursor = null;
-		if (hasNext) {
-			Route lastRoute = routeList.getLast();
-			nextCursor = lastRoute.getId();
-			nextSubCursor = getNextSubCursor(lastRoute, sortType);
-		}
-
-		return RoutePageResponse.of(routeResponseList, nextCursor, nextSubCursor, hasNext, routeList.size());
+		return RoutePageResponse.of(routeResponseList, page.nextCursor(), page.nextSubCursor(), page.hasNext(), page.size());
 	}
 
 	@Transactional(readOnly = true)

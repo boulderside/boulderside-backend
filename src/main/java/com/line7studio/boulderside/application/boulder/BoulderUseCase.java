@@ -7,16 +7,18 @@ import com.line7studio.boulderside.controller.boulder.response.BoulderPageRespon
 import com.line7studio.boulderside.controller.boulder.response.BoulderResponse;
 import com.line7studio.boulderside.domain.feature.boulder.entity.Boulder;
 import com.line7studio.boulderside.domain.feature.boulder.enums.BoulderSortType;
+import com.line7studio.boulderside.domain.feature.boulder.interaction.like.service.UserBoulderLikeService;
 import com.line7studio.boulderside.domain.feature.boulder.service.BoulderService;
 import com.line7studio.boulderside.domain.feature.image.entity.Image;
 import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;
 import com.line7studio.boulderside.domain.feature.image.service.ImageService;
 import com.line7studio.boulderside.domain.feature.region.entity.Region;
 import com.line7studio.boulderside.domain.feature.region.service.RegionService;
+import com.line7studio.boulderside.domain.feature.route.service.RouteService;
 import com.line7studio.boulderside.domain.feature.sector.entity.Sector;
 import com.line7studio.boulderside.domain.feature.sector.service.SectorService;
-import com.line7studio.boulderside.domain.feature.route.service.RouteService;
-import com.line7studio.boulderside.domain.feature.boulder.interaction.like.service.UserBoulderLikeService;
+import com.line7studio.boulderside.common.util.CursorPageUtil;
+import com.line7studio.boulderside.common.util.CursorPageUtil.CursorPageWithSubCursor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,26 +42,16 @@ public class BoulderUseCase {
 	public BoulderPageResponse getBoulderPage(Long userId, BoulderSortType sortType, Long cursor, String subCursor, int size) {
 		List<Boulder> boulderList = boulderService.getBouldersWithCursor(cursor, subCursor, size + 1, sortType);
 
-		boolean hasNext = boulderList.size() > size;
-		if (hasNext) {
-			boulderList = boulderList.subList(0, size);
-		}
+		CursorPageWithSubCursor<Boulder> page = CursorPageUtil.ofWithSubCursor(
+			boulderList, size, Boulder::getId, b -> getNextSubCursor(b, sortType));
 
-		if (boulderList.isEmpty()) {
+		if (page.content().isEmpty()) {
 			return BoulderPageResponse.of(Collections.emptyList(), null, null, false, 0);
 		}
 
-		List<BoulderResponse> boulderResponseList = buildBoulderResponseList(boulderList, userId);
+		List<BoulderResponse> boulderResponseList = buildBoulderResponseList(page.content(), userId);
 
-		Long nextCursor = null;
-		String nextSubCursor = null;
-		if (hasNext) {
-			Boulder lastBoulder = boulderList.getLast();
-			nextCursor = lastBoulder.getId();
-			nextSubCursor = getNextSubCursor(lastBoulder, sortType);
-		}
-
-		return BoulderPageResponse.of(boulderResponseList, nextCursor, nextSubCursor, hasNext, boulderList.size());
+		return BoulderPageResponse.of(boulderResponseList, page.nextCursor(), page.nextSubCursor(), page.hasNext(), page.size());
 	}
 
 	@Transactional(readOnly = true)

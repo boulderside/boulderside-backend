@@ -21,6 +21,7 @@ import com.line7studio.boulderside.domain.feature.route.entity.Route;
 import com.line7studio.boulderside.domain.feature.route.service.RouteService;
 import com.line7studio.boulderside.domain.feature.user.entity.User;
 import com.line7studio.boulderside.domain.feature.user.service.UserService;
+import com.line7studio.boulderside.common.util.CursorPageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,19 +45,16 @@ public class CommentUseCase {
 
     @Transactional(readOnly = true)
     public CommentPageResponse getCommentPage(Long cursor, int size, Long domainId, CommentDomainType commentDomainType, Long userId) {
-        // 댓글 조회
         List<Comment> commentList = commentService.getCommentsWithCursor(cursor, size + 1, domainId, commentDomainType);
 
-        boolean hasNext = commentList.size() > size;
-        if (hasNext) {
-            commentList = commentList.subList(0, size);
+        CursorPageUtil<Comment> page = CursorPageUtil.of(commentList, size, Comment::getId);
+
+        if (page.content().isEmpty()) {
+            return CommentPageResponse.of(Collections.emptyList(), null, false, size);
         }
 
-        // 다음 커서 위치 지정
-        Long nextCursor = hasNext && !commentList.isEmpty() ? commentList.getLast().getId() : null;
-
         // 댓글 작성자 ID 취합
-        List<Long> userIdList = commentList.stream()
+        List<Long> userIdList = page.content().stream()
                 .map(Comment::getUserId)
                 .distinct()
                 .toList();
@@ -66,7 +64,7 @@ public class CommentUseCase {
                 .collect(Collectors.toMap(User::getId, u -> u));
 
         // 댓글 - 유저 정보로 응답 작성
-        List<CommentResponse> commentResponses = commentList.stream()
+        List<CommentResponse> commentResponses = page.content().stream()
                 .map(comment -> {
                     User user = userMap.get(comment.getUserId());
                     UserInfo userInfo = UserInfo.from(user);
@@ -75,7 +73,7 @@ public class CommentUseCase {
                 })
                 .toList();
 
-        return CommentPageResponse.of(commentResponses, nextCursor, hasNext, size);
+        return CommentPageResponse.of(commentResponses, page.nextCursor(), page.hasNext(), page.size());
     }
 
     @Transactional(readOnly = true)
@@ -89,12 +87,11 @@ public class CommentUseCase {
             commentList = commentService.getCommentsByUserWithCursor(cursor, size + 1, userId);
         }
 
-        boolean hasNext = commentList.size() > size;
-        if (hasNext) {
-            commentList = commentList.subList(0, size);
-        }
+        CursorPageUtil<Comment> page = CursorPageUtil.of(commentList, size, Comment::getId);
 
-        Long nextCursor = hasNext && !commentList.isEmpty() ? commentList.getLast().getId() : null;
+        if (page.content().isEmpty()) {
+            return MyCommentPageResponse.of(Collections.emptyList(), null, false, size);
+        }
 
         User user = userService.getUserById(userId);
         UserInfo userInfo = UserInfo.from(user);
@@ -104,7 +101,7 @@ public class CommentUseCase {
         List<Long> boardPostIds = new ArrayList<>();
         List<Long> matePostIds = new ArrayList<>();
 
-        for (Comment comment : commentList) {
+        for (Comment comment : page.content()) {
             if (comment.getCommentDomainType() == CommentDomainType.ROUTE) {
                 routeIds.add(comment.getDomainId());
             } else if (comment.getCommentDomainType() == CommentDomainType.BOARD_POST) {
@@ -128,7 +125,7 @@ public class CommentUseCase {
                         .collect(Collectors.toMap(MatePost::getId, MatePost::getTitle));
 
         // Map response
-        List<MyCommentResponse> commentResponses = commentList.stream()
+        List<MyCommentResponse> commentResponses = page.content().stream()
                 .map(comment -> {
                     String title = null;
                     if (comment.getCommentDomainType() == CommentDomainType.ROUTE) {
@@ -142,7 +139,7 @@ public class CommentUseCase {
                 })
                 .toList();
 
-        return MyCommentPageResponse.of(commentResponses, nextCursor, hasNext, size);
+        return MyCommentPageResponse.of(commentResponses, page.nextCursor(), page.hasNext(), page.size());
     }
 
     @Transactional
