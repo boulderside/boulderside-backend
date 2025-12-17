@@ -29,6 +29,8 @@ public class CustomEntryPoint implements AuthenticationEntryPoint {
 		SecurityErrorCode errorCode;
 		if (authException instanceof AuthenticationFailureException authEx) {
 			errorCode = authEx.getErrorCode();
+		} else if (authException instanceof JwtAuthenticationException jwtEx) {
+			errorCode = jwtEx.getErrorCode();
 		} else {
             log.warn(
                     "[AUTH][UNKNOWN] exceptionType={}, message={}, path={}, method={}, remoteAddr={}",

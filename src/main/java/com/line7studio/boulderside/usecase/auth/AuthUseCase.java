@@ -1,5 +1,7 @@
 package com.line7studio.boulderside.usecase.auth;
 
+import com.line7studio.boulderside.domain.user.UserLoginHistory;
+import com.line7studio.boulderside.domain.user.repository.UserLoginHistoryRepository;
 import com.line7studio.boulderside.usecase.auth.oauth.OAuthClient;
 import com.line7studio.boulderside.usecase.auth.oauth.OAuthClientRegistry;
 import com.line7studio.boulderside.usecase.auth.oauth.OAuthUserProfile;
@@ -13,33 +15,39 @@ import com.line7studio.boulderside.controller.auth.request.OAuthSignupRequest;
 import com.line7studio.boulderside.controller.auth.request.RefreshTokenRequest;
 import com.line7studio.boulderside.domain.user.User;
 import com.line7studio.boulderside.domain.user.enums.UserRole;
-import com.line7studio.boulderside.domain.user.service.UserCredentialService;
+import com.line7studio.boulderside.domain.user.enums.UserStatus;
 import com.line7studio.boulderside.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class AuthUseCase {
 	private final OAuthClientRegistry oAuthClientRegistry;
 	private final UserService userService;
-	private final UserCredentialService userCredentialService;
 	private final TokenProvider tokenProvider;
+	private final UserLoginHistoryRepository userLoginHistoryRepository;
+
+	private static final long WITHDRAWAL_REJOIN_COOLDOWN_DAYS = 30L;
 
 	@Transactional
-	public LoginResponse loginWithOAuth(OAuthLoginRequest request) {
+	public LoginResponse loginWithOAuth(OAuthLoginRequest request, String ipAddress, String userAgent) {
 		OAuthClient client = oAuthClientRegistry.getClient(request.providerType());
 		OAuthUserProfile profile = client.fetchUserProfile(request.identityToken());
 
-		var credential = userCredentialService.findByProvider(request.providerType(), profile.providerUserId())
+		User user = userService.findByProvider(request.providerType(), profile.providerUserId())
 			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_REGISTERED));
 
-		User user = userService.getUserById(credential.getUserId());
+		validateLoginStatus(user);
 
 		String accessToken = tokenProvider.create("access", user.getId(), user.getUserRole());
 		String refreshToken = tokenProvider.create("refresh", user.getId(), user.getUserRole());
-		userCredentialService.updateOAuthCredential(credential, refreshToken);
+		userService.updateRefreshToken(user.getId(), refreshToken);
+
+		saveLoginHistory(user.getId(), ipAddress, userAgent);
 
 		return LoginResponse.builder()
 			.userId(user.getId())
@@ -51,17 +59,23 @@ public class AuthUseCase {
 	}
 
 	@Transactional
-	public LoginResponse signupWithOAuth(OAuthSignupRequest request) {
+	public LoginResponse signupWithOAuth(OAuthSignupRequest request, String ipAddress, String userAgent) {
 		OAuthClient client = oAuthClientRegistry.getClient(request.providerType());
 		OAuthUserProfile profile = client.fetchUserProfile(request.identityToken());
 
-		if (userCredentialService.findByProvider(request.providerType(), profile.providerUserId()).isPresent()) {
-			throw new BusinessException(ErrorCode.ACCOUNT_ALREADY_EXISTS);
-		}
+		userService.findByProvider(request.providerType(), profile.providerUserId())
+			.ifPresent(this::validateSignupAvailability);
 
 		CreateUserCommand command = CreateUserCommand.builder()
 			.nickname(request.nickname())
+			.providerType(profile.providerType())
+			.providerUserId(profile.providerUserId())
+			.providerEmail(null)
 			.userRole(UserRole.ROLE_USER)
+			.privacyAgreed(request.privacyAgreed())
+			.serviceTermsAgreed(request.serviceTermsAgreed())
+			.overFourteenAgreed(request.overFourteenAgreed())
+			.marketingAgreed(Boolean.TRUE.equals(request.marketingAgreed()))
 			.build();
 
 		User user = userService.createUser(command);
@@ -69,12 +83,9 @@ public class AuthUseCase {
 		String accessToken = tokenProvider.create("access", user.getId(), user.getUserRole());
 		String refreshToken = tokenProvider.create("refresh", user.getId(), user.getUserRole());
 
-		userCredentialService.createOAuthCredential(
-			user,
-			request.providerType(),
-			profile.providerUserId(),
-			refreshToken
-		);
+		userService.updateRefreshToken(user.getId(), refreshToken);
+
+		saveLoginHistory(user.getId(), ipAddress, userAgent);
 
 		return LoginResponse.builder()
 			.userId(user.getId())
@@ -91,18 +102,17 @@ public class AuthUseCase {
 		validateRefreshToken(providedRefreshToken);
 
 		Long userId = tokenProvider.getUserId(providedRefreshToken);
-		var credential = userCredentialService.findByUserId(userId)
-			.orElseThrow(() -> new BusinessException(ErrorCode.REFRESH_TOKEN_INVALID));
+		User user = userService.getUserById(userId);
 
-		if (!providedRefreshToken.equals(credential.getRefreshToken())) {
+		validateLoginStatus(user);
+
+		if (user.getRefreshToken() == null || !providedRefreshToken.equals(user.getRefreshToken())) {
 			throw new BusinessException(ErrorCode.REFRESH_TOKEN_INVALID);
 		}
 
-		User user = userService.getUserById(userId);
-
 		String newAccessToken = tokenProvider.create("access", userId, user.getUserRole());
 		String newRefreshToken = tokenProvider.create("refresh", userId, user.getUserRole());
-		userCredentialService.updateOAuthCredential(credential, newRefreshToken);
+		userService.updateRefreshToken(userId, newRefreshToken);
 
 		return LoginResponse.builder()
 			.userId(user.getId())
@@ -122,6 +132,43 @@ public class AuthUseCase {
 			}
 		} catch (Exception e) {
 			throw new BusinessException(ErrorCode.REFRESH_TOKEN_INVALID);
+		}
+	}
+
+	private void saveLoginHistory(Long userId, String ipAddress, String userAgent) {
+		UserLoginHistory history = UserLoginHistory.builder()
+			.userId(userId)
+			.ipAddress(ipAddress)
+			.userAgent(userAgent)
+			.loginAt(LocalDateTime.now())
+			.build();
+		userLoginHistoryRepository.save(history);
+	}
+
+	private void validateSignupAvailability(User user) {
+		UserStatus status = user.getUserStatus();
+		switch (status) {
+			case ACTIVE -> throw new BusinessException(ErrorCode.ACCOUNT_ALREADY_EXISTS);
+			case PENDING -> throw new BusinessException(ErrorCode.USER_PENDING);
+			case BANNED -> throw new BusinessException(ErrorCode.USER_BANNED);
+			case INACTIVE -> {
+				if (userService.isWithdrawnWithinDays(user.getId(), WITHDRAWAL_REJOIN_COOLDOWN_DAYS)) {
+					throw new BusinessException(ErrorCode.USER_WITHDRAWAL_COOLDOWN);
+				}
+				throw new BusinessException(ErrorCode.USER_INACTIVE);
+			}
+			default -> throw new BusinessException(ErrorCode.ACCOUNT_ALREADY_EXISTS);
+		}
+	}
+
+	private void validateLoginStatus(User user) {
+		UserStatus status = user.getUserStatus();
+		switch (status) {
+			case ACTIVE -> { return; }
+			case PENDING -> throw new BusinessException(ErrorCode.USER_PENDING);
+			case INACTIVE -> throw new BusinessException(ErrorCode.USER_INACTIVE);
+			case BANNED -> throw new BusinessException(ErrorCode.USER_BANNED);
+			default -> throw new BusinessException(ErrorCode.USER_INACTIVE);
 		}
 	}
 }

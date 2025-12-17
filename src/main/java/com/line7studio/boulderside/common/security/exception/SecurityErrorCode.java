@@ -24,7 +24,8 @@ public enum SecurityErrorCode {
 
 	// Authorization (S050 ~ S099)
 	ACCESS_DENIED("S050", "요청한 리소스에 대한 권한이 없습니다.", HttpStatus.FORBIDDEN),
-	ROLE_NOT_ALLOWED("S051", "해당 역할(Role)로 접근이 불가능합니다.", HttpStatus.FORBIDDEN);
+	ROLE_NOT_ALLOWED("S051", "해당 역할(Role)로 접근이 불가능합니다.", HttpStatus.FORBIDDEN),
+	USER_INACTIVE("S052", "활성 상태의 사용자만 접근할 수 있습니다.", HttpStatus.FORBIDDEN);
 
 	private final String code;
 	private final String message;

@@ -14,6 +14,7 @@ import com.line7studio.boulderside.controller.auth.request.OAuthLoginRequest;
 import com.line7studio.boulderside.controller.auth.request.OAuthSignupRequest;
 import com.line7studio.boulderside.controller.auth.request.RefreshTokenRequest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -26,15 +27,21 @@ public class AuthController {
 
 	@PostMapping("/oauth/login")
 	public ResponseEntity<ApiResponse<LoginResponse>> loginWithOAuth(
-		@Valid @RequestBody OAuthLoginRequest request) {
-		LoginResponse response = authUseCase.loginWithOAuth(request);
+		@Valid @RequestBody OAuthLoginRequest request,
+		HttpServletRequest servletRequest) {
+		String ipAddress = getClientIp(servletRequest);
+		String userAgent = servletRequest.getHeader("User-Agent");
+		LoginResponse response = authUseCase.loginWithOAuth(request, ipAddress, userAgent);
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
 	@PostMapping("/oauth/signup")
 	public ResponseEntity<ApiResponse<LoginResponse>> signupWithOAuth(
-		@Valid @RequestBody OAuthSignupRequest request) {
-		LoginResponse response = authUseCase.signupWithOAuth(request);
+		@Valid @RequestBody OAuthSignupRequest request,
+		HttpServletRequest servletRequest) {
+		String ipAddress = getClientIp(servletRequest);
+		String userAgent = servletRequest.getHeader("User-Agent");
+		LoginResponse response = authUseCase.signupWithOAuth(request, ipAddress, userAgent);
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
@@ -44,5 +51,24 @@ public class AuthController {
 		LoginResponse response = authUseCase.refreshTokens(request);
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
-}
 
+	private String getClientIp(HttpServletRequest request) {
+		String ip = request.getHeader("X-Forwarded-For");
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("Proxy-Client-IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("WL-Proxy-Client-IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("HTTP_CLIENT_IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getRemoteAddr();
+		}
+		return ip;
+	}
+}
