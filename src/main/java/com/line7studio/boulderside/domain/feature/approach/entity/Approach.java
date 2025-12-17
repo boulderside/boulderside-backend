@@ -44,6 +44,10 @@ public class Approach extends BaseEntity {
 	@Column(name = "duration")
 	private Integer duration;
 
+    /** 이동 거리 (km) */
+    @Column(name = "distance")
+    private Double distance;
+
 	/** 팁 */
 	@Column(name = "tip")
 	private String tip;

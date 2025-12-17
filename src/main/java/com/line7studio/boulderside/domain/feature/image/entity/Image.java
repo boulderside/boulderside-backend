@@ -1,5 +1,6 @@
 package com.line7studio.boulderside.domain.feature.image.entity;
 
+import com.line7studio.boulderside.domain.BaseEntity;
 import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;
 
 import jakarta.persistence.Column;
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "images")
-public class Image {
+public class Image extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

@@ -89,10 +89,7 @@ public class RouteUseCase {
 			request.name(),
 			null, // description
 			request.routeLevel(),
-			request.pioneerName(),
-			null, // firstAscentYear
-			boulder.getLatitude(),
-			boulder.getLongitude()
+			request.pioneerName()
 		);
 
 		// 저장

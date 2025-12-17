@@ -3,12 +3,7 @@ package com.line7studio.boulderside.domain.feature.route.entity;
 import com.line7studio.boulderside.common.enums.Level;
 import com.line7studio.boulderside.domain.BaseEntity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,20 +41,13 @@ public class Route extends BaseEntity {
 	private String description;
 
 	/** 난이도 (route_level) */
+    @Enumerated(value = EnumType.STRING)
 	@Column(name = "route_level")
 	private Level routeLevel;
 
 	/** 첫 등반자 이름 (pioneer_name) */
 	@Column(name = "pioneer_name")
 	private String pioneerName;
-
-	/** 루트 위치 위도 */
-	@Column(name = "latitude")
-	private Double latitude;
-
-	/** 루트 위치 경도 */
-	@Column(name = "longitude")
-	private Double longitude;
 
 	/** 조회 수 */
 	@Column(name = "view_count")
@@ -79,7 +67,7 @@ public class Route extends BaseEntity {
 
 	@Builder(access = AccessLevel.PRIVATE)
 	private Route(Long boulderId, Long regionId, Long sectorId, String name, String description, Level routeLevel,
-	              String pioneerName, Integer firstAscentYear, Double latitude, Double longitude) {
+	              String pioneerName) {
 		this.boulderId = boulderId;
 		this.regionId = regionId;
 		this.sectorId = sectorId;
@@ -87,8 +75,6 @@ public class Route extends BaseEntity {
 		this.description = description;
 		this.routeLevel = routeLevel;
 		this.pioneerName = pioneerName;
-		this.latitude = latitude;
-		this.longitude = longitude;
 		this.viewCount = 0L;
 		this.likeCount = 0L;
 		this.climberCount = 0L;
@@ -99,15 +85,13 @@ public class Route extends BaseEntity {
 	 * 정적 팩토리 메서드 - 루트 생성
 	 */
 	public static Route create(Long boulderId, Long regionId, Long sectorId, String name, String description, Level routeLevel,
-	                            String pioneerName, Integer firstAscentYear, Double latitude, Double longitude) {
+	                            String pioneerName) {
 		validateBoulderId(boulderId);
 		validateRegionId(regionId);
 		validateSectorId(sectorId);
 		validateName(name);
 		validateDescription(description);
 		validatePioneerName(pioneerName);
-		validateFirstAscentYear(firstAscentYear);
-		validateCoordinates(latitude, longitude);
 
 		return Route.builder()
 			.boulderId(boulderId)
@@ -117,9 +101,6 @@ public class Route extends BaseEntity {
 			.description(description)
 			.routeLevel(routeLevel)
 			.pioneerName(pioneerName)
-			.firstAscentYear(firstAscentYear)
-			.latitude(latitude)
-			.longitude(longitude)
 			.build();
 	}
 
@@ -134,7 +115,6 @@ public class Route extends BaseEntity {
 		validateName(name);
 		validateDescription(description);
 		validatePioneerName(pioneerName);
-		validateCoordinates(latitude, longitude);
 
 		this.boulderId = boulderId;
 		this.regionId = regionId;
@@ -143,8 +123,6 @@ public class Route extends BaseEntity {
 		this.description = description;
 		this.routeLevel = routeLevel;
 		this.pioneerName = pioneerName;
-		this.latitude = latitude;
-		this.longitude = longitude;
 	}
 
 	public void incrementViewCount() {
@@ -210,21 +188,6 @@ public class Route extends BaseEntity {
 	private static void validatePioneerName(String pioneerName) {
 		if (pioneerName != null && pioneerName.length() > 100) {
 			throw new IllegalArgumentException("첫 등반자 이름은 100자를 초과할 수 없습니다.");
-		}
-	}
-
-	private static void validateFirstAscentYear(Integer firstAscentYear) {
-		if (firstAscentYear != null && (firstAscentYear < 1900 || firstAscentYear > 2100)) {
-			throw new IllegalArgumentException("첫 등반 년도는 1900 ~ 2100 범위여야 합니다.");
-		}
-	}
-
-	private static void validateCoordinates(Double latitude, Double longitude) {
-		if (latitude != null && (latitude < -90.0 || latitude > 90.0)) {
-			throw new IllegalArgumentException("위도는 -90.0 ~ 90.0 범위여야 합니다.");
-		}
-		if (longitude != null && (longitude < -180.0 || longitude > 180.0)) {
-			throw new IllegalArgumentException("경도는 -180.0 ~ 180.0 범위여야 합니다.");
 		}
 	}
 }
