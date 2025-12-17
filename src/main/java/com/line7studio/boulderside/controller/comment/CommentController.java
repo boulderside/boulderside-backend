@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.comment;
 
-import com.line7studio.boulderside.application.comment.CommentUseCase;
+import com.line7studio.boulderside.usecase.comment.CommentUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.controller.comment.request.CreateCommentRequest;
@@ -8,7 +8,7 @@ import com.line7studio.boulderside.controller.comment.request.UpdateCommentReque
 import com.line7studio.boulderside.controller.comment.response.CommentPageResponse;
 import com.line7studio.boulderside.controller.comment.response.CommentResponse;
 import com.line7studio.boulderside.controller.comment.response.MyCommentPageResponse;
-import com.line7studio.boulderside.domain.feature.comment.enums.CommentDomainType;
+import com.line7studio.boulderside.domain.comment.enums.CommentDomainType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

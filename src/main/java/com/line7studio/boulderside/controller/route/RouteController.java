@@ -1,11 +1,11 @@
 package com.line7studio.boulderside.controller.route;
 
-import com.line7studio.boulderside.application.route.RouteUseCase;
+import com.line7studio.boulderside.usecase.route.RouteUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.controller.route.response.RoutePageResponse;
 import com.line7studio.boulderside.controller.route.response.RouteResponse;
-import com.line7studio.boulderside.domain.feature.route.enums.RouteSortType;
+import com.line7studio.boulderside.domain.route.enums.RouteSortType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

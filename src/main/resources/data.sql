@@ -1,373 +1,86 @@
 -- ▶ 0. 외래 키 제약 잠시 비활성화
 SET FOREIGN_KEY_CHECKS = 0;
-
--- user table 초기화
-TRUNCATE TABLE users;
-
 TRUNCATE TABLE user_credentials;
-
--- boulders table 초기화
-TRUNCATE TABLE boulders;
-
--- regions table 초기화
-TRUNCATE TABLE regions;
-
+TRUNCATE TABLE users;
 TRUNCATE TABLE sectors;
-
+TRUNCATE TABLE boulders;
+TRUNCATE TABLE regions;
 TRUNCATE TABLE images;
-
 TRUNCATE TABLE comments;
-
 TRUNCATE TABLE routes;
-
 TRUNCATE TABLE approaches;
 TRUNCATE TABLE points;
 
-INSERT INTO board_posts (user_id, title, content, view_count, comment_count, created_at, updated_at) VALUES
- (1, '볼더링장 같이 가실 분 구합니다! (강남)', '이번 주 토요일 오후에 같이 클라이밍 하실 분 계신가요? 초보 환영합니다!', 0, 0, '2025-10-01 11:30:00', '2025-10-01 11:30:00'),
- (1, 'V4 난이도 졸업 팁 공유', 'V3에서 V4 넘어갈 때 고생했는데, 저는 발 위치에 집중해서 돌파했어요. 여러분의 팁은 뭔가요?', 0, 0, '2025-10-05 16:45:00', '2025-10-05 17:00:00'),
- (1, '클라이밍 신발 교체 주기 질문드려요.', '3개월 정도 신었는데, 접지력이 떨어진 느낌이 드는데 교체할 시기인가요? 조언 부탁드립니다.', 0, 0, '2025-10-10 09:10:00', '2025-10-10 09:10:00'),
- (1, '오늘의 실패 루트 기록 (B센터 빨강)', '팔 힘이 너무 빨리 빠지네요. 탑 홀드를 잡기 직전에서 항상 떨어집니다. 내일은 코어 운동부터 해야겠습니다.', 0, 0, '2025-10-12 20:00:00', '2025-10-12 20:00:00'),
- (1, '새 볼더링 홀 오픈 소식!', '서초동에 새로운 볼더링장이 생겼다고 합니다! 분위기가 궁금해서 이번 주말에 가보려구요.', 0, 0, '2025-10-15 14:00:00', '2025-10-15 14:00:00'),
- (1, '팔꿈치 통증, 이럴 땐 어떻게 해야 하나요?', '운동 후 다음날 팔꿈치 바깥쪽이 아픕니다. 흔한 증상인가요? 혹시 스트레칭 팁 아시는 분?', 0, 0, '2025-10-20 17:25:00', '2025-10-20 17:25:00'),
- (1, '볼더링 초크 추천 (액상 vs 가루)', '여름이라 땀이 많이 나서 액상 초크가 좋을까요? 아니면 가루 초크가 더 나은가요? 장단점 비교해주세요!', 0, 0, '2025-10-25 10:40:00', '2025-10-25 10:40:00'),
- (1, 'V1 완등 기념 후기!', '드디어 V1 성공했습니다! 꾸준히 하는 게 답이네요. 다음은 V2 목표! 다들 화이팅입니다.', 0, 0, '2025-11-01 19:30:00', '2025-11-01 19:30:00'),
- (1, '볼더링 관련 유튜브 채널 추천 받습니다!', '재미있거나 교육적인 채널 있으면 알려주세요. 주로 해외 채널도 괜찮습니다.', 0, 0, '2025-11-05 13:15:00', '2025-11-05 13:15:00'),
- (1, '평일 저녁 야외 클라이밍 벙개!', '수요일 저녁 7시, 북한산 인수봉에서 가볍게 모입니다. 초보자는 안전장비 필수 지참입니다.', 0, 0, '2025-11-10 16:00:00', '2025-11-10 16:00:00');
+INSERT INTO users (id, nickname, user_role, profile_image_url, phone, user_sex, user_level, name, email, created_at, updated_at) VALUES
+    (1,'bouldertiger', 'ROLE_USER', null, '010-1234-5678', 'MAN', 'V13', '김철수', 'example@com', '2025-01-01 09:00:00', '2025-01-01 09:00:00');
 
-INSERT INTO mate_posts (user_id, title, content, view_count, comment_count, meeting_date, created_at, updated_at) VALUES
-(1, '[강남] 볼더링 초보 레벨 (V0~V2) 같이 성장하실 메이트 구합니다.', '주 2회 저녁 8시 이후 정기적으로 활동하실 분 찾아요. 부담 없이 연락주세요!', 0, 0, '2025-12-05 20:00:00', '2025-11-15 10:00:00', '2025-11-15 10:00:00'),
-(1, '[홍대] 주말 암장 투어 메이트 모집 (V3~V5)', '매주 토요일 새로운 암장 방문을 목표로 합니다. 함께 챌린지하고 즐기실 분 환영!', 0, 0, '2025-12-07 15:00:00', '2025-11-16 14:30:00', '2025-11-16 14:30:00'),
-(1, '[건대] 평일 낮 클라이밍 파트너 구해요.', '오후 2시~5시 사이에 시간이 비어서 함께 운동하실 분 구합니다. 리딩/볼더링 모두 가능합니다.', 0, 0, '2025-12-03 14:00:00', '2025-11-17 09:15:00', '2025-11-17 09:15:00'),
-(1, '[인천] 하네스 사용법 가르쳐 주실 분! (초보)', '클라이밍 입문한 지 얼마 안 됐습니다. 리딩 안전 교육 및 기본 자세 알려주실 친절한 분 찾아요!', 0, 0, '2025-12-08 19:00:00', '2025-11-18 19:40:00', '2025-11-18 19:40:00'),
-(1, '[부산] 볼더링 V6 이상 목표 트레이닝 메이트', '진지하게 실력 향상에 초점을 맞추고 싶습니다. 서로 피드백 주고받으며 강하게 운동하실 분 연락주세요.', 0, 0, '2025-12-10 18:30:00', '2025-11-19 11:20:00', '2025-11-19 11:20:00'),
-(1, '[수원] 신규 암장 같이 가봐요.', '이번에 오픈한 **클라임탑 수원점** 같이 탐방하실 분! 선착순 2명 모집합니다.', 0, 0, '2025-12-06 13:00:00', '2025-11-20 15:50:00', '2025-11-20 15:50:00'),
-(1, '[대구] 여성 클라이밍 메이트 (V1~V3)', '여성분들끼리 편안하게 볼더링 즐기실 분 구합니다. 매주 수요일 저녁 모임.', 0, 0, '2025-12-04 19:00:00', '2025-11-21 20:10:00', '2025-11-21 20:10:00'),
-(1, '[대전] 주 1회 야외 리드 클라이밍 메이트', '산악회 활동 경험 있으신 분 우대합니다. 장비는 각자 지참입니다.', 0, 0, '2025-12-14 10:00:00', '2025-11-22 13:05:00', '2025-11-22 13:05:00'),
-(1, '[잠실] 평일 점심 볼더링 파트너', '점심시간 활용해서 1시간 반 정도 운동하실 직장인 분 계신가요? (V2~V4)', 0, 0, '2025-12-09 12:30:00', '2025-11-23 08:30:00', '2025-11-23 08:30:00'),
-(1, '[제주] 가끔 주말에 같이 암벽 등반하실 분?', '날씨 좋을 때 가볍게 다녀올 메이트 찾아요. 주로 성산일출봉 근처 암장 이용.', 0, 0, '2025-12-13 11:00:00', '2025-11-24 16:55:00', '2025-11-24 16:55:00'),
-(1, '[광주] 클라이밍 초보 탈출 프로젝트 팀원 모집!', 'V0 벽부터 차근차근 깨나갈 열정 있는 분들 모여주세요. 트레이닝 계획 공유합니다.', 0, 0, '2025-12-01 19:30:00', '2025-11-25 18:00:00', '2025-11-25 18:00:00'),
-(1, '[천안] 퇴근 후 볼더링 메이트 구인 (V3)', '월, 목 저녁 7시 정기 모임. 즐겁게 땀 흘리실 분 메시지 주세요!', 0, 0, '2025-12-02 19:00:00', '2025-11-26 12:45:00', '2025-11-26 12:45:00'),
-(1, '[분당] 암벽화 세탁/관리 팁 공유하실 분 모임', '볼더링 후에 신발 관리하는 노하우 같이 공유해요. 모임 후 커피 한잔!', 0, 0, '2025-12-11 15:00:00', '2025-11-27 15:10:00', '2025-11-27 15:10:00'),
-(1, '[강서] V5 문제 푸는 것 봐주실 코치 메이트 부탁드려요.', '특정 루트에서 계속 막힙니다. 제 움직임을 보시고 냉정한 피드백 주실 고수분 찾습니다.', 0, 0, '2025-12-05 18:00:00', '2025-11-28 09:00:00', '2025-11-28 09:00:00'),
-(1, '[전국] 온라인 트레이닝 기록 공유 메이트', '실내 암장 운동 기록(루트, 시간, 실패 영상)을 공유하며 서로 동기 부여하실 분들 모십니다. (V4 이상)', 0, 0, '2025-12-30 00:00:00', '2025-11-29 21:00:00', '2025-11-29 21:00:00');
+INSERT INTO sectors (id, sector_name, area_code, created_at, updated_at) VALUES
+    (1, '을왕리', 'A-1', '2025-01-05 10:00:00', '2025-01-05 10:00:00'),
+    (2, '을왕리', 'A-2', '2025-01-05 10:05:00', '2025-01-05 10:05:00'),
+    (3, '을왕리', 'A-3', '2025-01-05 10:10:00', '2025-01-05 10:10:00');
 
-INSERT INTO approaches (id, boulder_id, order_index, transport_info, parking_info, duration, tip, created_at, updated_at)
-VALUES
-    -- Sunrise Crag (1)
-    (1, 1, 0, '서울역에서 버스 402번 환승 후 하차, 도보 10분', '주차장: 북악산 공영주차장 이용', 20, '해뜨기 30분 전에 도착하면 좋습니다.', '2025-08-21 08:00:00', '2025-08-21 08:00:00'),
-    (2, 1, 1, '지하철 3호선 안국역 하차, 도보 25분', '주차 공간 협소, 가급적 대중교통 권장', 25, '이른 아침에는 한산합니다.', '2025-08-21 08:05:00', '2025-08-21 08:05:00'),
+INSERT INTO boulders (id, region_id, sector_id, name, description, latitude, longitude, like_count, view_count, created_at, updated_at) VALUES
+    (1, 1, 1, 'Sunrise Crag', '해돋이 보기 좋은 바위, 초보자도 접근 용이', 37.579617, 126.977041, 0, 0, '2025-01-10 11:00:00', '2025-01-10 11:00:00'),
+    (2, 2, 2, 'Shadow Peak', '그림자가 길게 드리워지는 고독한 암석', 35.179554, 129.075642, 0, 0, '2025-01-10 11:15:00', '2025-01-10 11:15:00'),
+    (3, 3, 3, 'Mossy Boulder', '이끼로 덮인 습한 바위, 촉감이 부드러움', 37.566535, 126.977969, 0, 0, '2025-01-10 11:30:00', '2025-01-10 11:30:00');
 
-    -- Shadow Peak (2)
-    (3, 2, 0, '부산역에서 시내버스 100번, 종점 하차 후 등산로 진입', '산 입구 유료 주차장(30대 규모)', 40, '석양 무렵 그림자가 길게 드리워집니다.', '2025-08-21 08:10:00', '2025-08-21 08:10:00'),
+INSERT INTO routes (id, boulder_id, name, description, route_level, pioneer_name, like_count, view_count, climber_count, comment_count, created_at, updated_at) VALUES
+    (1, 1,  'Beginners Edge', '루트 설명이 없습니다.', 'V0', 'jaehoon lee', 0, 0, 0, 0, '2025-01-15 12:00:00', '2025-01-15 12:00:00'),
+    (2, 1,  'Sunrise Traverse', '루트 설명이 없습니다.', 'V1', 'Sunrise Crew',  0, 0, 0, 0, '2025-01-15 12:15:00', '2025-01-15 12:15:00'),
+    (3, 2,  'Shadow Crack', '루트 설명이 없습니다.', 'V2', 'Shadow Crew', 0, 0, 0, 0, '2025-01-15 12:30:00', '2025-01-15 12:30:00');
 
-    -- Mossy Boulder (3)
-    (4, 3, 0, '종로3가역에서 도보 15분', '인근 공영주차장 이용 가능', 15, '비 온 다음 날은 미끄러우니 주의하세요.', '2025-08-21 08:15:00', '2025-08-21 08:15:00'),
-
-    -- Eagle's Perch (4)
-    (5, 4, 0, '대전역에서 버스 1번 탑승, 산성 입구 하차 후 20분 도보', '산성 주차장 무료 개방', 30, '독수리가 날아오르는 시간대는 이른 아침.', '2025-08-21 08:20:00', '2025-08-21 08:20:00'),
-    (6, 4, 1, '유성IC에서 차량 15분, 도보 10분', '주차 공간 충분', 25, '전망대에서 도심이 한눈에 들어옵니다.', '2025-08-21 08:25:00', '2025-08-21 08:25:00'),
-
-    -- Whispering Stone (5)
-    (7, 5, 0, '대구역에서 버스 23번, 종점 하차 후 숲길 따라 15분', '마을 입구 소규모 주차장', 20, '바람 소리가 크게 들리는 포인트를 찾아보세요.', '2025-08-21 08:30:00', '2025-08-21 08:30:00'),
-
-    -- Red Cliff (6)
-    (8, 6, 0, '광주송정역에서 버스 30번, 절벽 입구 하차', '주차장은 협소, 주말 혼잡', 35, '사진 촬영 명소, 오후 햇살이 좋습니다.', '2025-08-21 08:35:00', '2025-08-21 08:35:00'),
-
-    -- Twin Rocks (7)
-    (9, 7, 0, '세종시청에서 버스 221번, 종점 하차', '임시 주차 공간 있음', 25, '쌍둥이 바위 사이로 들어가면 시원한 바람.', '2025-08-21 08:40:00', '2025-08-21 08:40:00'),
-    (10, 7, 1, '차량 접근 가능, 진입로 좁음', '바위 앞 공터 주차 가능', 10, '야간에는 별빛 감상이 좋습니다.', '2025-08-21 08:45:00', '2025-08-21 08:45:00'),
-
-    -- Hidden Hollow (8)
-    (11, 8, 0, '전주역에서 버스 12번, 골짜기 입구 하차', '마을회관 앞 주차장 이용 가능', 30, '계곡물 소리와 함께 아늑한 분위기.', '2025-08-21 08:50:00', '2025-08-21 08:50:00');
+INSERT INTO approaches (id, boulder_id, order_index, transport_info, parking_info, duration, tip, distance, created_at, updated_at) VALUES
+    (1, 1, 0, '서울역에서 버스 402번 환승 후 하차, 도보 10분', '주차장: 북악산 공영주차장 이용', 20, '해뜨기 30분 전에 도착하면 좋습니다.', 1.4, '2025-01-20 13:00:00', '2025-01-20 13:00:00'),
+    (2, 1, 1, '지하철 3호선 안국역 하차, 도보 25분', '주차 공간 협소, 가급적 대중교통 권장', 25, '이른 아침에는 한산합니다.', 2.3, '2025-01-20 13:10:00', '2025-01-20 13:10:00'),
+    (3, 2, 0, '부산역에서 시내버스 100번, 종점 하차 후 등산로 진입', '산 입구 유료 주차장(30대 규모)', 40, '석양 무렵 그림자가 길게 드리워집니다.', 0.7, '2025-01-20 13:20:00', '2025-01-20 13:20:00');
 
 INSERT INTO points (id, approach_id, order_index, name, description, note, created_at, updated_at) VALUES
-    (1, 1, 0, '북악산 주차장', '북악산 공영주차장에서 출발', '주차비는 카드 결제 가능', '2025-08-21 09:00:00', '2025-08-21 09:00:00'),
-    (2, 1, 1, '소나무 숲길', '완만한 경사의 흙길', '이른 아침 이슬에 주의', '2025-08-21 09:01:00', '2025-08-21 09:01:00'),
-    (3, 1, 2, '전망 바위', '서울 시내가 보이는 포인트', '사진 촬영 명소', '2025-08-21 09:02:00', '2025-08-21 09:02:00'),
-    (4, 1, 3, 'Sunrise Crag 베이스', '볼더 바로 앞 공터', '스트레칭하기 좋은 공간', '2025-08-21 09:03:00', '2025-08-21 09:03:00'),
-    (5, 2, 0, '안국역 출구', '역 2번 출구에서 직진', '편의점에서 간식 구매 가능', '2025-08-21 09:04:00', '2025-08-21 09:04:00'),
-    (6, 2, 1, '한옥마을 골목', '전통가옥 사이로 난 길', '주민 생활 구역, 소음 주의', '2025-08-21 09:05:00', '2025-08-21 09:05:00'),
-    (7, 2, 2, '북측 오르막', '돌계단과 흙길 혼합', '미끄럼 주의', '2025-08-21 09:06:00', '2025-08-21 09:06:00'),
-    (8, 2, 3, '정상 접근로', '바위 바로 전 갈림길', '좌측 길로 진입', '2025-08-21 09:07:00', '2025-08-21 09:07:00'),
-    (9, 3, 0, '부산역 3번 출구', '버스 환승 지점', '인근에 코인락커 있음', '2025-08-21 09:08:00', '2025-08-21 09:08:00'),
-    (10, 3, 1, '어귀 쉼터', '버스 종점 옆 정자', '물 보충 가능', '2025-08-21 09:09:00', '2025-08-21 09:09:00'),
-    (11, 3, 2, '등산로 초입', '완만한 숲길 시작', '해충 스프레이 권장', '2025-08-21 09:10:00', '2025-08-21 09:10:00'),
-    (12, 3, 3, 'Shadow Peak 베이스', '암벽 앞 평평한 공간', '바람이 강함', '2025-08-21 09:11:00', '2025-08-21 09:11:00'),
-    (13, 4, 0, '종로3가 역사', '6번 출구 집결 지점', '지하철 이용 추천', '2025-08-21 09:12:00', '2025-08-21 09:12:00'),
-    (14, 4, 1, '계곡 초입', '작은 다리를 건너는 지점', '우천 시 수위 상승', '2025-08-21 09:13:00', '2025-08-21 09:13:00'),
-    (15, 4, 2, '이끼 숲길', '미끄러운 돌길', '트레킹화 필수', '2025-08-21 09:14:00', '2025-08-21 09:14:00'),
-    (16, 4, 3, 'Mossy Boulder 앞', '볼더 하단 쉼터', '습기가 많음', '2025-08-21 09:15:00', '2025-08-21 09:15:00'),
-    (17, 5, 0, '대전 산성 입구', '버스 하차 후 바로 보임', '매점에서 간식 구매 가능', '2025-08-21 09:16:00', '2025-08-21 09:16:00'),
-    (18, 5, 1, '현수교', '짧은 구름다리', '사진 스팟', '2025-08-21 09:17:00', '2025-08-21 09:17:00'),
-    (19, 5, 2, 'Eagle''s Perch 베이스', '전망대 아래 공터', '강풍 주의', '2025-08-21 09:18:00', '2025-08-21 09:18:00'),
-    (20, 6, 0, '유성IC 출발점', '도로 옆 임시 주차장', '네비게이션 주소: 유성전망대', '2025-08-21 09:19:00', '2025-08-21 09:19:00'),
-    (21, 6, 1, '임도 진입', '비포장 도로 시작', 'SUV 권장', '2025-08-21 09:20:00', '2025-08-21 09:20:00'),
-    (22, 6, 2, '소나무 숲', '완만한 오르막', '그늘이 많아 시원함', '2025-08-21 09:21:00', '2025-08-21 09:21:00'),
-    (23, 6, 3, '전망 데크', '도심 조망 포인트', '사진 촬영 추천', '2025-08-21 09:22:00', '2025-08-21 09:22:00'),
-    (24, 7, 0, '대구역 버스정류장', '23번 버스 승차 지점', '교통카드 필수', '2025-08-21 09:23:00', '2025-08-21 09:23:00'),
-    (25, 7, 1, '숲길 입구', '마을 뒤편 좁은 길', '주민 차량 주의', '2025-08-21 09:24:00', '2025-08-21 09:24:00'),
-    (26, 7, 2, '폭포 포인트', '작은 폭포 옆 바위', '발판이 젖어 있음', '2025-08-21 09:25:00', '2025-08-21 09:25:00'),
-    (27, 8, 0, 'Red Cliff 주차장', '절벽 입구 소형 주차장', '주말 혼잡', '2025-08-21 09:26:00', '2025-08-21 09:26:00'),
-    (28, 8, 1, '붉은 흙길', '틈새에서 붉은 토양이 드러남', '비 오면 진흙길', '2025-08-21 09:27:00', '2025-08-21 09:27:00'),
-    (29, 8, 2, '절벽 전망대', '절벽 중간 평탄지', '안전 펜스 있음', '2025-08-21 09:28:00', '2025-08-21 09:28:00'),
-    (30, 8, 3, 'Red Cliff 베이스', '볼더 앞 작은 공터', '장비 정리에 용이', '2025-08-21 09:29:00', '2025-08-21 09:29:00'),
-    (31, 9, 0, '세종시청 앞', '221번 버스 정류장', '정기권 사용 가능', '2025-08-21 09:30:00', '2025-08-21 09:30:00'),
-    (32, 9, 1, '갈대밭 길', '쌍둥이 바위로 향하는 갈대밭', '노을이 아름다움', '2025-08-21 09:31:00', '2025-08-21 09:31:00'),
-    (33, 9, 2, 'Twin Rocks 앞마당', '두 바위 사이 공터', '야영 금지', '2025-08-21 09:32:00', '2025-08-21 09:32:00'),
-    (34, 10, 0, '비포장 주차장', '차량 접근 가능', '비 오면 진입 곤란', '2025-08-21 09:33:00', '2025-08-21 09:33:00'),
-    (35, 10, 1, '계곡 다리', '작은 나무 다리', '미끄럼 방지 필요', '2025-08-21 09:34:00', '2025-08-21 09:34:00'),
-    (36, 10, 2, '야간 전망 포인트', '별 관측 최적지', '랜턴 필수', '2025-08-21 09:35:00', '2025-08-21 09:35:00'),
-    (37, 10, 3, 'Hidden Hollow 입구', '계곡 속 진입로', '습기 높음', '2025-08-21 09:36:00', '2025-08-21 09:36:00'),
-    (38, 11, 0, '전주역 광장', '버스 승차 위치', '인근 카페 다수', '2025-08-21 09:37:00', '2025-08-21 09:37:00'),
-    (39, 11, 1, '골짜기 입구', '마을회관 옆', '주민 인사 권장', '2025-08-21 09:38:00', '2025-08-21 09:38:00'),
-    (40, 11, 2, '계류길', '맑은 계류 따라 오르는 길', '장화 추천', '2025-08-21 09:39:00', '2025-08-21 09:39:00'),
-    (41, 11, 3, '은신처 평상', '나무 평상 두 개', '휴식 가능', '2025-08-21 09:40:00', '2025-08-21 09:40:00'),
-    (42, 11, 4, 'Hidden Hollow 베이스', '바위 바로 앞 플랫폼', '기온이 낮음', '2025-08-21 09:41:00', '2025-08-21 09:41:00'),
-    (43, 11, 5, '비상 대피소', '간이 대피소 위치', '우천 시 대피 가능', '2025-08-21 09:42:00', '2025-08-21 09:42:00');
+    (1, 1, 0, '북악산 주차장', '북악산 공영주차장에서 출발', '주차비는 카드 결제 가능', '2025-01-22 14:00:00', '2025-01-22 14:00:00'),
+    (2, 1, 1, '소나무 숲길', '완만한 경사의 흙길', '이른 아침 이슬에 주의', '2025-01-22 14:05:00', '2025-01-22 14:05:00'),
+    (3, 1, 2, '전망 바위', '서울 시내가 보이는 포인트', '사진 촬영 명소', '2025-01-22 14:10:00', '2025-01-22 14:10:00'),
+    (4, 1, 3, 'Sunrise Crag 베이스', '볼더 바로 앞 공터', '스트레칭하기 좋은 공간', '2025-01-22 14:15:00', '2025-01-22 14:15:00'),
+    (5, 1, 4, '안국역 출구', '역 2번 출구에서 직진', '편의점에서 간식 구매 가능', '2025-01-22 14:20:00', '2025-01-22 14:20:00'),
+    (6, 2, 0, '한옥마을 골목', '전통가옥 사이로 난 길', '주민 생활 구역, 소음 주의', '2025-01-22 14:25:00', '2025-01-22 14:25:00'),
+    (7, 2, 1, '북측 오르막', '돌계단과 흙길 혼합', '미끄럼 주의', '2025-01-22 14:30:00', '2025-01-22 14:30:00'),
+    (8, 2, 2, '정상 접근로', '바위 바로 전 갈림길', '좌측 길로 진입', '2025-01-22 14:35:00', '2025-01-22 14:35:00'),
+    (9, 3, 0, '부산역 3번 출구', '버스 환승 지점', '인근에 코인락커 있음', '2025-01-22 14:40:00', '2025-01-22 14:40:00');
 
-INSERT INTO routes (id, boulder_id, region_id, sector_id, name, pioneer_name, like_count, view_count, climber_count, comment_count, latitude, longitude, route_level, created_at, updated_at)
-VALUES
-    (1, 1, 1, 1, 'Beginner''s Edge', 'Sunrise Crew', 0, 0, 0, 0, 37.579617, 126.977041, 'V0', '2025-08-21 10:00:00', '2025-08-21 10:00:00'),
-    (2, 1, 1, 1, 'Sunrise Traverse', 'Sunrise Crew', 0, 0, 0, 0, 37.579617, 126.977041, 'V2', '2025-08-21 10:05:00', '2025-08-21 10:05:00'),
-    (3, 2, 2, 2, 'Shadow Crack', 'Shadow Crew', 0, 0, 0, 0, 35.179554, 129.075642, 'V1', '2025-08-21 10:10:00', '2025-08-21 10:10:00'),
-    (4, 2, 2, 2, 'Moonlight Mantle', 'Shadow Crew', 0, 0, 0, 0, 35.179554, 129.075642, 'V4', '2025-08-21 10:15:00', '2025-08-21 10:15:00'),
-    (5, 3, 3, 3, 'Green Slab', 'Moss Squad', 0, 0, 0, 0, 37.566535, 126.977969, 'V0', '2025-08-21 10:20:00', '2025-08-21 10:20:00'),
-    (6, 3, 3, 3, 'Moss Traverse', 'Moss Squad', 0, 0, 0, 0, 37.566535, 126.977969, 'V3', '2025-08-21 10:25:00', '2025-08-21 10:25:00'),
-    (7, 3, 3, 3, 'Damp Pocket', 'Moss Squad', 0, 0, 0, 0, 37.566535, 126.977969, 'V5', '2025-08-21 10:30:00', '2025-08-21 10:30:00'),
-    (8, 4, 4, 1, 'Eagle''s Flight', 'Eagle Crew', 0, 0, 0, 0, 36.350411, 127.384547, 'V6', '2025-08-21 10:35:00', '2025-08-21 10:35:00'),
-    (9, 4, 4, 1, 'Perch Traverse', 'Eagle Crew', 0, 0, 0, 0, 36.350411, 127.384547, 'V2', '2025-08-21 10:40:00', '2025-08-21 10:40:00'),
-    (10, 4, 4, 1, 'Sky Crack', 'Eagle Crew', 0, 0, 0, 0, 36.350411, 127.384547, 'V8', '2025-08-21 10:45:00', '2025-08-21 10:45:00'),
-    (11, 5, 5, 2, 'Stone Whisper', 'Whisper Crew', 0, 0, 0, 0, 35.872218, 128.602528, 'V1', '2025-08-21 10:50:00', '2025-08-21 10:50:00'),
-    (12, 5, 5, 2, 'Wind Song', 'Whisper Crew', 0, 0, 0, 0, 35.872218, 128.602528, 'V3', '2025-08-21 10:55:00', '2025-08-21 10:55:00'),
-    (13, 6, 6, 3, 'Red Wall', 'Red Cliff Crew', 0, 0, 0, 0, 35.159545, 126.852601, 'V7', '2025-08-21 11:00:00', '2025-08-21 11:00:00'),
-    (14, 6, 6, 3, 'Cliff Edge', 'Red Cliff Crew', 0, 0, 0, 0, 35.159545, 126.852601, 'V5', '2025-08-21 11:05:00', '2025-08-21 11:05:00'),
-    (15, 6, 6, 3, 'Blood Crack', 'Red Cliff Crew', 0, 0, 0, 0, 35.159545, 126.852601, 'V9', '2025-08-21 11:10:00', '2025-08-21 11:10:00'),
-    (16, 7, 7, 1, 'Twin Arete', 'Twin Crew', 0, 0, 0, 0, 36.487224, 127.289098, 'V4', '2025-08-21 11:15:00', '2025-08-21 11:15:00'),
-    (17, 7, 7, 1, 'Double Slab', 'Twin Crew', 0, 0, 0, 0, 36.487224, 127.289098, 'V0', '2025-08-21 11:20:00', '2025-08-21 11:20:00'),
-    (18, 8, 8, 2, 'Hidden Crack', 'Hollow Crew', 0, 0, 0, 0, 35.907757, 127.766922, 'V2', '2025-08-21 11:25:00', '2025-08-21 11:25:00'),
-    (19, 8, 8, 2, 'Hollow Roof', 'Hollow Crew', 0, 0, 0, 0, 35.907757, 127.766922, 'V6', '2025-08-21 11:30:00', '2025-08-21 11:30:00'),
-    (20, 8, 8, 2, 'Quiet Traverse', 'Hollow Crew', 0, 0, 0, 0, 35.907757, 127.766922, 'V1', '2025-08-21 11:35:00', '2025-08-21 11:35:00'),
-    (21, 2, 2, 2, 'Shadow Wall', 'Shadow Crew', 0, 0, 0, 0, 35.179554, 129.075642, 'V10', '2025-08-21 11:40:00', '2025-08-21 11:40:00'),
-    (22, 5, 5, 2, 'Echo Corner', 'Whisper Crew', 0, 0, 0, 0, 35.872218, 128.602528, 'V2', '2025-08-21 11:45:00', '2025-08-21 11:45:00');
+INSERT INTO board_posts (id, user_id, title, content, view_count, comment_count, created_at, updated_at) VALUES
+     (1, 1, '볼더링장 같이 가실 분 구합니다! (강남)', '이번 주 토요일 오후에 같이 클라이밍 하실 분 계신가요? 초보 환영합니다!', 0, 0, '2025-01-25 15:00:00', '2025-01-25 15:00:00'),
+     (2, 1, 'V4 난이도 졸업 팁 공유', 'V3에서 V4 넘어갈 때 고생했는데, 저는 발 위치에 집중해서 돌파했어요. 여러분의 팁은 뭔가요?', 0, 0, '2025-01-25 15:30:00', '2025-01-25 15:30:00'),
+     (3, 1, '클라이밍 신발 교체 주기 질문드려요.', '3개월 정도 신었는데, 접지력이 떨어진 느낌이 드는데 교체할 시기인가요? 조언 부탁드립니다.', 0, 0, '2025-01-25 16:00:00', '2025-01-25 16:00:00');
+
+INSERT INTO mate_posts (id, user_id, title, content, view_count, comment_count, meeting_date, created_at, updated_at) VALUES
+    (1, 1, '[강남] 볼더링 초보 레벨 (V0~V2) 같이 성장하실 메이트 구합니다.', '주 2회 저녁 8시 이후 정기적으로 활동하실 분 찾아요. 부담 없이 연락주세요!', 0, 0, '2025-12-05 20:00:00', '2025-11-15 10:00:00', '2025-11-15 10:00:00'),
+    (2, 1, '[홍대] 주말 암장 투어 메이트 모집 (V3~V5)', '매주 토요일 새로운 암장 방문을 목표로 합니다. 함께 챌린지하고 즐기실 분 환영!', 0, 0, '2025-12-07 15:00:00', '2025-11-16 14:30:00', '2025-11-16 14:30:00'),
+    (3, 1, '[건대] 평일 낮 클라이밍 파트너 구해요.', '오후 2시~5시 사이에 시간이 비어서 함께 운동하실 분 구합니다. 리딩/볼더링 모두 가능합니다.', 0, 0, '2025-12-03 14:00:00', '2025-11-17 09:15:00', '2025-11-17 09:15:00');
 
 INSERT INTO comments (id, user_id, domain_id, comment_domain_type, content, created_at, updated_at) VALUES
-    (1, 1, 1, 'BOARD_POST', '첫 번째 게시글의 첫 댓글입니다.', '2025-08-20 10:01:12', '2025-08-20 10:01:12'),
-    (2, 1, 2, 'BOARD_POST', '좋은 글 잘 읽었습니다.', '2025-08-20 10:02:45', '2025-08-20 10:02:45'),
-    (3, 1, 2, 'BOARD_POST', '동의합니다!', '2025-08-20 10:03:27', '2025-08-20 10:03:27'),
-    (4, 1, 3, 'BOARD_POST', '두 번째 게시글의 첫 댓글', '2025-08-20 10:03:27', '2025-08-20 10:03:27'),
-    (5, 1, 3, 'BOARD_POST', '추가 의견 남깁니다.', '2025-08-20 10:06:49', '2025-08-20 10:06:49'),
-    (6, 1, 3, 'BOARD_POST', '게시글 내용이 유익하네요.', '2025-08-20 10:08:15', '2025-08-20 10:08:15'),
-    (7, 1, 4, 'BOARD_POST', '궁금한 점이 있습니다.', '2025-08-20 10:09:52', '2025-08-20 10:09:52'),
-    (8, 1, 4, 'BOARD_POST', '좋은 정보 감사합니다.', '2025-08-20 10:11:30', '2025-08-20 10:11:30'),
-    (9, 1, 4, 'BOARD_POST', '정말 공감되는 내용입니다.', '2025-08-20 10:13:04', '2025-08-20 10:13:04'),
-    (10, 1, 4, 'MATE_POST', '도움이 많이 되었어요.', '2025-08-20 10:14:42', '2025-08-20 10:14:42'),
-    (11, 1, 5, 'MATE_POST', '혹시 출처가 있을까요?', '2025-08-20 10:16:18', '2025-08-20 10:16:18'),
-    (12, 1, 5, 'MATE_POST', '깔끔한 정리 감사합니다.', '2025-08-20 10:18:01', '2025-08-20 10:18:01'),
-    (13, 1, 5, 'MATE_POST', '관련해서 제 경험도 공유하고 싶네요.', '2025-08-20 10:20:20', '2025-08-20 10:20:20'),
-    (14, 1, 5, 'MATE_POST', '좋은 시각 배워갑니다.', '2025-08-20 10:22:11', '2025-08-20 10:22:11'),
-    (15, 1, 5, 'MATE_POST', '읽으면서 많은 생각이 들었습니다.', '2025-08-20 10:24:36', '2025-08-20 10:24:36'),
-    (16, 1, 5, 'MATE_POST', '작성해주셔서 감사드려요!', '2025-08-20 10:26:50', '2025-08-20 10:26:50'),
-    (17, 1, 6, 'MATE_POST', '더 자세히 알고 싶습니다.', '2025-08-20 10:29:07', '2025-08-20 10:29:07'),
-    (18, 1, 7, 'MATE_POST', '다른 글도 기대하겠습니다.', '2025-08-20 10:31:42', '2025-08-20 10:31:42');
+    (1, 1, 1, 'ROUTE', '첫 번째 게시글의 첫 댓글입니다.', '2025-08-20 10:01:12', '2025-08-20 10:01:12'),
+    (2, 1, 2, 'ROUTE', '좋은 글 잘 읽었습니다.', '2025-08-20 10:02:45', '2025-08-20 10:02:45'),
+    (3, 1, 2, 'ROUTE', '동의합니다!', '2025-08-20 10:03:27', '2025-08-20 10:03:27'),
+    (4, 1, 1, 'BOARD_POST', '두 번째 게시글의 첫 댓글', '2025-08-20 10:03:27', '2025-08-20 10:03:27'),
+    (5, 1, 1, 'BOARD_POST', '추가 의견 남깁니다.', '2025-08-20 10:06:49', '2025-08-20 10:06:49'),
+    (6, 1, 1, 'BOARD_POST', '게시글 내용이 유익하네요.', '2025-08-20 10:08:15', '2025-08-20 10:08:15'),
+    (7, 1, 2, 'BOARD_POST', '궁금한 점이 있습니다.', '2025-08-20 10:09:52', '2025-08-20 10:09:52'),
+    (8, 1, 1, 'MATE_POST', '좋은 정보 감사합니다.', '2025-08-20 10:11:30', '2025-08-20 10:11:30'),
+    (9, 1, 1, 'MATE_POST', '정말 공감되는 내용입니다.', '2025-08-20 10:13:04', '2025-08-20 10:13:04'),
+    (10, 1, 1, 'MATE_POST', '도움이 많이 되었어요.', '2025-08-20 10:14:42', '2025-08-20 10:14:42');
 
-INSERT INTO users (nickname, phone, user_role,
-                   user_sex,
-                   user_level,
-                   name,
-                   email,
-                   created_at,
-                   updated_at)
-VALUES ('bouldertiger', -- nickname
-        '010-1234-5678', -- phone
-        'ROLE_USER', -- user_role (enum 문자열)
-        'MAN', -- user_sex (enum 문자열)
-        'V0', -- user_level (enum 문자열)
-        '김볼더', -- name
-        'boulder@example.com', -- email
-        NOW(), -- created_at
-        NOW() -- updated_at
-       );
-
-INSERT INTO sectors (id, sector_name, area_code)
+INSERT INTO images (original_filename, domain_id, image_domain_type, image_url, order_index, created_at, updated_at)
 VALUES
-    (1, '을왕리', 'A-1'),
-    (2, '을왕리', 'A-2'),
-    (3, '을왕리', 'A-3');
+    ('default.png', 1, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0, '2025-01-28 16:00:00', '2025-01-28 16:00:00'),
+    ('default.png', 2, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0, '2025-01-28 16:05:00', '2025-01-28 16:05:00'),
+    ('default.png', 2, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1, '2025-01-28 16:10:00', '2025-01-28 16:10:00'),
 
-INSERT INTO boulders (id, region_id, sector_id, name, description,
-                      latitude, longitude, like_count, view_count, created_at, updated_at)
-VALUES
-    (1, 1, 1, 'Sunrise Crag', '해돋이 보기 좋은 바위, 초보자도 접근 용이',
-     37.579617, 126.977041, 0, 0, '2025-08-15 07:15:32', '2025-08-15 07:15:32'),
-    (2, 2, 2, 'Shadow Peak', '그림자가 길게 드리워지는 고독한 암석',
-     35.179554, 129.075642, 0, 0, '2025-08-16 09:42:18', '2025-08-16 09:42:18'),
-    (3, 3, 3, 'Mossy Boulder', '이끼로 덮인 습한 바위, 촉감이 부드러움',
-     37.566535, 126.977969, 0, 0, '2025-08-17 14:27:05', '2025-08-17 14:27:05'),
-    (4, 4, 1, 'Eagle''s Perch', '독수리가 날아오르는 전망 좋은 암석',
-     36.350411, 127.384547, 0, 0, '2025-08-18 06:55:44', '2025-08-18 06:55:44'),
-    (5, 5, 2, 'Whispering Stone', '바람 소리가 울리는 신비한 바위',
-     35.872218, 128.602528, 0, 0, '2025-08-18 19:33:21', '2025-08-18 19:33:21'),
-    (6, 6, 3, 'Red Cliff', '붉은 색을 띤 절벽형 바위, 사진 찍기 좋음',
-     35.159545, 126.852601, 0, 0, '2025-08-19 10:08:59', '2025-08-19 10:08:59'),
-    (7, 7, 1, 'Twin Rocks', '쌍둥이처럼 생긴 두 개의 바위가 붙어 있는 장소',
-     36.487224, 127.289098, 0, 0, '2025-08-19 22:45:11', '2025-08-19 22:45:11'),
-    (8, 8, 2, 'Hidden Hollow', '작은 계곡 안에 숨어있는 아늑한 바위',
-     35.907757, 127.766922, 0, 0, '2025-08-20 08:17:46', '2025-08-20 08:17:46');
+    ('default.png', 1, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0, '2025-01-28 16:15:00', '2025-01-28 16:15:00'),
+    ('default.png', 2, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0, '2025-01-28 16:20:00', '2025-01-28 16:20:00'),
+    ('default.png', 2, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1, '2025-01-28 16:25:00', '2025-01-28 16:25:00'),
 
-/* ----------------------------
-   IMAGES: BOULDER (2장씩)
------------------------------ */
-INSERT INTO images (original_filename, domain_id, image_domain_type, image_url, order_index)
-VALUES
-    -- Boulder 1
-    ('default.png', 1, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 1, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    -- Boulder 2
-    ('default.png', 2, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 2, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    -- Boulder 3
-    ('default.png', 3, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 3, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    -- Boulder 4
-    ('default.png', 4, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 4, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    -- Boulder 5
-    ('default.png', 5, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 5, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    -- Boulder 6
-    ('default.png', 6, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 6, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    -- Boulder 7
-    ('default.png', 7, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 7, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    -- Boulder 8
-    ('default.png', 8, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 8, 'BOULDER', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    -- Route 1
-    ('default.png', 1, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 1, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    -- Route 2
-    ('default.png', 2, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    -- Route 3
-    ('default.png', 3, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 3, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    ('default.png', 3, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
-    -- Route 4
-    ('default.png', 4, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 4, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    -- Route 5
-    ('default.png', 5, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    -- Route 6
-    ('default.png', 6, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 6, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    ('default.png', 6, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
-    ('default.png', 6, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 3),
-    -- Route 7
-    ('default.png', 7, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    -- Route 8
-    ('default.png', 8, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 8, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    ('default.png', 8, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
-    ('default.png', 8, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 3),
-    ('default.png', 8, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 4),
-    -- Route 9
-    ('default.png', 9, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 9, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    -- Route 10
-    ('default.png', 10, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    -- Route 11
-    ('default.png', 11, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 11, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    ('default.png', 11, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
-    -- Route 12
-    ('default.png', 12, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 12, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    -- Route 13
-    ('default.png', 13, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 13, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    ('default.png', 13, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
-    ('default.png', 13, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 3),
-    -- Route 14
-    ('default.png', 14, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    -- Route 15
-    ('default.png', 15, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 15, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    -- Route 16
-    ('default.png', 16, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 16, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    ('default.png', 16, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
-    -- Route 17
-    ('default.png', 17, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    -- Route 18
-    ('default.png', 18, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 18, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    -- Route 19
-    ('default.png', 19, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    -- Route 20
-    ('default.png', 20, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 20, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    -- Route 21
-    ('default.png', 21, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 21, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    ('default.png', 21, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
-    -- Route 22
-    ('default.png', 22, 'ROUTE', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0);
+    ('default.png', 1, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0, '2025-01-28 16:30:00', '2025-01-28 16:30:00'),
+    ('default.png', 2, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0, '2025-01-28 16:35:00', '2025-01-28 16:35:00'),
+    ('default.png', 2, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1, '2025-01-28 16:40:00', '2025-01-28 16:40:00');
 
-/* ----------------------------
-   IMAGES: POINT (각 1장씩)
-   points.id = 1..43 기준
------------------------------ */
-INSERT INTO images (original_filename, domain_id, image_domain_type, image_url, order_index)
-VALUES
-    ('default.png', 1,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 1,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    ('default.png', 1,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2),
-    ('default.png', 4,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 5,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 6,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 7,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 8,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 9,  'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 10, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 11, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 12, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 13, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 14, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 15, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 16, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 17, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 18, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 19, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 20, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 21, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 22, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 23, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 24, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 25, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 26, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 27, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 28, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 29, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 30, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 31, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 32, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 33, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 34, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 35, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 36, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 37, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 38, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 39, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 40, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 41, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 42, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-
-('default.png', 2, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 2, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    ('default.png', 3, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0),
-    ('default.png', 3, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1),
-    ('default.png', 3, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 2);
 
 INSERT INTO regions (official_district_code, province, city, region_code)
 VALUES ('1100000000', '서울특별시', NULL, '11B10101'),

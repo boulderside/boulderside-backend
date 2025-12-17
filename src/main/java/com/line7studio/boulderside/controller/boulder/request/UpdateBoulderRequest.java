@@ -4,34 +4,14 @@ import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class UpdateBoulderRequest {
-
-	@NotBlank(message = "바위 이름은 필수입니다")
-	private String name;
-
-	private String description;
-
-	@NotNull(message = "위도는 필수입니다")
-	private Double latitude;
-
-	@NotNull(message = "경도는 필수입니다")
-	private Double longitude;
-
-	@NotNull(message = "섹터 ID는 필수입니다")
-	private Long sectorId;
-
-	private String province;
-
-	private String city;
-
-	private List<String> imageUrlList;
-}
+public record UpdateBoulderRequest(
+    @NotBlank(message = "바위 이름은 필수입니다") String name,
+    String description,
+    @NotNull(message = "위도는 필수입니다") Double latitude,
+    @NotNull(message = "경도는 필수입니다") Double longitude,
+    @NotNull(message = "섹터 ID는 필수입니다") Long sectorId,
+    String province,
+    String city,
+    List<String> imageUrlList
+) {}

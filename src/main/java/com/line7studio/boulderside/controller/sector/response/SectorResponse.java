@@ -1,21 +1,17 @@
 package com.line7studio.boulderside.controller.sector.response;
 
-import com.line7studio.boulderside.domain.feature.sector.Sector;
-import lombok.Builder;
-import lombok.Getter;
+import com.line7studio.boulderside.domain.sector.Sector;
 
-@Getter
-@Builder
-public class SectorResponse {
-    private Long id;
-    private String sectorName;
-    private String areaCode;
-
+public record SectorResponse(
+    Long id,
+    String sectorName,
+    String areaCode
+) {
     public static SectorResponse from(Sector sector) {
-        return SectorResponse.builder()
-            .id(sector.getId())
-            .sectorName(sector.getSectorName())
-            .areaCode(sector.getAreaCode())
-            .build();
+        return new SectorResponse(
+            sector.getId(),
+            sector.getSectorName(),
+            sector.getAreaCode()
+        );
     }
 }

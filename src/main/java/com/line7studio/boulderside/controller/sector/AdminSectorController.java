@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.sector;
 
-import com.line7studio.boulderside.application.sector.SectorUseCase;
+import com.line7studio.boulderside.usecase.sector.SectorUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.controller.sector.request.CreateAdminSectorRequest;
 import com.line7studio.boulderside.controller.sector.request.UpdateAdminSectorRequest;

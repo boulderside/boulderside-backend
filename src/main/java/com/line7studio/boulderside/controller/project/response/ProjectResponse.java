@@ -1,59 +1,63 @@
 package com.line7studio.boulderside.controller.project.response;
 
 import com.line7studio.boulderside.common.enums.Level;
-import com.line7studio.boulderside.domain.feature.project.entity.Project;
-import com.line7studio.boulderside.domain.feature.route.Route;
-import lombok.Builder;
+import com.line7studio.boulderside.domain.project.Project;
+import com.line7studio.boulderside.domain.route.Route;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
-@Builder
-public record ProjectResponse(Long projectId, Long routeId, Long userId, Boolean completed, String memo,
-                              RouteInfo routeInfo,
-                              List<ProjectAttemptHistoryResponse> attemptHistories, LocalDateTime createdAt,
-                              LocalDateTime updatedAt) {
-
-    @Builder
+public record ProjectResponse(
+    Long projectId,
+    Long routeId,
+    Long userId,
+    Boolean completed,
+    String memo,
+    RouteInfo routeInfo,
+    List<ProjectAttemptHistoryResponse> attemptHistories,
+    LocalDateTime createdAt,
+    LocalDateTime updatedAt
+) {
     public record RouteInfo(
-            String name,
-            Level routeLevel,
-            Long climberCount,
-            Long likeCount,
-            Long viewCount,
-            Long commentCount
+        String name,
+        Level routeLevel,
+        Long climberCount,
+        Long likeCount,
+        Long viewCount,
+        Long commentCount
     ) {
         public static RouteInfo from(Route route) {
-            return RouteInfo.builder()
-                    .name(route.getName())
-                    .routeLevel(route.getRouteLevel())
-                    .climberCount(route.getClimberCount())
-                    .likeCount(route.getLikeCount())
-                    .viewCount(route.getViewCount())
-                    .commentCount(route.getCommentCount())
-                    .build();
+            return new RouteInfo(
+                route.getName(),
+                route.getRouteLevel(),
+                route.getClimberCount(),
+                route.getLikeCount(),
+                route.getViewCount(),
+                route.getCommentCount()
+            );
         }
     }
 
     public static ProjectResponse from(Project project, Route route) {
         List<ProjectAttemptHistoryResponse> histories = project.getAttemptHistories() == null
-                ? Collections.emptyList()
-                : project.getAttemptHistories().stream()
+            ? Collections.emptyList()
+            : project.getAttemptHistories().stream()
                 .map(ProjectAttemptHistoryResponse::from)
-                .sorted(java.util.Comparator.comparing(ProjectAttemptHistoryResponse::getAttemptedDate).reversed())
+                .sorted(Comparator.comparing(ProjectAttemptHistoryResponse::attemptedDate).reversed())
                 .toList();
 
-        return ProjectResponse.builder()
-                .projectId(project.getId())
-                .routeId(project.getRouteId())
-                .userId(project.getUserId())
-                .completed(project.getCompleted())
-                .memo(project.getMemo())
-                .routeInfo(RouteInfo.from(route))
-                .attemptHistories(histories)
-                .createdAt(project.getCreatedAt())
-                .updatedAt(project.getUpdatedAt())
-                .build();
+        return new ProjectResponse(
+            project.getId(),
+            project.getRouteId(),
+            project.getUserId(),
+            project.getCompleted(),
+            project.getMemo(),
+            RouteInfo.from(route),
+            histories,
+            project.getCreatedAt(),
+            project.getUpdatedAt()
+        );
     }
 }

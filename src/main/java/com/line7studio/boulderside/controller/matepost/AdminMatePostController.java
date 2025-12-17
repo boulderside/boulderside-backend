@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.matepost;
 
-import com.line7studio.boulderside.application.post.MatePostUseCase;
+import com.line7studio.boulderside.usecase.post.MatePostUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.controller.matepost.request.CreateMatePostRequest;

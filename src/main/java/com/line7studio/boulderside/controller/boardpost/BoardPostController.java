@@ -1,13 +1,13 @@
 package com.line7studio.boulderside.controller.boardpost;
 
-import com.line7studio.boulderside.application.post.BoardPostUseCase;
+import com.line7studio.boulderside.usecase.post.BoardPostUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.controller.boardpost.request.CreateBoardPostRequest;
 import com.line7studio.boulderside.controller.boardpost.request.UpdateBoardPostRequest;
 import com.line7studio.boulderside.controller.boardpost.response.BoardPostPageResponse;
 import com.line7studio.boulderside.controller.boardpost.response.BoardPostResponse;
-import com.line7studio.boulderside.domain.feature.post.enums.BoardPostSortType;
+import com.line7studio.boulderside.domain.board.enums.BoardPostSortType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

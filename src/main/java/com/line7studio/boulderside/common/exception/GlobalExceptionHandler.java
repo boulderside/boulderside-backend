@@ -31,26 +31,14 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(BusinessException.class)
-	public ResponseEntity<ErrorResponse> handleApplicationException(BusinessException ex) {
-		log.error("ApplicationException caught in GlobalExceptionHandler", ex);
+	public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex) {
+		log.error("BusinessException caught in GlobalExceptionHandler", ex);
 		return respond(ex.getErrorCode(), ex.getMessage());
 	}
 
-	@ExceptionHandler(DatabaseException.class)
-	public ResponseEntity<ErrorResponse> handleDatabaseException(DatabaseException ex) {
-		log.error("DatabaseException caught in GlobalExceptionHandler", ex);
-		return respond(ex.getErrorCode(), ex.getMessage());
-	}
-
-	@ExceptionHandler(DomainException.class)
-	public ResponseEntity<ErrorResponse> handleDomainException(DomainException ex) {
-		log.error("DomainException caught in GlobalExceptionHandler", ex);
-		return respond(ex.getErrorCode(), ex.getMessage());
-	}
-
-	@ExceptionHandler(ExternalApiException.class)
-	public ResponseEntity<ErrorResponse> handleExternalApiException(ExternalApiException ex) {
-		log.error("ExternalApiException caught in GlobalExceptionHandler", ex);
+	@ExceptionHandler(ExternalException.class)
+	public ResponseEntity<ErrorResponse> handleExternalException(ExternalException ex) {
+		log.error("ExternalException caught in GlobalExceptionHandler", ex);
 		return respond(ex.getErrorCode(), ex.getMessage());
 	}
 
@@ -112,9 +100,9 @@ public class GlobalExceptionHandler {
 		return respond(ErrorCode.VALIDATION_FAILED, message);
 	}
 
-	@ExceptionHandler(ValidationException.class)
-	public ResponseEntity<ErrorResponse> handleValidationException(ValidationException ex) {
-		log.error("ValidationException in GlobalExceptionHandler", ex);
+	@ExceptionHandler(InvalidValueException.class)
+	public ResponseEntity<ErrorResponse> handleInvalidValueException(InvalidValueException ex) {
+		log.error("InvalidValueException in GlobalExceptionHandler", ex);
 		return respond(ex.getErrorCode(), ex.getMessage());
 	}
 

@@ -1,13 +1,13 @@
 package com.line7studio.boulderside.controller.matepost;
 
-import com.line7studio.boulderside.application.post.MatePostUseCase;
+import com.line7studio.boulderside.usecase.post.MatePostUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.controller.matepost.request.CreateMatePostRequest;
 import com.line7studio.boulderside.controller.matepost.request.UpdateMatePostRequest;
 import com.line7studio.boulderside.controller.matepost.response.MatePostPageResponse;
 import com.line7studio.boulderside.controller.matepost.response.MatePostResponse;
-import com.line7studio.boulderside.domain.feature.post.enums.MatePostSortType;
+import com.line7studio.boulderside.domain.mate.enums.MatePostSortType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

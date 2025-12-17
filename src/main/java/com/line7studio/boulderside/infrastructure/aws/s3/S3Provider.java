@@ -6,7 +6,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.common.exception.ExternalApiException;
+import com.line7studio.boulderside.common.exception.ExternalException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,7 +47,7 @@ public class S3Provider {
 		// 확장자 검증(스푸핑 가능)
 		String ext = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
 		if (!List.of("png", "jpg", "jpeg").contains(ext)) {
-			throw new ExternalApiException(ErrorCode.S3_INVALID_FILE_TYPE);
+			throw new ExternalException(ErrorCode.S3_INVALID_FILE_TYPE);
 		}
 
 		// MIME 타입 검증
@@ -55,7 +55,7 @@ public class S3Provider {
 		List<String> allowedMimeTypes = List.of("image/png", "image/jpg", "image/jpeg");
 
 		if (contentType == null || !allowedMimeTypes.contains(contentType.toLowerCase())) {
-			throw new ExternalApiException(ErrorCode.S3_INVALID_FILE_TYPE);
+			throw new ExternalException(ErrorCode.S3_INVALID_FILE_TYPE);
 		}
 
 		String uuidFileName = UUID.randomUUID() + "_" + fileName;
@@ -86,7 +86,7 @@ public class S3Provider {
 			log.info("[S3 DELETE] bucket={}, key={}, url={}", bucket, s3Key, s3Url);
 			amazonS3.deleteObject(bucket, s3Key);
 		} catch (Exception e) {
-			throw new ExternalApiException(ErrorCode.S3_DELETE_FAILED);
+			throw new ExternalException(ErrorCode.S3_DELETE_FAILED);
 		}
 	}
 
@@ -102,7 +102,7 @@ public class S3Provider {
 				return path.startsWith("/") ? path.substring(1) : path;
 			}
 		} catch (Exception e) {
-			throw new ExternalApiException(ErrorCode.S3_DELETE_FAILED);
+			throw new ExternalException(ErrorCode.S3_DELETE_FAILED);
 		}
 	}
 

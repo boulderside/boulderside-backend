@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.line7studio.boulderside.application.project.ProjectUseCase;
+import com.line7studio.boulderside.usecase.project.ProjectUseCase;
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.common.exception.ValidationException;
+import com.line7studio.boulderside.common.exception.InvalidValueException;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.controller.project.request.ProjectRequest;
 import com.line7studio.boulderside.controller.project.response.ProjectPageResponse;
 import com.line7studio.boulderside.controller.project.response.ProjectResponse;
-import com.line7studio.boulderside.domain.feature.project.enums.ProjectSortType;
+import com.line7studio.boulderside.domain.project.enums.ProjectSortType;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,11 +51,11 @@ public class ProjectController {
 	public ResponseEntity<ApiResponse<ProjectResponse>> createProject(
 		@Valid @RequestBody ProjectRequest request,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
-		if (request.getRouteId() == null) {
-			throw new ValidationException(ErrorCode.MISSING_REQUIRED_FIELD);
+		if (request.routeId() == null) {
+			throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD);
 		}
 		ProjectResponse response = projectUseCase.createProject(
-			userDetails.userId(), request.getRouteId(), request.getCompleted(), request.getMemo(), request.getAttemptHistories());
+			userDetails.userId(), request.routeId(), request.completed(), request.memo(), request.attemptHistories());
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
@@ -65,7 +65,7 @@ public class ProjectController {
 		@Valid @RequestBody ProjectRequest request,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 		ProjectResponse response = projectUseCase.updateProject(
-			userDetails.userId(), projectId, request.getCompleted(), request.getMemo(), request.getAttemptHistories());
+			userDetails.userId(), projectId, request.completed(), request.memo(), request.attemptHistories());
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 

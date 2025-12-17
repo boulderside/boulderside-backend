@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.boardpost;
 
-import com.line7studio.boulderside.application.post.BoardPostUseCase;
+import com.line7studio.boulderside.usecase.post.BoardPostUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.controller.boardpost.request.CreateBoardPostRequest;
 import com.line7studio.boulderside.controller.boardpost.request.UpdateBoardPostRequest;

@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.region;
 
-import com.line7studio.boulderside.application.region.RegionUseCase;
+import com.line7studio.boulderside.usecase.region.RegionUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.controller.region.request.CreateAdminRegionRequest;
 import com.line7studio.boulderside.controller.region.request.UpdateAdminRegionRequest;

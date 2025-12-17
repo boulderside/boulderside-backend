@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.comment;
 
-import com.line7studio.boulderside.application.comment.CommentUseCase;
+import com.line7studio.boulderside.usecase.comment.CommentUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.controller.comment.request.CreateAdminCommentRequest;
 import com.line7studio.boulderside.controller.comment.request.UpdateCommentRequest;
@@ -14,7 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
-import com.line7studio.boulderside.domain.feature.comment.enums.CommentDomainType;
+import com.line7studio.boulderside.domain.comment.enums.CommentDomainType;
 
 import com.line7studio.boulderside.controller.comment.response.CommentCountResponse;
 

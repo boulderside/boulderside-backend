@@ -1,7 +1,7 @@
 package com.line7studio.boulderside.controller.user.response;
 
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
-import com.line7studio.boulderside.domain.feature.user.enums.UserRole;
+import com.line7studio.boulderside.domain.user.enums.UserRole;
 
 import lombok.Builder;
 

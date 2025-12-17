@@ -1,7 +1,7 @@
 package com.line7studio.boulderside.controller.weather;
 
-import com.line7studio.boulderside.application.weather.WeatherUseCase;
-import com.line7studio.boulderside.application.weather.dto.DailyWeatherInfoDto;
+import com.line7studio.boulderside.usecase.weather.WeatherUseCase;
+import com.line7studio.boulderside.usecase.weather.dto.DailyWeatherInfoDto;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

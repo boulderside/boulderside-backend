@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.approach;
 
-import com.line7studio.boulderside.application.approach.ApproachUseCase;
+import com.line7studio.boulderside.usecase.approach.ApproachUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.controller.approach.response.ApproachResponse;
 import lombok.RequiredArgsConstructor;

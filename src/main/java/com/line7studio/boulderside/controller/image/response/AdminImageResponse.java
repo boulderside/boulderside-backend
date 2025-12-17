@@ -1,28 +1,24 @@
 package com.line7studio.boulderside.controller.image.response;
 
-import com.line7studio.boulderside.domain.feature.image.entity.Image;
-import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;
-import lombok.Builder;
-import lombok.Getter;
+import com.line7studio.boulderside.domain.image.Image;
+import com.line7studio.boulderside.domain.image.enums.ImageDomainType;
 
-@Getter
-@Builder
-public class AdminImageResponse {
-	private Long id;
-	private Long domainId;
-	private ImageDomainType imageDomainType;
-	private String imageUrl;
-	private String originalFileName;
-	private Integer orderIndex;
-
-	public static AdminImageResponse from(Image image) {
-		return AdminImageResponse.builder()
-			.id(image.getId())
-			.domainId(image.getDomainId())
-			.imageDomainType(image.getImageDomainType())
-			.imageUrl(image.getImageUrl())
-			.originalFileName(image.getOriginalFileName())
-			.orderIndex(image.getOrderIndex())
-			.build();
-	}
+public record AdminImageResponse(
+    Long id,
+    Long domainId,
+    ImageDomainType imageDomainType,
+    String imageUrl,
+    String originalFileName,
+    Integer orderIndex
+) {
+    public static AdminImageResponse from(Image image) {
+        return new AdminImageResponse(
+            image.getId(),
+            image.getDomainId(),
+            image.getImageDomainType(),
+            image.getImageUrl(),
+            image.getOriginalFileName(),
+            image.getOrderIndex()
+        );
+    }
 }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.line7studio.boulderside.application.auth.AuthUseCase;
+import com.line7studio.boulderside.usecase.auth.AuthUseCase;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.vo.LoginResponse;
 import com.line7studio.boulderside.controller.auth.request.OAuthLoginRequest;
