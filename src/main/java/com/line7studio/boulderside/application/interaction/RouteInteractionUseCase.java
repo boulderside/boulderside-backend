@@ -31,7 +31,7 @@ public class RouteInteractionUseCase {
 	private final BoulderService boulderService;
 
 	public RouteLikeResponse toggleLike(Long userId, Long routeId) {
-		Route route = routeService.getRouteById(routeId);
+		Route route = routeService.getById(routeId);
 
 		UserRouteLike userRouteLike = UserRouteLike.builder()
 			.userId(userId)

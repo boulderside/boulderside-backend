@@ -21,9 +21,18 @@ public class BoulderService {
         return boulderRepository.findAll();
     }
 
-	public Boulder getBoulderById(Long boulderId) {
+	public Boulder getById(Long boulderId) {
 		return boulderRepository.findById(boulderId)
 			.orElseThrow(() -> new DomainException(ErrorCode.BOULDER_NOT_FOUND));
+	}
+
+	/**
+	 * 조회수를 증가시키고 업데이트된 Boulder를 반환합니다.
+	 */
+	public Boulder incrementViewCount(Long boulderId) {
+		Boulder boulder = getById(boulderId);
+		boulder.incrementViewCount();
+		return boulder;
 	}
 
 	public List<Boulder> getBouldersWithCursor(Long cursor, String subCursor, int size, BoulderSortType sortType) {
@@ -34,18 +43,27 @@ public class BoulderService {
 		return boulderRepository.findAllById(boulderIds);
 	}
 
-	public Boulder createBoulder(Boulder boulder) {
-		return  boulderRepository.save(boulder);
-	}
-
-	public Boulder updateBoulder(Long boulderId, Long regionId, Long sectorId, String name, String description, Double latitude, Double longitude) {
-		Boulder boulder = getBoulderById(boulderId);
-		boulder.update(regionId, sectorId, name, description, latitude, longitude);
+	/**
+	 * Boulder를 저장합니다.
+	 */
+	public Boulder save(Boulder boulder) {
 		return boulderRepository.save(boulder);
 	}
 
-	public void deleteByBoulderId(Long boulderId) {
-		Boulder boulder = getBoulderById(boulderId);
+	/**
+	 * Boulder 정보를 업데이트합니다.
+	 */
+	public Boulder update(Long boulderId, Long regionId, Long sectorId, String name, String description, Double latitude, Double longitude) {
+		Boulder boulder = getById(boulderId);
+		boulder.update(regionId, sectorId, name, description, latitude, longitude);
+		return boulder;
+	}
+
+	/**
+	 * Boulder를 삭제합니다.
+	 */
+	public void delete(Long boulderId) {
+		Boulder boulder = getById(boulderId);
 		boulderRepository.delete(boulder);
 	}
 }

@@ -108,4 +108,15 @@ public class Route extends BaseEntity {
 	public void decrementCommentCount() {
 		this.commentCount = (this.commentCount == null || this.commentCount <= 0) ? 0 : this.commentCount - 1;
 	}
+
+	public void update(Long boulderId, Long regionId, Long sectorId, String name, String pioneerName, Level routeLevel, Double latitude, Double longitude) {
+		this.boulderId = boulderId;
+		this.regionId = regionId;
+		this.sectorId = sectorId;
+		this.name = name;
+		this.pioneerName = pioneerName;
+		this.routeLevel = routeLevel;
+		this.latitude = latitude;
+		this.longitude = longitude;
+	}
 }

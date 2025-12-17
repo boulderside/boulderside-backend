@@ -40,7 +40,7 @@ public class ProjectService {
 			.attemptHistories(copyAttemptsOrDefault(attemptHistories))
 			.build();
 
-		Route route = routeService.getRouteById(routeId);
+		Route route = routeService.getById(routeId);
 		Project saved = projectRepository.save(project);
 		if (completed) {
 			route.incrementClimberCount();
@@ -54,7 +54,7 @@ public class ProjectService {
 		Long routeId = project.getRouteId();
 		boolean wasCompleted = Boolean.TRUE.equals(project.getCompleted());
 		if (wasCompleted != completed) {
-			Route route = routeService.getRouteById(routeId);
+			Route route = routeService.getById(routeId);
 			if (completed) {
 				route.incrementClimberCount();
 			} else if (wasCompleted) {
@@ -111,7 +111,7 @@ public class ProjectService {
 		Long routeId = project.getRouteId();
 		projectRepository.delete(project);
 		if (Boolean.TRUE.equals(project.getCompleted())) {
-			routeService.getRouteById(routeId).decrementClimberCount();
+			routeService.getById(routeId).decrementClimberCount();
 		}
 	}
 

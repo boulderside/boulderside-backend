@@ -33,7 +33,7 @@ public class BoulderInteractionUseCase {
 	private final RegionService regionService;
 
 	public BoulderLikeResponse toggleLike(Long userId, Long boulderId) {
-		Boulder boulder = boulderService.getBoulderById(boulderId);
+		Boulder boulder = boulderService.getById(boulderId);
 
 		UserBoulderLike userBoulderLike = UserBoulderLike.builder()
 			.userId(userId)

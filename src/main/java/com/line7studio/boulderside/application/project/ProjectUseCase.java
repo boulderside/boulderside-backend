@@ -31,14 +31,14 @@ public class ProjectUseCase {
 	@Transactional(readOnly = true)
 	public ProjectResponse getProject(Long userId, Long projectId) {
 		Project project = projectService.get(userId, projectId);
-		Route route = routeService.getRouteById(project.getRouteId());
+		Route route = routeService.getById(project.getRouteId());
 		return ProjectResponse.from(project, route);
 	}
 
 	@Transactional(readOnly = true)
 	public ProjectResponse getProjectByRoute(Long userId, Long routeId) {
 		Project project = projectService.getByRoute(userId, routeId);
-		Route route = routeService.getRouteById(project.getRouteId());
+		Route route = routeService.getById(project.getRouteId());
 		return ProjectResponse.from(project, route);
 	}
 
@@ -46,7 +46,7 @@ public class ProjectUseCase {
 		List<ProjectAttemptHistoryRequest> attemptHistories) {
 		Project project = projectService.create(
 			userId, routeId, completed, memo, mapAttemptHistories(attemptHistories));
-		Route route = routeService.getRouteById(project.getRouteId());
+		Route route = routeService.getById(project.getRouteId());
 		return ProjectResponse.from(project, route);
 	}
 
@@ -54,7 +54,7 @@ public class ProjectUseCase {
 		List<ProjectAttemptHistoryRequest> attemptHistories) {
 		Project project = projectService.update(
 			userId, projectId, completed, memo, mapAttemptHistories(attemptHistories));
-		Route route = routeService.getRouteById(project.getRouteId());
+		Route route = routeService.getById(project.getRouteId());
 		return ProjectResponse.from(project, route);
 	}
 

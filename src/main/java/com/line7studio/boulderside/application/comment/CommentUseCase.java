@@ -163,7 +163,7 @@ public class CommentUseCase {
         } else if (commentDomainType == CommentDomainType.MATE_POST) {
             commentCount = matePostReadService.incrementCommentCount(postId);
         } else if (commentDomainType == CommentDomainType.ROUTE) {
-            Route route = routeService.getRouteById(postId);
+            Route route = routeService.getById(postId);
             route.incrementCommentCount();
             commentCount = route.getCommentCount();
         }
@@ -188,7 +188,7 @@ public class CommentUseCase {
         } else if (comment.getCommentDomainType() == CommentDomainType.MATE_POST) {
             commentCount = matePostReadService.getCommentCount(comment.getDomainId());
         } else if (comment.getCommentDomainType() == CommentDomainType.ROUTE) {
-            Route route = routeService.getRouteById(comment.getDomainId());
+            Route route = routeService.getById(comment.getDomainId());
             commentCount = route.getCommentCount();
         }
 
@@ -211,7 +211,7 @@ public class CommentUseCase {
         } else if (comment.getCommentDomainType() == CommentDomainType.MATE_POST) {
             commentCount = matePostReadService.decrementCommentCount(comment.getDomainId());
         } else if (comment.getCommentDomainType() == CommentDomainType.ROUTE) {
-            Route route = routeService.getRouteById(comment.getDomainId());
+            Route route = routeService.getById(comment.getDomainId());
             route.decrementCommentCount();
             commentCount = route.getCommentCount();
         }
@@ -230,7 +230,7 @@ public class CommentUseCase {
         } else if (comment.getCommentDomainType() == CommentDomainType.MATE_POST) {
             commentCount = matePostReadService.getCommentCount(comment.getDomainId());
         } else if (comment.getCommentDomainType() == CommentDomainType.ROUTE) {
-            Route route = routeService.getRouteById(comment.getDomainId());
+            Route route = routeService.getById(comment.getDomainId());
             commentCount = route.getCommentCount();
         }
 
@@ -248,7 +248,7 @@ public class CommentUseCase {
         } else if (comment.getCommentDomainType() == CommentDomainType.MATE_POST) {
             commentCount = matePostReadService.decrementCommentCount(comment.getDomainId());
         } else if (comment.getCommentDomainType() == CommentDomainType.ROUTE) {
-            Route route = routeService.getRouteById(comment.getDomainId());
+            Route route = routeService.getById(comment.getDomainId());
             route.decrementCommentCount();
             commentCount = route.getCommentCount();
         }
@@ -276,7 +276,7 @@ public class CommentUseCase {
         } else if (domainType == CommentDomainType.MATE_POST) {
             commentCount = matePostReadService.incrementCommentCount(request.domainId());
         } else if (domainType == CommentDomainType.ROUTE) {
-            Route route = routeService.getRouteById(request.domainId());
+            Route route = routeService.getById(request.domainId());
             route.incrementCommentCount();
             commentCount = route.getCommentCount();
         }

@@ -1,5 +1,6 @@
 package com.line7studio.boulderside.domain.feature.route.service;
 
+import com.line7studio.boulderside.common.enums.Level;
 import com.line7studio.boulderside.common.exception.DomainException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.domain.feature.route.entity.Route;
@@ -21,6 +22,20 @@ public class RouteService {
         return routeRepository.findAll();
     }
 
+    public Route getById(Long routeId) {
+        return routeRepository.findById(routeId)
+                .orElseThrow(() -> new DomainException(ErrorCode.ROUTE_NOT_FOUND));
+    }
+
+    /**
+     * 조회수를 증가시키고 업데이트된 Route를 반환합니다.
+     */
+    public Route incrementViewCount(Long routeId) {
+        Route route = getById(routeId);
+        route.incrementViewCount();
+        return route;
+    }
+
     public List<Route> getRoutesWithCursor(Long cursor, String subCursor, int size, RouteSortType sortType) {
         return routeQueryRepository.findRoutesWithCursor(sortType, cursor, subCursor, size);
     }
@@ -29,42 +44,33 @@ public class RouteService {
         return routeRepository.findAllById(routeIds);
     }
 
-	public List<Route> getRoutesByBoulderId(Long boulderId) {
-		return routeRepository.findByBoulderIdOrderByIdAsc(boulderId);
-	}
-
-    public Route getRouteById(Long routeId) {
-        return routeRepository.findById(routeId)
-                .orElseThrow(() -> new DomainException(ErrorCode.ROUTE_NOT_FOUND));
+    public List<Route> getRoutesByBoulderId(Long boulderId) {
+        return routeRepository.findByBoulderIdOrderByIdAsc(boulderId);
     }
 
-    public Route createRoute(Route route) {
+    /**
+     * Route를 저장합니다.
+     */
+    public Route save(Route route) {
         return routeRepository.save(route);
     }
 
-	public Route updateRoute(Long routeId, Route routeDetails) {
-		Route route = getRouteById(routeId);
-		Route updatedRoute = Route.builder()
-				.id(route.getId())
-				.boulderId(routeDetails.getBoulderId() != null ? routeDetails.getBoulderId() : route.getBoulderId())
-				.regionId(routeDetails.getRegionId() != null ? routeDetails.getRegionId() : route.getRegionId())
-				.sectorId(routeDetails.getSectorId() != null ? routeDetails.getSectorId() : route.getSectorId())
-				.name(routeDetails.getName() != null ? routeDetails.getName() : route.getName())
-				.pioneerName(routeDetails.getPioneerName() != null ? routeDetails.getPioneerName() : route.getPioneerName())
-				.routeLevel(routeDetails.getRouteLevel() != null ? routeDetails.getRouteLevel() : route.getRouteLevel())
-				.latitude(routeDetails.getLatitude() != null ? routeDetails.getLatitude() : route.getLatitude())
-				.longitude(routeDetails.getLongitude() != null ? routeDetails.getLongitude() : route.getLongitude())
-				.likeCount(route.getLikeCount())
-				.viewCount(route.getViewCount())
-				.climberCount(route.getClimberCount())
-				.commentCount(route.getCommentCount())
-				.build();
-        
-        return routeRepository.save(updatedRoute);
+    /**
+     * Route 정보를 업데이트합니다.
+     */
+    public Route update(Long routeId, Long boulderId, Long regionId, Long sectorId,
+                        String name, String pioneerName, Level routeLevel,
+                        Double latitude, Double longitude) {
+        Route route = getById(routeId);
+        route.update(boulderId, regionId, sectorId, name, pioneerName, routeLevel, latitude, longitude);
+        return route;
     }
 
-    public void deleteRoute(Long routeId) {
-        Route route = getRouteById(routeId);
+    /**
+     * Route를 삭제합니다.
+     */
+    public void delete(Long routeId) {
+        Route route = getById(routeId);
         routeRepository.delete(route);
     }
 }

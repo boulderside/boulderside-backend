@@ -45,6 +45,41 @@ public class ImageService {
 		return imageRepository.saveAll(imageList);
 	}
 
+	/**
+	 * URL 리스트로 특정 도메인에 연결된 이미지들을 생성합니다.
+	 * @param imageDomainType 이미지가 연결될 도메인 타입
+	 * @param domainId 도메인 ID
+	 * @param imageUrls 이미지 URL 리스트
+	 * @return 생성된 이미지 리스트
+	 */
+	public List<Image> createImagesForDomain(ImageDomainType imageDomainType, Long domainId, List<String> imageUrls) {
+		if (imageUrls == null || imageUrls.isEmpty()) {
+			return List.of();
+		}
+
+		List<Image> images = new java.util.ArrayList<>();
+		for (int i = 0; i < imageUrls.size(); i++) {
+			Image image = Image.builder()
+				.imageDomainType(imageDomainType)
+				.domainId(domainId)
+				.imageUrl(imageUrls.get(i))
+				.orderIndex(i)
+				.build();
+			images.add(image);
+		}
+
+		return imageRepository.saveAll(images);
+	}
+
+	/**
+	 * 특정 도메인의 이미지를 모두 교체합니다.
+	 * 기존 이미지 삭제 후 새 이미지 생성
+	 */
+	public List<Image> replaceImagesForDomain(ImageDomainType imageDomainType, Long domainId, List<String> imageUrls) {
+		deleteAllImagesByImageDomainTypeAndDomainId(imageDomainType, domainId);
+		return createImagesForDomain(imageDomainType, domainId, imageUrls);
+	}
+
 	public Image save(Image image) {
 		return imageRepository.save(image);
 	}

@@ -36,44 +36,170 @@ public class BoulderUseCase {
 	private final RouteService routeService;
 	private final UserBoulderLikeService userBoulderLikeService;
 
-    @Transactional(readOnly = true)
-    public BoulderPageResponse getBoulderPage(Long userId, BoulderSortType sortType, Long cursor, String subCursor, int size) {
+	@Transactional(readOnly = true)
+	public BoulderPageResponse getBoulderPage(Long userId, BoulderSortType sortType, Long cursor, String subCursor, int size) {
 		List<Boulder> boulderList = boulderService.getBouldersWithCursor(cursor, subCursor, size + 1, sortType);
 
-        boolean hasNext = boulderList.size() > size;
-        if (hasNext) {
-            boulderList = boulderList.subList(0, size);
-        }
+		boolean hasNext = boulderList.size() > size;
+		if (hasNext) {
+			boulderList = boulderList.subList(0, size);
+		}
 
-		List<Long> boulderIdList = boulderList.stream().map(Boulder::getId).toList();
-		
 		if (boulderList.isEmpty()) {
 			return BoulderPageResponse.of(Collections.emptyList(), null, null, false, 0);
 		}
 
+		List<BoulderResponse> boulderResponseList = buildBoulderResponseList(boulderList, userId);
+
+		Long nextCursor = null;
+		String nextSubCursor = null;
+		if (hasNext) {
+			Boulder lastBoulder = boulderList.getLast();
+			nextCursor = lastBoulder.getId();
+			nextSubCursor = getNextSubCursor(lastBoulder, sortType);
+		}
+
+		return BoulderPageResponse.of(boulderResponseList, nextCursor, nextSubCursor, hasNext, boulderList.size());
+	}
+
+	@Transactional(readOnly = true)
+	public List<BoulderResponse> getAllBoulders(Long userId) {
+		List<Boulder> boulderList = boulderService.getAllBoulders();
+		if (boulderList.isEmpty()) {
+			return Collections.emptyList();
+		}
+		return buildBoulderResponseList(boulderList, userId);
+	}
+
+	@Transactional
+	public BoulderResponse getBoulderById(Long userId, Long boulderId) {
+		// Service에 조회수 증가 위임
+		Boulder boulder = boulderService.incrementViewCount(boulderId);
+		return buildSingleBoulderResponse(boulder, userId);
+	}
+
+	@Transactional
+	public BoulderResponse getBoulderByRouteId(Long userId, Long routeId) {
+        Long boulderId = routeService.getById(routeId).getBoulderId();
+        Boulder boulder = boulderService.incrementViewCount(boulderId);
+        return buildSingleBoulderResponse(boulder, userId);
+
+    }
+
+	@Transactional
+	public BoulderResponse createBoulder(CreateBoulderRequest request) {
+		// 연관 도메인 조회
+		Region region = regionService.getRegionByProvinceAndCity(request.province(), request.city());
+		Sector sector = sectorService.getSectorById(request.sectorId());
+
+		// Request → Domain 변환
+		Boulder boulder = Boulder.builder()
+			.regionId(region.getId())
+			.sectorId(request.sectorId())
+			.name(request.name())
+			.description(request.description())
+			.latitude(request.latitude())
+			.longitude(request.longitude())
+			.likeCount(0L)
+			.viewCount(0L)
+			.build();
+
+		// 저장
+		Boulder savedBoulder = boulderService.save(boulder);
+
+		// 이미지 생성 (ImageService에 위임)
+		List<Image> images = imageService.createImagesForDomain(
+			ImageDomainType.BOULDER, savedBoulder.getId(), request.imageUrlList());
+		List<ImageInfo> imageInfoList = toSortedImageInfoList(images);
+
+		// Domain → Response 변환
+		return BoulderResponse.of(
+			savedBoulder,
+			region.getProvince(),
+			region.getCity(),
+			sector.getSectorName(),
+			sector.getAreaCode(),
+			imageInfoList,
+			0L,
+			false
+		);
+	}
+
+	@Transactional
+	public BoulderResponse updateBoulder(Long userId, Long boulderId, UpdateBoulderRequest request) {
+		// 연관 도메인 조회
+		Region region = regionService.getRegionByProvinceAndCity(request.province(), request.city());
+		Sector sector = sectorService.getSectorById(request.sectorId());
+
+		// 업데이트
+		Boulder boulder = boulderService.update(
+			boulderId,
+			region.getId(),
+			request.sectorId(),
+			request.name(),
+			request.description(),
+			request.latitude(),
+			request.longitude()
+		);
+
+		// 이미지 교체 (ImageService에 위임)
+		List<Image> images = imageService.replaceImagesForDomain(
+			ImageDomainType.BOULDER, boulderId, request.imageUrlList());
+		List<ImageInfo> imageInfoList = toSortedImageInfoList(images);
+
+		boolean liked = userBoulderLikeService.existsIsLikedByUserId(boulderId, userId);
+		long likeCount = Optional.ofNullable(boulder.getLikeCount()).orElse(0L);
+
+		return BoulderResponse.of(
+			boulder,
+			region.getProvince(),
+			region.getCity(),
+			sector.getSectorName(),
+			sector.getAreaCode(),
+			imageInfoList,
+			likeCount,
+			liked
+		);
+	}
+
+	@Transactional
+	public void deleteBoulder(Long boulderId) {
+		imageService.deleteAllImagesByImageDomainTypeAndDomainId(ImageDomainType.BOULDER, boulderId);
+		userBoulderLikeService.deleteAllLikesByBoulderId(boulderId);
+		boulderService.delete(boulderId);
+	}
+
+	// === Private Helper Methods ===
+
+	private String getNextSubCursor(Boulder boulder, BoulderSortType sortType) {
+		return switch (sortType) {
+			case LATEST_CREATED -> boulder.getCreatedAt().toString();
+			case MOST_LIKED -> boulder.getLikeCount().toString();
+		};
+	}
+
+	private List<BoulderResponse> buildBoulderResponseList(List<Boulder> boulderList, Long userId) {
+		List<Long> boulderIdList = boulderList.stream().map(Boulder::getId).toList();
+
+		// 좋아요 정보 조회
 		Map<Long, Boolean> userLikeMap = userBoulderLikeService.getIsLikedByUserIdForBoulderList(boulderIdList, userId);
 
+		// Region 조회
 		List<Long> regionIdList = boulderList.stream().map(Boulder::getRegionId).distinct().toList();
 		Map<Long, Region> regionMap = regionService.getRegionsByIds(regionIdList)
 			.stream()
 			.collect(Collectors.toMap(Region::getId, Function.identity()));
 
-		List<Image> imageList = imageService.getImageListByImageDomainTypeAndDomainIdList(ImageDomainType.BOULDER, boulderIdList);
-		Map<Long, List<ImageInfo>> boulderImageInfoMap = imageList.stream()
-			.collect(Collectors.groupingBy(
-				Image::getDomainId,
-				Collectors.mapping(ImageInfo::from,
-					Collectors.collectingAndThen(Collectors.toList(), list -> {
-						list.sort(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)));
-						return list;
-					}))
-			));
+		// 이미지 조회
+		Map<Long, List<ImageInfo>> boulderImageInfoMap = getImageInfoMapForBoulders(boulderIdList);
 
+		// Sector 조회
 		List<Long> sectorIdList = boulderList.stream().map(Boulder::getSectorId).distinct().toList();
 		Map<Long, Sector> sectorMap = sectorService.getSectorsByIds(sectorIdList).stream()
 			.collect(Collectors.toMap(Sector::getId, Function.identity()));
 
-		List<BoulderResponse> boulderResponseList = boulderList.stream()
+		// Response 조립
+		return boulderList.stream()
 			.map(boulder -> {
 				Region region = regionMap.get(boulder.getRegionId());
 				Sector sector = sectorMap.get(boulder.getSectorId());
@@ -92,227 +218,50 @@ public class BoulderUseCase {
 				);
 			})
 			.toList();
-
-        Long nextCursor = null;
-        String nextSubCursor = null;
-        if (hasNext && !boulderList.isEmpty()) {
-            Boulder lastBoulder = boulderList.getLast();
-            nextCursor = lastBoulder.getId();
-            nextSubCursor = getNextSubCursor(lastBoulder, sortType);
-        }
-
-		return BoulderPageResponse.of(boulderResponseList, nextCursor, nextSubCursor, hasNext, boulderList.size());
 	}
 
-    @Transactional(readOnly = true)
-    public List<BoulderResponse> getAllBoulders(Long userId) {
-        List<Boulder> boulderList = boulderService.getAllBoulders();
-        if (boulderList.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Long> boulderIdList = boulderList.stream()
-            .map(Boulder::getId)
-            .toList();
-
-        Map<Long, Boolean> userLikeMap = userBoulderLikeService.getIsLikedByUserIdForBoulderList(boulderIdList, userId);
-
-        List<Long> regionIdList = boulderList.stream()
-            .map(Boulder::getRegionId)
-            .distinct()
-            .toList();
-        Map<Long, Region> regionMap = regionService.getRegionsByIds(regionIdList)
-            .stream()
-            .collect(Collectors.toMap(Region::getId, Function.identity()));
-
-        List<Image> imageList = imageService.getImageListByImageDomainTypeAndDomainIdList(ImageDomainType.BOULDER, boulderIdList);
-        Map<Long, List<ImageInfo>> boulderImageInfoMap = imageList.stream()
-            .collect(Collectors.groupingBy(
-                Image::getDomainId,
-                Collectors.mapping(ImageInfo::from,
-                    Collectors.collectingAndThen(Collectors.toList(), list -> {
-                        list.sort(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)));
-                        return list;
-                    }))
-            ));
-
-        List<Long> sectorIdList = boulderList.stream()
-            .map(Boulder::getSectorId)
-            .distinct()
-            .toList();
-        Map<Long, Sector> sectorMap = sectorService.getSectorsByIds(sectorIdList)
-            .stream()
-            .collect(Collectors.toMap(Sector::getId, Function.identity()));
-
-        return boulderList.stream()
-            .map(boulder -> {
-                Region region = regionMap.get(boulder.getRegionId());
-                Sector sector = sectorMap.get(boulder.getSectorId());
-                List<ImageInfo> images = boulderImageInfoMap.getOrDefault(boulder.getId(), Collections.emptyList());
-                long likeCount = Optional.ofNullable(boulder.getLikeCount()).orElse(0L);
-                boolean liked = userLikeMap.getOrDefault(boulder.getId(), false);
-                return BoulderResponse.of(
-                    boulder,
-                    region.getProvince(),
-                    region.getCity(),
-                    sector != null ? sector.getSectorName() : null,
-                    sector != null ? sector.getAreaCode() : null,
-                    images,
-                    likeCount,
-                    liked
-                );
-            })
-            .toList();
-    }
-
-	private String getNextSubCursor(Boulder boulder, BoulderSortType sortType) {
-		return switch (sortType) {
-            case LATEST_CREATED -> boulder.getCreatedAt().toString();
-			case MOST_LIKED -> boulder.getLikeCount().toString();
-		};
-	}
-
-    @Transactional
-	public BoulderResponse getBoulderById(Long userId, Long boulderId) {
-		Boulder boulder = boulderService.getBoulderById(boulderId);
-		boulder.incrementViewCount();
+	private BoulderResponse buildSingleBoulderResponse(Boulder boulder, Long userId) {
 		Region region = regionService.getRegionById(boulder.getRegionId());
 		Sector sector = sectorService.getSectorById(boulder.getSectorId());
-		List<Image> imageList = imageService.getImageListByImageDomainTypeAndDomainId(ImageDomainType.BOULDER, boulderId);
-		List<ImageInfo> imageInfoList = imageList.stream()
+
+		List<Image> imageList = imageService.getImageListByImageDomainTypeAndDomainId(
+			ImageDomainType.BOULDER, boulder.getId());
+		List<ImageInfo> imageInfoList = toSortedImageInfoList(imageList);
+
+		boolean liked = userBoulderLikeService.existsIsLikedByUserId(boulder.getId(), userId);
+		long likeCount = Optional.ofNullable(boulder.getLikeCount()).orElse(0L);
+
+		return BoulderResponse.of(
+			boulder,
+			region.getProvince(),
+			region.getCity(),
+			sector.getSectorName(),
+			sector.getAreaCode(),
+			imageInfoList,
+			likeCount,
+			liked
+		);
+	}
+
+	private Map<Long, List<ImageInfo>> getImageInfoMapForBoulders(List<Long> boulderIdList) {
+		List<Image> imageList = imageService.getImageListByImageDomainTypeAndDomainIdList(
+			ImageDomainType.BOULDER, boulderIdList);
+
+		return imageList.stream()
+			.collect(Collectors.groupingBy(
+				Image::getDomainId,
+				Collectors.mapping(ImageInfo::from,
+					Collectors.collectingAndThen(Collectors.toList(), list -> {
+						list.sort(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)));
+						return list;
+					}))
+			));
+	}
+
+	private List<ImageInfo> toSortedImageInfoList(List<Image> images) {
+		return images.stream()
 			.map(ImageInfo::from)
 			.sorted(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)))
 			.toList();
-
-		boolean liked = userBoulderLikeService.existsIsLikedByUserId(boulderId, userId);
-		long likeCount = Optional.ofNullable(boulder.getLikeCount()).orElse(0L);
-
-		return BoulderResponse.of(
-			boulder,
-			region.getProvince(),
-			region.getCity(),
-			sector.getSectorName(),
-			sector.getAreaCode(),
-			imageInfoList,
-			likeCount,
-			liked
-		);
-	}
-
-	@Transactional
-	public BoulderResponse getBoulderByRouteId(Long userId, Long routeId) {
-		Long boulderId = routeService.getRouteById(routeId).getBoulderId();
-		return getBoulderById(userId, boulderId);
-	}
-
-    @Transactional
-	public BoulderResponse createBoulder(CreateBoulderRequest request) {
-		Region region = regionService.getRegionByProvinceAndCity(request.province(), request.city());
-
-		Sector sector = sectorService.getSectorById(request.sectorId());
-
-		Boulder boulder = Boulder.builder()
-			.regionId(region.getId())
-			.sectorId(request.sectorId())
-			.name(request.name())
-			.description(request.description())
-			.latitude(request.latitude())
-			.longitude(request.longitude())
-			.likeCount(0L)
-			.viewCount(0L)
-			.build();
-
-		Boulder savedBoulder = boulderService.createBoulder(boulder);
-		List<ImageInfo> imageInfoList = Collections.emptyList();
-		if (request.imageUrlList() != null && !request.imageUrlList().isEmpty()) {
-			List<Image> newImageList = new ArrayList<>();
-			for (int i = 0; i < request.imageUrlList().size(); i++) {
-				Image image = Image.builder()
-                    .imageDomainType(ImageDomainType.BOULDER)
-                    .domainId(savedBoulder.getId())
-					.imageUrl(request.imageUrlList().get(i))
-					.orderIndex(i)
-					.build();
-				newImageList.add(image);
-			}
-
-			List<Image> savedImages = imageService.createImages(newImageList);
-			imageInfoList = savedImages.stream()
-				.map(ImageInfo::from)
-				.sorted(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)))
-				.toList();
-		}
-
-		return BoulderResponse.of(
-			savedBoulder,
-			region.getProvince(),
-			region.getCity(),
-			sector.getSectorName(),
-			sector.getAreaCode(),
-			imageInfoList,
-			0L,
-			false
-		);
-	}
-
-    @Transactional
-	public BoulderResponse updateBoulder(Long userId, Long boulderId, UpdateBoulderRequest request) {
-		Region region = regionService.getRegionByProvinceAndCity(request.province(), request.city());
-
-		Sector sector = sectorService.getSectorById(request.sectorId());
-
-		Boulder boulder = boulderService.updateBoulder(
-			boulderId,
-			region.getId(),
-			request.sectorId(),
-			request.name(),
-			request.description(),
-			request.latitude(),
-			request.longitude()
-		);
-
-		imageService.deleteAllImagesByImageDomainTypeAndDomainId(ImageDomainType.BOULDER, boulderId);
-
-		List<ImageInfo> imageInfoList = Collections.emptyList();
-		if (request.imageUrlList() != null && !request.imageUrlList().isEmpty()) {
-			List<Image> newImageList = new ArrayList<>();
-			for (int i = 0; i < request.imageUrlList().size(); i++) {
-				Image image = Image.builder()
-                    .imageDomainType(ImageDomainType.BOULDER)
-                    .domainId(boulderId)
-					.imageUrl(request.imageUrlList().get(i))
-					.orderIndex(i)
-					.build();
-				newImageList.add(image);
-			}
-
-			List<Image> savedImageList = imageService.createImages(newImageList);
-			imageInfoList = savedImageList.stream()
-				.map(ImageInfo::from)
-				.sorted(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)))
-				.toList();
-		}
-
-        boolean liked = userBoulderLikeService.existsIsLikedByUserId(boulderId, userId);
-
-		long likeCount = Optional.ofNullable(boulder.getLikeCount()).orElse(0L);
-		return BoulderResponse.of(
-			boulder,
-			region.getProvince(),
-			region.getCity(),
-			sector.getSectorName(),
-			sector.getAreaCode(),
-			imageInfoList,
-			likeCount,
-			liked
-		);
-	}
-
-    @Transactional
-	public void deleteBoulder(Long boulderId) {
-		imageService.deleteAllImagesByImageDomainTypeAndDomainId(ImageDomainType.BOULDER, boulderId);
-		userBoulderLikeService.deleteAllLikesByBoulderId(boulderId);
-		boulderService.deleteByBoulderId(boulderId);
-
 	}
 }
