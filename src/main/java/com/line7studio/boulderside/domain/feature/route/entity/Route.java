@@ -127,14 +127,13 @@ public class Route extends BaseEntity {
 	 * 루트 정보 업데이트 (검증 포함)
 	 */
 	public void update(Long boulderId, Long regionId, Long sectorId, String name, String description, Level routeLevel,
-	                   String pioneerName, Integer firstAscentYear, Double latitude, Double longitude) {
+	                   String pioneerName, Double latitude, Double longitude) {
 		validateBoulderId(boulderId);
 		validateRegionId(regionId);
 		validateSectorId(sectorId);
 		validateName(name);
 		validateDescription(description);
 		validatePioneerName(pioneerName);
-		validateFirstAscentYear(firstAscentYear);
 		validateCoordinates(latitude, longitude);
 
 		this.boulderId = boulderId;

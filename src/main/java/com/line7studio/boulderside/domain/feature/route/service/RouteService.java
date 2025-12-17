@@ -60,9 +60,9 @@ public class RouteService {
      */
     public Route update(Long routeId, Long boulderId, Long regionId, Long sectorId,
                         String name, String description, Level routeLevel,
-                        String pioneerName, Integer firstAscentYear, Double latitude, Double longitude) {
+                        String pioneerName, Double latitude, Double longitude) {
         Route route = getById(routeId);
-        route.update(boulderId, regionId, sectorId, name, description, routeLevel, pioneerName, firstAscentYear, latitude, longitude);
+        route.update(boulderId, regionId, sectorId, name, description, routeLevel, pioneerName, latitude, longitude);
         return route;
     }
 

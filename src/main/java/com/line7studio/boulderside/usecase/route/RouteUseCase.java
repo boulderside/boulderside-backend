@@ -127,9 +127,8 @@ public class RouteUseCase {
 			boulder.getSectorId(),
 			request.name(),
 			null, // description
-			request.routeLevel() != null ? request.routeLevel().name() : null,
+			request.routeLevel(),
 			request.pioneerName(),
-			null, // firstAscentYear
 			boulder.getLatitude(),
 			boulder.getLongitude()
 		);
