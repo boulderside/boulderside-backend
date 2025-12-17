@@ -1,7 +1,7 @@
 package com.line7studio.boulderside.domain.feature.route.service;
 
 import com.line7studio.boulderside.common.enums.Level;
-import com.line7studio.boulderside.common.exception.DomainException;
+import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.domain.feature.route.entity.Route;
 import com.line7studio.boulderside.domain.feature.route.enums.RouteSortType;
@@ -24,7 +24,7 @@ public class RouteService {
 
     public Route getById(Long routeId) {
         return routeRepository.findById(routeId)
-                .orElseThrow(() -> new DomainException(ErrorCode.ROUTE_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ROUTE_NOT_FOUND));
     }
 
     /**

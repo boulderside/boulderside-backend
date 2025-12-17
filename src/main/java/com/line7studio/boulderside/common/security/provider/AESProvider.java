@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.common.exception.ExternalApiException;
+import com.line7studio.boulderside.common.exception.ExternalException;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class AESProvider {
 			byte[] encrypted = cipher.doFinal(plainText.getBytes());
 			return Base64.getEncoder().encodeToString(encrypted);
 		} catch (Exception ex) {
-			throw new ExternalApiException(ErrorCode.AES_ENCRYPTION_ERROR);
+			throw new ExternalException(ErrorCode.AES_ENCRYPTION_ERROR);
 		}
 	}
 
@@ -53,7 +53,7 @@ public class AESProvider {
 			byte[] original = cipher.doFinal(Base64.getDecoder().decode(encryptedText));
 			return new String(original);
 		} catch (Exception ex) {
-			throw new ExternalApiException(ErrorCode.AES_DECRYPTION_ERROR);
+			throw new ExternalException(ErrorCode.AES_DECRYPTION_ERROR);
 		}
 	}
 }

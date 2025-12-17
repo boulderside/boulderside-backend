@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.common.exception.ExternalApiException;
+import com.line7studio.boulderside.common.exception.ExternalException;
 import com.line7studio.boulderside.infrastructure.weather.dto.OneCallResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -29,10 +29,10 @@ public class OpenWeatherClient {
     @Retryable(retryFor = {Exception.class}, maxAttempts = 2, backoff = @Backoff(delay = 1000))
 	public OneCallResponse getOneCallWeather(double latitude, double longitude) {
 		if (latitude < -90 || latitude > 90) {
-			throw new ExternalApiException(ErrorCode.LATITUDE_OUT_OF_RANGE);
+			throw new ExternalException(ErrorCode.LATITUDE_OUT_OF_RANGE);
 		}
 		if (longitude < -180 || longitude > 180) {
-			throw new ExternalApiException(ErrorCode.LONGITUDE_OUT_OF_RANGE);
+			throw new ExternalException(ErrorCode.LONGITUDE_OUT_OF_RANGE);
 		}
 
 		String uri = UriComponentsBuilder

@@ -11,7 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.common.exception.ValidationException;
+import com.line7studio.boulderside.common.exception.InvalidValueException;
 import com.line7studio.boulderside.domain.feature.route.interaction.like.entity.UserRouteLike;
 import com.line7studio.boulderside.domain.feature.route.interaction.like.repository.UserRouteLikeRepository;
 
@@ -26,7 +26,7 @@ public class UserRouteLikeService {
 		Long userId = userRouteLike.getUserId();
 		Long routeId = userRouteLike.getRouteId();
 		if (userId == null || routeId == null) {
-			throw new ValidationException(ErrorCode.VALIDATION_FAILED);
+			throw new InvalidValueException(ErrorCode.VALIDATION_FAILED);
 		}
 
 		boolean alreadyExists = userRouteLikeRepository.existsByUserIdAndRouteId(userId, routeId);
@@ -63,7 +63,7 @@ public class UserRouteLikeService {
 
 	public void deleteAllLikesByRouteId(Long routeId) {
 		if (routeId == null) {
-			throw new ValidationException(ErrorCode.VALIDATION_FAILED);
+			throw new InvalidValueException(ErrorCode.VALIDATION_FAILED);
 		}
 		userRouteLikeRepository.deleteAllByRouteId(routeId);
 	}

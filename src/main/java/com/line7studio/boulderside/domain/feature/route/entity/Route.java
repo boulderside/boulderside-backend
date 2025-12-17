@@ -1,6 +1,8 @@
 package com.line7studio.boulderside.domain.feature.route.entity;
 
 import com.line7studio.boulderside.common.enums.Level;
+import com.line7studio.boulderside.common.exception.ErrorCode;
+import com.line7studio.boulderside.common.exception.InvalidValueException;
 import com.line7studio.boulderside.domain.BaseEntity;
 
 import jakarta.persistence.*;
@@ -157,37 +159,37 @@ public class Route extends BaseEntity {
 
 	private static void validateBoulderId(Long boulderId) {
 		if (boulderId == null) {
-			throw new IllegalArgumentException("바위 ID는 필수입니다.");
+			throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD);
 		}
 	}
 
 	private static void validateRegionId(Long regionId) {
 		if (regionId == null) {
-			throw new IllegalArgumentException("지역 ID는 필수입니다.");
+			throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD);
 		}
 	}
 
 	private static void validateSectorId(Long sectorId) {
 		if (sectorId == null) {
-			throw new IllegalArgumentException("섹터 ID는 필수입니다.");
+			throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD);
 		}
 	}
 
 	private static void validateName(String name) {
 		if (name != null && name.length() > 100) {
-			throw new IllegalArgumentException("루트 이름은 100자를 초과할 수 없습니다.");
+			throw new InvalidValueException(ErrorCode.INVALID_FIELD_LENGTH);
 		}
 	}
 
 	private static void validateDescription(String description) {
 		if (description != null && description.length() > 1000) {
-			throw new IllegalArgumentException("루트 설명은 1000자를 초과할 수 없습니다.");
+			throw new InvalidValueException(ErrorCode.INVALID_FIELD_LENGTH);
 		}
 	}
 
 	private static void validatePioneerName(String pioneerName) {
 		if (pioneerName != null && pioneerName.length() > 100) {
-			throw new IllegalArgumentException("첫 등반자 이름은 100자를 초과할 수 없습니다.");
+			throw new InvalidValueException(ErrorCode.INVALID_FIELD_LENGTH);
 		}
 	}
 }

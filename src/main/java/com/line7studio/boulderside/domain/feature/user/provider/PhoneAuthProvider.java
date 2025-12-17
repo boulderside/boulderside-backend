@@ -9,7 +9,7 @@ import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.common.exception.ExternalApiException;
+import com.line7studio.boulderside.common.exception.ExternalException;
 
 import jakarta.annotation.PostConstruct;
 
@@ -42,7 +42,7 @@ public class PhoneAuthProvider {
 		try {
 			this.messageService.sendOne(new SingleMessageSendingRequest(message));
 		} catch (Exception e) {
-			throw new ExternalApiException(ErrorCode.PHONE_SEND_FAILED);
+			throw new ExternalException(ErrorCode.PHONE_SEND_FAILED);
 		}
 	}
 }

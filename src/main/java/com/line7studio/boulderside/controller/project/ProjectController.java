@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.line7studio.boulderside.usecase.project.ProjectUseCase;
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.common.exception.ValidationException;
+import com.line7studio.boulderside.common.exception.InvalidValueException;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.controller.project.request.ProjectRequest;
@@ -52,7 +52,7 @@ public class ProjectController {
 		@Valid @RequestBody ProjectRequest request,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 		if (request.routeId() == null) {
-			throw new ValidationException(ErrorCode.MISSING_REQUIRED_FIELD);
+			throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD);
 		}
 		ProjectResponse response = projectUseCase.createProject(
 			userDetails.userId(), request.routeId(), request.completed(), request.memo(), request.attemptHistories());

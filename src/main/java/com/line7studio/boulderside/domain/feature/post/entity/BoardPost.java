@@ -1,5 +1,8 @@
 package com.line7studio.boulderside.domain.feature.post.entity;
 
+import com.line7studio.boulderside.common.exception.BusinessException;
+import com.line7studio.boulderside.common.exception.ErrorCode;
+import com.line7studio.boulderside.common.exception.InvalidValueException;
 import com.line7studio.boulderside.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -83,7 +86,7 @@ public class BoardPost extends BaseEntity {
      */
     public void verifyOwner(Long userId) {
         if (!isOwner(userId)) {
-            throw new IllegalStateException("게시글 작업은 작성자만 가능합니다.");
+            throw new BusinessException(ErrorCode.NO_PERMISSION);
         }
     }
 
@@ -103,23 +106,23 @@ public class BoardPost extends BaseEntity {
 
     private static void validateUserId(Long userId) {
         if (userId == null) {
-            throw new IllegalArgumentException("작성자 ID는 필수입니다.");
+            throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD);
         }
     }
 
     private static void validateTitle(String title) {
         if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("제목은 필수입니다.");
+            throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD);
         }
         if (title.length() > 100) {
-            throw new IllegalArgumentException("제목은 100자를 초과할 수 없습니다.");
+            throw new InvalidValueException(ErrorCode.INVALID_FIELD_LENGTH);
         }
     }
 
     private static void validateContent(String content) {
         // content는 nullable이므로 null 체크만
         if (content != null && content.length() > 5000) {
-            throw new IllegalArgumentException("내용은 5000자를 초과할 수 없습니다.");
+            throw new InvalidValueException(ErrorCode.INVALID_FIELD_LENGTH);
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.line7studio.boulderside.domain.feature.comment.enums;
 
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.common.exception.ValidationException;
+import com.line7studio.boulderside.common.exception.InvalidValueException;
 
 import java.util.Arrays;
 
@@ -21,6 +21,6 @@ public enum CommentDomainType {
         return Arrays.stream(values())
                 .filter(type -> type.pathName.equals(path))
                 .findFirst()
-                .orElseThrow(() -> new ValidationException(ErrorCode.VALIDATION_FAILED));
+                .orElseThrow(() -> new InvalidValueException(ErrorCode.VALIDATION_FAILED));
     }
 }

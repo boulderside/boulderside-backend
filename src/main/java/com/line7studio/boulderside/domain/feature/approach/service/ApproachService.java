@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.approach.service;
 
-import com.line7studio.boulderside.common.exception.DatabaseException;
+import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.domain.feature.approach.entity.Approach;
 import com.line7studio.boulderside.domain.feature.approach.repository.ApproachRepository;
@@ -20,12 +20,12 @@ public class ApproachService {
 
     public Approach getById(Long id) {
         return approachRepository.findById(id)
-            .orElseThrow(() -> new DatabaseException(ErrorCode.APPROACH_NOT_FOUND));
+            .orElseThrow(() -> new BusinessException(ErrorCode.APPROACH_NOT_FOUND));
     }
 
     public void deleteById(Long id) {
         if (!approachRepository.existsById(id)) {
-            throw new DatabaseException(ErrorCode.APPROACH_NOT_FOUND);
+            throw new BusinessException(ErrorCode.APPROACH_NOT_FOUND);
         }
         approachRepository.deleteById(id);
     }

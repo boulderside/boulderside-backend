@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.boulder.service;
 
-import com.line7studio.boulderside.common.exception.DomainException;
+import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.domain.feature.boulder.entity.Boulder;
 import com.line7studio.boulderside.domain.feature.boulder.enums.BoulderSortType;
@@ -23,7 +23,7 @@ public class BoulderService {
 
 	public Boulder getById(Long boulderId) {
 		return boulderRepository.findById(boulderId)
-			.orElseThrow(() -> new DomainException(ErrorCode.BOULDER_NOT_FOUND));
+			.orElseThrow(() -> new BusinessException(ErrorCode.BOULDER_NOT_FOUND));
 	}
 
 	/**

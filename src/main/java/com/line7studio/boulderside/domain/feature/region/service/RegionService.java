@@ -3,7 +3,7 @@ package com.line7studio.boulderside.domain.feature.region.service;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.line7studio.boulderside.common.exception.DatabaseException;
+import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.domain.feature.region.entity.Region;
 import com.line7studio.boulderside.domain.feature.region.repository.RegionRepository;
@@ -19,7 +19,7 @@ public class RegionService {
 
 	public Region getRegionById(Long regionId) {
 		return regionRepository.findById(regionId)
-			.orElseThrow(() -> new DatabaseException(ErrorCode.REGION_NOT_FOUND));
+			.orElseThrow(() -> new BusinessException(ErrorCode.REGION_NOT_FOUND));
 	}
 
 	public List<Region> getRegionsByIds(List<Long> regionIds) {
@@ -28,7 +28,7 @@ public class RegionService {
 
 	public Region getRegionByProvinceAndCity(String province, String city) {
 		return regionRepository.findByProvinceAndCity(province, city)
-			.orElseThrow(() -> new DatabaseException(ErrorCode.REGION_NOT_FOUND));
+			.orElseThrow(() -> new BusinessException(ErrorCode.REGION_NOT_FOUND));
 	}
 
 	public List<Region> getAllRegions() {

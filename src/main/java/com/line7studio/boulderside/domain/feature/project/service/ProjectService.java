@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.project.service;
 
-import com.line7studio.boulderside.common.exception.DomainException;
+import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.domain.feature.project.entity.Project;
 import com.line7studio.boulderside.domain.feature.project.entity.ProjectAttemptHistory;
@@ -29,7 +29,7 @@ public class ProjectService {
 		List<ProjectAttemptHistory> attemptHistories) {
 		projectRepository.findByUserIdAndRouteId(userId, routeId)
 			.ifPresent(existing -> {
-				throw new DomainException(ErrorCode.ROUTE_COMPLETION_ALREADY_EXISTS);
+				throw new BusinessException(ErrorCode.ROUTE_COMPLETION_ALREADY_EXISTS);
 			});
 
 		Project project = Project.builder()
@@ -68,13 +68,13 @@ public class ProjectService {
 	@Transactional(readOnly = true)
 	public Project get(Long userId, Long projectId) {
 		return projectRepository.findByIdAndUserId(projectId, userId)
-			.orElseThrow(() -> new DomainException(ErrorCode.ROUTE_COMPLETION_NOT_FOUND));
+			.orElseThrow(() -> new BusinessException(ErrorCode.ROUTE_COMPLETION_NOT_FOUND));
 	}
 
 	@Transactional(readOnly = true)
 	public Project getByRoute(Long userId, Long routeId) {
 		return projectRepository.findByUserIdAndRouteId(userId, routeId)
-			.orElseThrow(() -> new DomainException(ErrorCode.ROUTE_COMPLETION_NOT_FOUND));
+			.orElseThrow(() -> new BusinessException(ErrorCode.ROUTE_COMPLETION_NOT_FOUND));
 	}
 
 	@Transactional(readOnly = true)

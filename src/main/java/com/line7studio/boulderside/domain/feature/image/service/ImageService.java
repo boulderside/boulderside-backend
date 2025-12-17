@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.image.service;
 
-import com.line7studio.boulderside.common.exception.DomainException;
+import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.domain.feature.image.entity.Image;
 import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;
@@ -22,7 +22,7 @@ public class ImageService {
 
 	public Image getById(Long imageId) {
 		return imageRepository.findById(imageId)
-			.orElseThrow(() -> new DomainException(ErrorCode.IMAGE_NOT_FOUND));
+			.orElseThrow(() -> new BusinessException(ErrorCode.IMAGE_NOT_FOUND));
 	}
 
 	public List<Image> getImageListByImageDomainTypeAndDomainIdList(ImageDomainType imageDomainType, List<Long> domainIdList) {
@@ -86,7 +86,7 @@ public class ImageService {
 
 	public void deleteById(Long imageId) {
 		if (!imageRepository.existsById(imageId)) {
-			throw new DomainException(ErrorCode.IMAGE_NOT_FOUND);
+			throw new BusinessException(ErrorCode.IMAGE_NOT_FOUND);
 		}
 		imageRepository.deleteById(imageId);
 	}

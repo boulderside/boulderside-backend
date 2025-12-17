@@ -11,7 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.common.exception.ValidationException;
+import com.line7studio.boulderside.common.exception.InvalidValueException;
 import com.line7studio.boulderside.domain.feature.boulder.interaction.like.entity.UserBoulderLike;
 import com.line7studio.boulderside.domain.feature.boulder.interaction.like.repository.UserBoulderLikeRepository;
 
@@ -26,7 +26,7 @@ public class UserBoulderLikeService {
 		Long userId = userBoulderLike.getUserId();
 		Long boulderId = userBoulderLike.getBoulderId();
 		if (userId == null || boulderId == null) {
-			throw new ValidationException(ErrorCode.VALIDATION_FAILED);
+			throw new InvalidValueException(ErrorCode.VALIDATION_FAILED);
 		}
 
 		boolean alreadyExists = userBoulderLikeRepository.existsByUserIdAndBoulderId(userId, boulderId);
@@ -42,7 +42,7 @@ public class UserBoulderLikeService {
 
 	public long getCountByBoulderId(Long boulderId) {
 		if (boulderId == null) {
-			throw new ValidationException(ErrorCode.VALIDATION_FAILED);
+			throw new InvalidValueException(ErrorCode.VALIDATION_FAILED);
 		}
 		return userBoulderLikeRepository.countByBoulderId(boulderId);
 	}
@@ -70,7 +70,7 @@ public class UserBoulderLikeService {
 
 	public void deleteAllLikesByBoulderId(Long boulderId) {
 		if (boulderId == null) {
-			throw new ValidationException(ErrorCode.VALIDATION_FAILED);
+			throw new InvalidValueException(ErrorCode.VALIDATION_FAILED);
 		}
 		userBoulderLikeRepository.deleteAllByBoulderId(boulderId);
 	}

@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.sector.service;
 
-import com.line7studio.boulderside.common.exception.DomainException;
+import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.domain.feature.sector.entity.Sector;
 import com.line7studio.boulderside.domain.feature.sector.repository.SectorRepository;
@@ -18,7 +18,7 @@ public class SectorService {
 
 	public Sector getSectorById(Long sectorId) {
 		return sectorRepository.findById(sectorId)
-			.orElseThrow(() -> new DomainException(ErrorCode.SECTOR_NOT_FOUND));
+			.orElseThrow(() -> new BusinessException(ErrorCode.SECTOR_NOT_FOUND));
 	}
 
 	public List<Sector> getSectorsByIds(List<Long> sectorIdList) {

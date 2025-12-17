@@ -30,6 +30,9 @@ public enum ErrorCode {
 	CONSTRAINT_VIOLATION("V002", "비즈니스 제약조건을 위반했습니다.", HttpStatus.BAD_REQUEST),
 	MISSING_REQUIRED_FIELD("V003", "필수 입력 값이 누락되었습니다.", HttpStatus.BAD_REQUEST),
     NOT_SUPPORT_SORT_TYPE("V004", "지원하지 않는 정렬 타입입니다.", HttpStatus.BAD_REQUEST),
+	INVALID_FIELD_LENGTH("V005", "필드 길이 제약조건을 위반했습니다.", HttpStatus.BAD_REQUEST),
+	INVALID_DATE_VALUE("V006", "유효하지 않은 날짜 값입니다.", HttpStatus.BAD_REQUEST),
+	INVALID_YEAR_RANGE("V007", "유효하지 않은 연도 범위입니다.", HttpStatus.BAD_REQUEST),
 
 	// Persistence (P001~P099)
 	DB_CONSTRAINT_ERROR("P001", "데이터베이스 제약조건 위반입니다.", HttpStatus.CONFLICT),
