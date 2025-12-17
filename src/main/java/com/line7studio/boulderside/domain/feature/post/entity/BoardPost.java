@@ -86,7 +86,7 @@ public class BoardPost extends BaseEntity {
      */
     public void verifyOwner(Long userId) {
         if (!isOwner(userId)) {
-            throw new BusinessException(ErrorCode.NO_PERMISSION);
+            throw new BusinessException(ErrorCode.NO_PERMISSION, "게시글 작업은 작성자만 가능합니다.");
         }
     }
 
@@ -106,23 +106,23 @@ public class BoardPost extends BaseEntity {
 
     private static void validateUserId(Long userId) {
         if (userId == null) {
-            throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD);
+            throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD, "작성자 ID는 필수입니다.");
         }
     }
 
     private static void validateTitle(String title) {
         if (title == null || title.isBlank()) {
-            throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD);
+            throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD, "제목은 필수입니다.");
         }
         if (title.length() > 100) {
-            throw new InvalidValueException(ErrorCode.INVALID_FIELD_LENGTH);
+            throw new InvalidValueException(ErrorCode.INVALID_FIELD_LENGTH, "제목은 100자를 초과할 수 없습니다.");
         }
     }
 
     private static void validateContent(String content) {
         // content는 nullable이므로 null 체크만
         if (content != null && content.length() > 5000) {
-            throw new InvalidValueException(ErrorCode.INVALID_FIELD_LENGTH);
+            throw new InvalidValueException(ErrorCode.INVALID_FIELD_LENGTH, "내용은 5000자를 초과할 수 없습니다.");
         }
     }
 }

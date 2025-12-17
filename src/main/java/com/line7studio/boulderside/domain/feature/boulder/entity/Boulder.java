@@ -124,34 +124,34 @@ public class Boulder extends BaseEntity {
 
 	private static void validateRegionId(Long regionId) {
 		if (regionId == null) {
-			throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD);
+			throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD, "지역 ID는 필수입니다.");
 		}
 	}
 
 	private static void validateSectorId(Long sectorId) {
 		if (sectorId == null) {
-			throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD);
+			throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD, "섹터 ID는 필수입니다.");
 		}
 	}
 
 	private static void validateName(String name) {
 		if (name != null && name.length() > 100) {
-			throw new InvalidValueException(ErrorCode.INVALID_FIELD_LENGTH);
+			throw new InvalidValueException(ErrorCode.INVALID_FIELD_LENGTH, "바위 이름은 100자를 초과할 수 없습니다.");
 		}
 	}
 
 	private static void validateDescription(String description) {
 		if (description != null && description.length() > 1000) {
-			throw new InvalidValueException(ErrorCode.INVALID_FIELD_LENGTH);
+			throw new InvalidValueException(ErrorCode.INVALID_FIELD_LENGTH, "바위 설명은 1000자를 초과할 수 없습니다.");
 		}
 	}
 
 	private static void validateCoordinates(Double latitude, Double longitude) {
 		if (latitude != null && (latitude < -90.0 || latitude > 90.0)) {
-			throw new InvalidValueException(ErrorCode.LATITUDE_OUT_OF_RANGE);
+			throw new InvalidValueException(ErrorCode.LATITUDE_OUT_OF_RANGE, "위도는 -90.0 ~ 90.0 범위여야 합니다.");
 		}
 		if (longitude != null && (longitude < -180.0 || longitude > 180.0)) {
-			throw new InvalidValueException(ErrorCode.LONGITUDE_OUT_OF_RANGE);
+			throw new InvalidValueException(ErrorCode.LONGITUDE_OUT_OF_RANGE, "경도는 -180.0 ~ 180.0 범위여야 합니다.");
 		}
 	}
 }
