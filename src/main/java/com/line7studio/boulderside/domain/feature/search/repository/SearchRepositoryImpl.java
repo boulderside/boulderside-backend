@@ -9,7 +9,7 @@ import com.line7studio.boulderside.domain.feature.post.entity.QBoardPost;
 import com.line7studio.boulderside.domain.feature.post.entity.QMatePost;
 import com.line7studio.boulderside.domain.feature.region.entity.QRegion;
 import com.line7studio.boulderside.domain.feature.route.entity.QRoute;
-import com.line7studio.boulderside.domain.feature.route.entity.Route;
+import com.line7studio.boulderside.domain.feature.route.Route;
 import com.line7studio.boulderside.domain.feature.search.enums.DocumentDomainType;
 import com.line7studio.boulderside.domain.feature.user.entity.QUser;
 import com.line7studio.boulderside.usecase.search.dto.*;

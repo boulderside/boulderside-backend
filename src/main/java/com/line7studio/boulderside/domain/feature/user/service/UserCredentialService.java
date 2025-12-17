@@ -1,7 +1,7 @@
 package com.line7studio.boulderside.domain.feature.user.service;
 
-import com.line7studio.boulderside.domain.feature.user.entity.User;
-import com.line7studio.boulderside.domain.feature.user.entity.UserCredential;
+import com.line7studio.boulderside.domain.feature.user.User;
+import com.line7studio.boulderside.domain.feature.user.UserCredential;
 import com.line7studio.boulderside.domain.feature.user.enums.AuthProviderType;
 import com.line7studio.boulderside.domain.feature.user.repository.UserCredentialRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.domain.feature.region.entity;
+package com.line7studio.boulderside.domain.feature.region;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.route.repository;
 
-import com.line7studio.boulderside.domain.feature.route.entity.Route;
+import com.line7studio.boulderside.domain.feature.route.Route;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

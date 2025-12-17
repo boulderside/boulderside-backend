@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.domain.feature.region.entity.Region;
+import com.line7studio.boulderside.domain.feature.region.Region;
 import com.line7studio.boulderside.domain.feature.region.repository.RegionRepository;
 
 import lombok.RequiredArgsConstructor;

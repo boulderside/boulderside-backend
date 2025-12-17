@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.approach.repository;
 
-import com.line7studio.boulderside.domain.feature.approach.entity.Approach;
+import com.line7studio.boulderside.domain.feature.approach.Approach;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.domain.feature.image.entity;
+package com.line7studio.boulderside.domain.feature.image;
 
 import com.line7studio.boulderside.domain.BaseEntity;
 import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;

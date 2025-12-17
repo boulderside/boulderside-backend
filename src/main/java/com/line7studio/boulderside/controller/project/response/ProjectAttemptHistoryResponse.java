@@ -2,7 +2,7 @@ package com.line7studio.boulderside.controller.project.response;
 
 import java.time.LocalDate;
 
-import com.line7studio.boulderside.domain.feature.project.entity.ProjectAttemptHistory;
+import com.line7studio.boulderside.domain.feature.project.ProjectAttemptHistory;
 
 public record ProjectAttemptHistoryResponse(
     LocalDate attemptedDate,

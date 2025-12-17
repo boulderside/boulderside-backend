@@ -2,7 +2,7 @@ package com.line7studio.boulderside.common.security.filter;
 
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.common.security.provider.TokenProvider;
-import com.line7studio.boulderside.domain.feature.user.entity.User;
+import com.line7studio.boulderside.domain.feature.user.User;
 import com.line7studio.boulderside.domain.feature.user.enums.UserRole;
 import com.line7studio.boulderside.domain.feature.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;

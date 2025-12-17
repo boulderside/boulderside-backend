@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.point.repository;
 
-import com.line7studio.boulderside.domain.feature.point.entity.Point;
+import com.line7studio.boulderside.domain.feature.point.Point;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

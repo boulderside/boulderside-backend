@@ -1,8 +1,8 @@
 package com.line7studio.boulderside.controller.project.response;
 
 import com.line7studio.boulderside.common.enums.Level;
-import com.line7studio.boulderside.domain.feature.project.entity.Project;
-import com.line7studio.boulderside.domain.feature.route.entity.Route;
+import com.line7studio.boulderside.domain.feature.project.Project;
+import com.line7studio.boulderside.domain.feature.route.Route;
 
 import java.time.LocalDateTime;
 import java.util.Collections;

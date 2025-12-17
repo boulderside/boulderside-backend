@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.domain.feature.route.entity;
+package com.line7studio.boulderside.domain.feature.route;
 
 import com.line7studio.boulderside.common.enums.Level;
 import com.line7studio.boulderside.common.exception.ErrorCode;

@@ -3,7 +3,7 @@ package com.line7studio.boulderside.domain.feature.route.service;
 import com.line7studio.boulderside.common.enums.Level;
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.domain.feature.route.entity.Route;
+import com.line7studio.boulderside.domain.feature.route.Route;
 import com.line7studio.boulderside.domain.feature.route.enums.RouteSortType;
 import com.line7studio.boulderside.domain.feature.route.repository.RouteQueryRepository;
 import com.line7studio.boulderside.domain.feature.route.repository.RouteRepository;

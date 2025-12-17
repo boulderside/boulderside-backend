@@ -11,7 +11,7 @@ import com.line7studio.boulderside.common.security.vo.LoginResponse;
 import com.line7studio.boulderside.controller.auth.request.OAuthLoginRequest;
 import com.line7studio.boulderside.controller.auth.request.OAuthSignupRequest;
 import com.line7studio.boulderside.controller.auth.request.RefreshTokenRequest;
-import com.line7studio.boulderside.domain.feature.user.entity.User;
+import com.line7studio.boulderside.domain.feature.user.User;
 import com.line7studio.boulderside.domain.feature.user.enums.UserRole;
 import com.line7studio.boulderside.domain.feature.user.service.UserCredentialService;
 import com.line7studio.boulderside.domain.feature.user.service.UserService;

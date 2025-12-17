@@ -2,7 +2,7 @@ package com.line7studio.boulderside.domain.feature.boulder.repository;
 
 import java.util.List;
 
-import com.line7studio.boulderside.domain.feature.boulder.entity.Boulder;
+import com.line7studio.boulderside.domain.feature.boulder.Boulder;
 import com.line7studio.boulderside.domain.feature.boulder.enums.BoulderSortType;
 
 public interface BoulderQueryRepository {

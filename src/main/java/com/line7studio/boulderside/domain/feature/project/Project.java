@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.domain.feature.project.entity;
+package com.line7studio.boulderside.domain.feature.project;
 
 import com.line7studio.boulderside.domain.BaseEntity;
 import jakarta.persistence.*;

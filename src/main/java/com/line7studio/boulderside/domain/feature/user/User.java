@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.domain.feature.user.entity;
+package com.line7studio.boulderside.domain.feature.user;
 
 import com.line7studio.boulderside.common.enums.Level;
 import com.line7studio.boulderside.domain.BaseEntity;

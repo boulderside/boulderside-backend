@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.weather.service;
 
-import com.line7studio.boulderside.domain.feature.weather.entity.Weather;
+import com.line7studio.boulderside.domain.feature.weather.Weather;
 import com.line7studio.boulderside.domain.feature.weather.repository.WeatherRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

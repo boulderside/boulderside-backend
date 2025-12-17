@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.domain.feature.comment.entity;
+package com.line7studio.boulderside.domain.feature.comment;
 
 import com.line7studio.boulderside.domain.BaseEntity;
 import com.line7studio.boulderside.domain.feature.comment.enums.CommentDomainType;

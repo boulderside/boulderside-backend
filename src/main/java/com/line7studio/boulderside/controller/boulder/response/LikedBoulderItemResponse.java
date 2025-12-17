@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.boulder.response;
 
-import com.line7studio.boulderside.domain.feature.boulder.entity.Boulder;
+import com.line7studio.boulderside.domain.feature.boulder.Boulder;
 import com.line7studio.boulderside.domain.feature.boulder.interaction.like.entity.UserBoulderLike;
 
 import java.time.LocalDateTime;

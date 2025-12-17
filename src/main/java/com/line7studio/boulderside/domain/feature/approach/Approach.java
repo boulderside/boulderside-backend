@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.domain.feature.approach.entity;
+package com.line7studio.boulderside.domain.feature.approach;
 
 import com.line7studio.boulderside.domain.BaseEntity;
 

@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.common.dto;
 
-import com.line7studio.boulderside.domain.feature.image.entity.Image;
+import com.line7studio.boulderside.domain.feature.image.Image;
 import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;
 
 import lombok.AllArgsConstructor;

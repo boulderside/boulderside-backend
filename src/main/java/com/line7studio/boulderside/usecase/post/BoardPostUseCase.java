@@ -10,7 +10,7 @@ import com.line7studio.boulderside.domain.feature.comment.service.CommentService
 import com.line7studio.boulderside.domain.feature.post.entity.BoardPost;
 import com.line7studio.boulderside.domain.feature.post.enums.BoardPostSortType;
 import com.line7studio.boulderside.domain.feature.post.service.BoardPostService;
-import com.line7studio.boulderside.domain.feature.user.entity.User;
+import com.line7studio.boulderside.domain.feature.user.User;
 import com.line7studio.boulderside.domain.feature.user.service.UserService;
 import com.line7studio.boulderside.common.util.CursorPageUtil;
 import com.line7studio.boulderside.common.util.CursorPageUtil.CursorPageWithSubCursor;

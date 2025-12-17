@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.image.repository;
 
-import com.line7studio.boulderside.domain.feature.image.entity.Image;
+import com.line7studio.boulderside.domain.feature.image.Image;
 import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;
 import org.springframework.data.jpa.repository.JpaRepository;
 

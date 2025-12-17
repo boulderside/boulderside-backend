@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.domain.feature.boulder.entity;
+package com.line7studio.boulderside.domain.feature.boulder;
 
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.common.exception.InvalidValueException;

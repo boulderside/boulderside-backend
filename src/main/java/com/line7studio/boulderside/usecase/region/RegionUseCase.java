@@ -3,7 +3,7 @@ package com.line7studio.boulderside.usecase.region;
 import com.line7studio.boulderside.controller.region.request.CreateAdminRegionRequest;
 import com.line7studio.boulderside.controller.region.request.UpdateAdminRegionRequest;
 import com.line7studio.boulderside.controller.region.response.RegionResponse;
-import com.line7studio.boulderside.domain.feature.region.entity.Region;
+import com.line7studio.boulderside.domain.feature.region.Region;
 import com.line7studio.boulderside.domain.feature.region.service.RegionService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

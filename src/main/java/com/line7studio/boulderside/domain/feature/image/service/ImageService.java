@@ -2,7 +2,7 @@ package com.line7studio.boulderside.domain.feature.image.service;
 
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.domain.feature.image.entity.Image;
+import com.line7studio.boulderside.domain.feature.image.Image;
 import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;
 import com.line7studio.boulderside.domain.feature.image.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;

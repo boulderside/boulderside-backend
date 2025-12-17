@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.region.response;
 
-import com.line7studio.boulderside.domain.feature.region.entity.Region;
+import com.line7studio.boulderside.domain.feature.region.Region;
 
 public record RegionResponse(
     Long id,

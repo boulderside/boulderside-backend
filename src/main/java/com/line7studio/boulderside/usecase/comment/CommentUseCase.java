@@ -8,7 +8,7 @@ import com.line7studio.boulderside.controller.comment.response.CommentPageRespon
 import com.line7studio.boulderside.controller.comment.response.CommentResponse;
 import com.line7studio.boulderside.controller.comment.response.MyCommentPageResponse;
 import com.line7studio.boulderside.controller.comment.response.MyCommentResponse;
-import com.line7studio.boulderside.domain.feature.comment.entity.Comment;
+import com.line7studio.boulderside.domain.feature.comment.Comment;
 import com.line7studio.boulderside.domain.feature.comment.enums.CommentDomainType;
 import com.line7studio.boulderside.domain.feature.comment.service.CommentService;
 import com.line7studio.boulderside.domain.feature.post.entity.BoardPost;
@@ -17,9 +17,9 @@ import com.line7studio.boulderside.domain.feature.post.service.BoardPostReadServ
 import com.line7studio.boulderside.domain.feature.post.service.BoardPostService;
 import com.line7studio.boulderside.domain.feature.post.service.MatePostReadService;
 import com.line7studio.boulderside.domain.feature.post.service.MatePostService;
-import com.line7studio.boulderside.domain.feature.route.entity.Route;
+import com.line7studio.boulderside.domain.feature.route.Route;
 import com.line7studio.boulderside.domain.feature.route.service.RouteService;
-import com.line7studio.boulderside.domain.feature.user.entity.User;
+import com.line7studio.boulderside.domain.feature.user.User;
 import com.line7studio.boulderside.domain.feature.user.service.UserService;
 import com.line7studio.boulderside.common.util.CursorPageUtil;
 import lombok.RequiredArgsConstructor;

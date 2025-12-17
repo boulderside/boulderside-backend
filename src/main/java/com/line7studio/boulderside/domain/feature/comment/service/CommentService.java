@@ -2,7 +2,7 @@ package com.line7studio.boulderside.domain.feature.comment.service;
 
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.domain.feature.comment.entity.Comment;
+import com.line7studio.boulderside.domain.feature.comment.Comment;
 import com.line7studio.boulderside.domain.feature.comment.enums.CommentDomainType;
 import com.line7studio.boulderside.domain.feature.comment.repository.CommentQueryRepository;
 import com.line7studio.boulderside.domain.feature.comment.repository.CommentRepository;

@@ -1,9 +1,9 @@
 package com.line7studio.boulderside.usecase.weather;
 
 import com.line7studio.boulderside.usecase.weather.dto.DailyWeatherInfoDto;
-import com.line7studio.boulderside.domain.feature.boulder.entity.Boulder;
+import com.line7studio.boulderside.domain.feature.boulder.Boulder;
 import com.line7studio.boulderside.domain.feature.boulder.service.BoulderService;
-import com.line7studio.boulderside.domain.feature.weather.entity.Weather;
+import com.line7studio.boulderside.domain.feature.weather.Weather;
 import com.line7studio.boulderside.domain.feature.weather.mapper.WeatherMapper;
 import com.line7studio.boulderside.domain.feature.weather.service.WeatherService;
 import com.line7studio.boulderside.infrastructure.weather.client.OpenWeatherClient;

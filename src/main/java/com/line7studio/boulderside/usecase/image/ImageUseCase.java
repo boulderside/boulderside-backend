@@ -3,7 +3,7 @@ package com.line7studio.boulderside.usecase.image;
 import com.line7studio.boulderside.controller.image.request.CreateAdminImageRequest;
 import com.line7studio.boulderside.controller.image.request.UpdateAdminImageRequest;
 import com.line7studio.boulderside.controller.image.response.AdminImageResponse;
-import com.line7studio.boulderside.domain.feature.image.entity.Image;
+import com.line7studio.boulderside.domain.feature.image.Image;
 import com.line7studio.boulderside.domain.feature.image.enums.ImageDomainType;
 import com.line7studio.boulderside.domain.feature.image.service.ImageService;
 import lombok.RequiredArgsConstructor;

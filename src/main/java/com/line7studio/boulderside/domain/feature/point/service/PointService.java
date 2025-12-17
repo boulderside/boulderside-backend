@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.point.service;
 
-import com.line7studio.boulderside.domain.feature.point.entity.Point;
+import com.line7studio.boulderside.domain.feature.point.Point;
 import com.line7studio.boulderside.domain.feature.point.repository.PointRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

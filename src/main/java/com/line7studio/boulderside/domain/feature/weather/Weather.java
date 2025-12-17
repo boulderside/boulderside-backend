@@ -1,4 +1,4 @@
-package com.line7studio.boulderside.domain.feature.weather.entity;
+package com.line7studio.boulderside.domain.feature.weather;
 
 import com.line7studio.boulderside.domain.BaseEntity;
 import jakarta.persistence.*;

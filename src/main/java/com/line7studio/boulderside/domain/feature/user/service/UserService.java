@@ -3,7 +3,7 @@ package com.line7studio.boulderside.domain.feature.user.service;
 import com.line7studio.boulderside.usecase.user.dto.response.CreateUserCommand;
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.domain.feature.user.entity.User;
+import com.line7studio.boulderside.domain.feature.user.User;
 import com.line7studio.boulderside.domain.feature.user.enums.UserRole;
 import com.line7studio.boulderside.domain.feature.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

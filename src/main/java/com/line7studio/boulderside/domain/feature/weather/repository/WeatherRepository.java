@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.domain.feature.weather.repository;
 
-import com.line7studio.boulderside.domain.feature.weather.entity.Weather;
+import com.line7studio.boulderside.domain.feature.weather.Weather;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

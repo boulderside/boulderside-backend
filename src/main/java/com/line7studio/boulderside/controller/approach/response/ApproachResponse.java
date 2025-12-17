@@ -1,7 +1,7 @@
 package com.line7studio.boulderside.controller.approach.response;
 
 import com.line7studio.boulderside.common.dto.PointInfo;
-import com.line7studio.boulderside.domain.feature.approach.entity.Approach;
+import com.line7studio.boulderside.domain.feature.approach.Approach;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -2,7 +2,7 @@ package com.line7studio.boulderside.domain.feature.boulder.service;
 
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
-import com.line7studio.boulderside.domain.feature.boulder.entity.Boulder;
+import com.line7studio.boulderside.domain.feature.boulder.Boulder;
 import com.line7studio.boulderside.domain.feature.boulder.enums.BoulderSortType;
 import com.line7studio.boulderside.domain.feature.boulder.repository.BoulderQueryRepository;
 import com.line7studio.boulderside.domain.feature.boulder.repository.BoulderRepository;
