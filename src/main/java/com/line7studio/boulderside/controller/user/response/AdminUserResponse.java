@@ -6,6 +6,7 @@ import com.line7studio.boulderside.common.enums.Level;
 import com.line7studio.boulderside.domain.user.User;
 import com.line7studio.boulderside.domain.user.enums.UserRole;
 import com.line7studio.boulderside.domain.user.enums.UserSex;
+import com.line7studio.boulderside.domain.user.enums.UserStatus;
 
 public record AdminUserResponse(
     Long userId,
@@ -14,6 +15,7 @@ public record AdminUserResponse(
     String email,
     String phone,
     UserRole userRole,
+    UserStatus userStatus,
     UserSex userSex,
     Level userLevel,
     String profileImageUrl,
@@ -28,6 +30,7 @@ public record AdminUserResponse(
             user.getEmail(),
             user.getPhone(),
             user.getUserRole(),
+            user.getUserStatus(),
             user.getUserSex(),
             user.getUserLevel(),
             user.getProfileImageUrl(),

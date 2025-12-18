@@ -4,6 +4,7 @@ import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.domain.user.User;
 import com.line7studio.boulderside.domain.user.UserConsentHistory;
+import com.line7studio.boulderside.domain.user.UserLoginHistory;
 import com.line7studio.boulderside.domain.user.UserMeta;
 import com.line7studio.boulderside.domain.user.UserStatusHistory;
 import com.line7studio.boulderside.domain.user.enums.AuthProviderType;
@@ -12,6 +13,7 @@ import com.line7studio.boulderside.domain.user.enums.UserRole;
 import com.line7studio.boulderside.domain.user.enums.UserStatus;
 import com.line7studio.boulderside.domain.user.enums.UserStatusChangeReason;
 import com.line7studio.boulderside.domain.user.repository.UserConsentHistoryRepository;
+import com.line7studio.boulderside.domain.user.repository.UserLoginHistoryRepository;
 import com.line7studio.boulderside.domain.user.repository.UserMetaRepository;
 import com.line7studio.boulderside.domain.user.repository.UserRepository;
 import com.line7studio.boulderside.domain.user.repository.UserStatusHistoryRepository;
@@ -36,6 +38,7 @@ public class UserService {
 	private final UserMetaRepository userMetaRepository;
 	private final UserConsentHistoryRepository userConsentHistoryRepository;
 	private final UserStatusHistoryRepository userStatusHistoryRepository;
+	private final UserLoginHistoryRepository userLoginHistoryRepository;
 
 	public User getUserById(Long userId) {
 		return userRepository.findById(userId)
@@ -59,6 +62,24 @@ public class UserService {
 	public UserMeta getUserMeta(Long userId) {
 		return userMetaRepository.findByUserId(userId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+	}
+
+	@Transactional(readOnly = true)
+	public List<UserConsentHistory> getUserConsentHistories(Long userId) {
+		getUserById(userId);
+		return userConsentHistoryRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+	}
+
+	@Transactional(readOnly = true)
+	public List<UserLoginHistory> getUserLoginHistories(Long userId) {
+		getUserById(userId);
+		return userLoginHistoryRepository.findAllByUserIdOrderByLoginAtDesc(userId);
+	}
+
+	@Transactional(readOnly = true)
+	public List<UserStatusHistory> getUserStatusHistories(Long userId) {
+		getUserById(userId);
+		return userStatusHistoryRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
 	}
 
 	@Transactional
@@ -156,6 +177,32 @@ public class UserService {
 	public User updateUserRole(Long userId, UserRole userRole) {
 		User user = getUserById(userId);
 		user.updateRole(userRole);
+		return user;
+	}
+
+	@Transactional
+	public User updateUserStatus(Long userId, UserStatus newStatus, UserStatusChangeReason reasonType, String reasonDetail, Long changedBy) {
+		if (newStatus == null) {
+			throw new BusinessException(ErrorCode.MISSING_REQUIRED_FIELD, "변경할 상태가 필요합니다.");
+		}
+		User user = getUserById(userId);
+		UserStatus previousStatus = user.getUserStatus();
+
+		if (previousStatus == newStatus) {
+			return user;
+		}
+
+		user.updateStatus(newStatus);
+		userRepository.save(user);
+		saveStatusHistory(
+			userId,
+			previousStatus,
+			newStatus,
+			reasonType == null ? UserStatusChangeReason.ADMIN_ACTION : reasonType,
+			reasonDetail,
+			changedBy
+		);
+
 		return user;
 	}
 

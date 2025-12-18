@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserStatusHistoryRepository extends JpaRepository<UserStatusHistory, Long> {
-    List<UserStatusHistory> findAllByUserId(Long userId);
+    List<UserStatusHistory> findAllByUserIdOrderByCreatedAtDesc(Long userId);
 
     Optional<UserStatusHistory> findTopByUserIdAndNewStatusOrderByCreatedAtDesc(Long userId, UserStatus newStatus);
 }
