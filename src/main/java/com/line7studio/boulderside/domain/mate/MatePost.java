@@ -4,6 +4,7 @@ import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.common.exception.InvalidValueException;
 import com.line7studio.boulderside.domain.BaseEntity;
+import com.line7studio.boulderside.domain.enums.PostStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -41,8 +42,12 @@ public class MatePost extends BaseEntity {
     @Column(name = "meeting_date")
     private LocalDate meetingDate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private PostStatus status;
+
     @Builder(access = AccessLevel.PRIVATE)
-    private MatePost(Long id, Long userId, String title, String content, Long viewCount, Long commentCount, LocalDate meetingDate) {
+    private MatePost(Long id, Long userId, String title, String content, Long viewCount, Long commentCount, LocalDate meetingDate, PostStatus status) {
         this.id = id;
         this.userId = userId;
         this.title = title;
@@ -50,6 +55,7 @@ public class MatePost extends BaseEntity {
         this.viewCount = viewCount == null ? 0L : viewCount;
         this.commentCount = commentCount == null ? 0L : commentCount;
         this.meetingDate = meetingDate;
+        this.status = status == null ? PostStatus.ACTIVE : status;
     }
 
     /**
@@ -110,6 +116,34 @@ public class MatePost extends BaseEntity {
 
     public void decrementCommentCount() {
         this.commentCount = this.commentCount <= 0 ? 0 : this.commentCount - 1;
+    }
+
+    /**
+     * 게시글 상태 변경 (관리자용)
+     */
+    public void updateStatus(PostStatus status) {
+        this.status = status;
+    }
+
+    /**
+     * 게시글 차단
+     */
+    public void block() {
+        this.status = PostStatus.BLOCKED;
+    }
+
+    /**
+     * 게시글 활성화
+     */
+    public void activate() {
+        this.status = PostStatus.ACTIVE;
+    }
+
+    /**
+     * 게시글 삭제 처리
+     */
+    public void delete() {
+        this.status = PostStatus.DELETED;
     }
 
     // === Private 검증 메서드들 ===

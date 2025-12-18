@@ -5,6 +5,7 @@ import com.line7studio.boulderside.controller.boardpost.request.CreateBoardPostR
 import com.line7studio.boulderside.controller.boardpost.request.UpdateBoardPostRequest;
 import com.line7studio.boulderside.controller.boardpost.response.BoardPostPageResponse;
 import com.line7studio.boulderside.controller.boardpost.response.BoardPostResponse;
+import com.line7studio.boulderside.controller.common.request.UpdatePostStatusRequest;
 import com.line7studio.boulderside.domain.comment.enums.CommentDomainType;
 import com.line7studio.boulderside.domain.comment.service.CommentService;
 import com.line7studio.boulderside.domain.board.BoardPost;
@@ -36,6 +37,11 @@ public class BoardPostUseCase {
     public BoardPostPageResponse getBoardPostPage(Long cursor, String subCursor, int size, BoardPostSortType sortType, Long userId) {
         List<BoardPost> posts = boardPostService.getBoardPostsWithCursor(cursor, subCursor, size + 1, sortType);
         return buildCursorPageResponse(posts, size, sortType, userId);
+    }
+
+    public BoardPostPageResponse getBoardPostPageForAdmin(Long cursor, String subCursor, int size, BoardPostSortType sortType, Long adminUserId) {
+        List<BoardPost> posts = boardPostService.getBoardPostsWithCursorForAdmin(cursor, subCursor, size + 1, sortType);
+        return buildCursorPageResponse(posts, size, sortType, adminUserId);
     }
 
     public BoardPostPageResponse getMyBoardPosts(Long cursor, int size, Long userId) {
@@ -98,6 +104,13 @@ public class BoardPostUseCase {
         BoardPost post = boardPostService.getBoardPostById(postId);
         post.incrementViewCount();
         return buildSinglePostResponse(post, userId);
+    }
+
+    @Transactional
+    public BoardPostResponse getBoardPostForAdmin(Long postId, Long adminUserId) {
+        BoardPost post = boardPostService.getBoardPostByIdForAdmin(postId);
+        post.incrementViewCount();
+        return buildSinglePostResponse(post, adminUserId);
     }
 
     @Transactional
@@ -164,6 +177,11 @@ public class BoardPostUseCase {
         );
 
         return BoardPostResponse.of(savedPost, userInfo, true, 0L);
+    }
+
+    @Transactional
+    public void updateBoardPostStatus(Long postId, UpdatePostStatusRequest request) {
+        boardPostService.updateBoardPostStatus(postId, request.status());
     }
 
     private BoardPostResponse buildSinglePostResponse(BoardPost post, Long userId) {

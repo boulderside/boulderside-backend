@@ -2,6 +2,7 @@ package com.line7studio.boulderside.domain.board.repository;
 
 import com.line7studio.boulderside.domain.board.BoardPost;
 import com.line7studio.boulderside.domain.board.enums.BoardPostSortType;
+import com.line7studio.boulderside.domain.enums.PostStatus;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -21,8 +22,11 @@ public class BoardPostQueryRepositoryImpl implements BoardPostQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<BoardPost> findBoardPostsWithCursor(Long cursor, String subCursor, int size, BoardPostSortType postSortType) {
+    public List<BoardPost> findBoardPostsWithCursor(Long cursor, String subCursor, int size, BoardPostSortType postSortType, boolean activeOnly) {
         BooleanBuilder builder = new BooleanBuilder();
+        if (activeOnly) {
+            builder.and(boardPost.status.eq(PostStatus.ACTIVE));
+        }
 
         if (cursor != null && subCursor != null && postSortType != null) {
             switch (postSortType) {

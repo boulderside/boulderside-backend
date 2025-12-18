@@ -2,6 +2,7 @@ package com.line7studio.boulderside.domain.comment.repository;
 
 import com.line7studio.boulderside.domain.comment.Comment;
 import com.line7studio.boulderside.domain.comment.enums.CommentDomainType;
+import com.line7studio.boulderside.domain.enums.PostStatus;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +20,11 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Comment> findCommentsWithCursor(Long cursor, int size, Long domainId, CommentDomainType commentDomainType) {
+    public List<Comment> findCommentsWithCursor(Long cursor, int size, Long domainId, CommentDomainType commentDomainType, boolean activeOnly) {
         BooleanBuilder builder = new BooleanBuilder();
+        if (activeOnly) {
+            builder.and(comment.status.eq(PostStatus.ACTIVE));
+        }
 
         // 도메인 ID 필터링
         if (domainId != null) {
@@ -48,6 +52,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
     @Override
     public List<Comment> findCommentsByUserWithCursor(Long cursor, int size, Long userId) {
         BooleanBuilder builder = new BooleanBuilder();
+        builder.and(comment.status.eq(PostStatus.ACTIVE));
         builder.and(comment.userId.eq(userId));
 
         if (cursor != null) {
@@ -67,6 +72,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(comment.userId.eq(userId));
         builder.and(comment.commentDomainType.eq(commentDomainType));
+        builder.and(comment.status.eq(PostStatus.ACTIVE));
 
         if (cursor != null) {
             builder.and(comment.id.lt(cursor));
@@ -85,7 +91,8 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
         List<Comment> comments = jpaQueryFactory
                 .selectFrom(comment)
                 .where(comment.domainId.in(domainIds)
-                        .and(comment.commentDomainType.eq(commentDomainType)))
+                        .and(comment.commentDomainType.eq(commentDomainType))
+                        .and(comment.status.eq(PostStatus.ACTIVE)))
                 .fetch();
 
         return comments.stream()

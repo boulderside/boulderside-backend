@@ -2,6 +2,7 @@ package com.line7studio.boulderside.domain.mate.service;
 
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
+import com.line7studio.boulderside.domain.enums.PostStatus;
 import com.line7studio.boulderside.domain.mate.MatePost;
 import com.line7studio.boulderside.domain.mate.enums.MatePostSortType;
 import com.line7studio.boulderside.domain.mate.repository.MatePostQueryRepository;
@@ -26,7 +27,7 @@ public class MatePostService {
 
     public MatePost getMatePostById(Long postId) {
         log.info(String.valueOf(postId));
-        return matePostRepository.findById(postId)
+        return matePostRepository.findByIdAndStatus(postId, PostStatus.ACTIVE)
             .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
     }
 
@@ -38,15 +39,22 @@ public class MatePostService {
         if (postSortType == null) {
             throw new BusinessException(ErrorCode.NOT_SUPPORT_SORT_TYPE);
         }
-        return matePostQueryRepository.findMatePostsWithCursor(cursor, subCursor, size, postSortType);
+        return matePostQueryRepository.findMatePostsWithCursor(cursor, subCursor, size, postSortType, true);
+    }
+
+    public List<MatePost> getMatePostsWithCursorForAdmin(Long cursor, String subCursor, int size, MatePostSortType postSortType) {
+        if (postSortType == null) {
+            throw new BusinessException(ErrorCode.NOT_SUPPORT_SORT_TYPE);
+        }
+        return matePostQueryRepository.findMatePostsWithCursor(cursor, subCursor, size, postSortType, false);
     }
 
     public List<MatePost> getMatePostsByUser(Long userId, Long cursor, int size) {
         Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "id"));
         if (cursor == null) {
-            return matePostRepository.findByUserIdOrderByIdDesc(userId, pageable);
+            return matePostRepository.findByUserIdAndStatusOrderByIdDesc(userId, PostStatus.ACTIVE, pageable);
         }
-        return matePostRepository.findByUserIdAndIdLessThanOrderByIdDesc(userId, cursor, pageable);
+        return matePostRepository.findByUserIdAndIdLessThanAndStatusOrderByIdDesc(userId, cursor, PostStatus.ACTIVE, pageable);
     }
 
     public MatePost createMatePost(Long userId, String title, String content, LocalDate meetingDate) {
@@ -89,5 +97,18 @@ public class MatePostService {
             .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
         matePostRepository.delete(matePost);
+    }
+
+    public void updateMatePostStatus(Long postId, PostStatus status) {
+        MatePost matePost = matePostRepository.findById(postId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+
+        matePost.updateStatus(status);
+        matePostRepository.save(matePost);
+    }
+
+    public MatePost getMatePostByIdForAdmin(Long postId) {
+        return matePostRepository.findById(postId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
     }
 }

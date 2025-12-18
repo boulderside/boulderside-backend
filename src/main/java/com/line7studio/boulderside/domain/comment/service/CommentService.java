@@ -6,6 +6,7 @@ import com.line7studio.boulderside.domain.comment.Comment;
 import com.line7studio.boulderside.domain.comment.enums.CommentDomainType;
 import com.line7studio.boulderside.domain.comment.repository.CommentQueryRepository;
 import com.line7studio.boulderside.domain.comment.repository.CommentRepository;
+import com.line7studio.boulderside.domain.enums.PostStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +19,8 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentQueryRepository commentQueryRepository;
 
-    public List<Comment> getCommentsWithCursor(Long cursor, int size, Long domainId, CommentDomainType commentDomainType) {
-        return commentQueryRepository.findCommentsWithCursor(cursor, size, domainId, commentDomainType);
+    public List<Comment> getCommentsWithCursor(Long cursor, int size, Long domainId, CommentDomainType commentDomainType, boolean activeOnly) {
+        return commentQueryRepository.findCommentsWithCursor(cursor, size, domainId, commentDomainType, activeOnly);
     }
 
     public List<Comment> getCommentsByUserWithCursor(Long cursor, int size, Long userId) {
@@ -66,7 +67,7 @@ public class CommentService {
     }
 
     public Long countCommentsByDomainIdAndCommentDomainType(Long domainId, CommentDomainType commentDomainType) {
-        return commentRepository.countCommentsByDomainIdAndCommentDomainType(domainId, commentDomainType);
+        return commentRepository.countCommentsByDomainIdAndCommentDomainTypeAndStatus(domainId, commentDomainType, PostStatus.ACTIVE);
     }
 
     public Comment getCommentById(Long commentId) {
@@ -89,5 +90,12 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
         commentRepository.delete(comment);
+    }
+
+    public void updateCommentStatus(Long commentId, PostStatus status) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
+        comment.updateStatus(status);
+        commentRepository.save(comment);
     }
 }
