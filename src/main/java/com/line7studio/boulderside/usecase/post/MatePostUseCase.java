@@ -1,6 +1,8 @@
 package com.line7studio.boulderside.usecase.post;
 
 import com.line7studio.boulderside.common.dto.UserInfo;
+import com.line7studio.boulderside.common.exception.BusinessException;
+import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.controller.common.request.UpdatePostStatusRequest;
 import com.line7studio.boulderside.controller.matepost.request.CreateMatePostRequest;
 import com.line7studio.boulderside.controller.matepost.request.UpdateMatePostRequest;
@@ -13,6 +15,7 @@ import com.line7studio.boulderside.domain.mate.enums.MatePostSortType;
 import com.line7studio.boulderside.domain.mate.service.MatePostService;
 import com.line7studio.boulderside.domain.user.User;
 import com.line7studio.boulderside.domain.user.service.UserService;
+import com.line7studio.boulderside.domain.user.service.UserBlockService;
 import com.line7studio.boulderside.common.util.CursorPageUtil;
 import com.line7studio.boulderside.common.util.CursorPageUtil.CursorPageWithSubCursor;
 import lombok.RequiredArgsConstructor;
@@ -33,9 +36,11 @@ public class MatePostUseCase {
     private final MatePostService matePostService;
     private final UserService userService;
     private final CommentService commentService;
+    private final UserBlockService userBlockService;
 
     public MatePostPageResponse getMatePostPage(Long cursor, String subCursor, int size, MatePostSortType sortType, Long userId) {
-        List<MatePost> posts = matePostService.getMatePostsWithCursor(cursor, subCursor, size + 1, sortType);
+        List<Long> blockedUserIds = userBlockService.getBlockedOrBlockingUserIds(userId);
+        List<MatePost> posts = matePostService.getMatePostsWithCursor(cursor, subCursor, size + 1, sortType, blockedUserIds);
         return buildCursorPageResponse(posts, size, sortType, userId);
     }
 
@@ -103,6 +108,9 @@ public class MatePostUseCase {
     @Transactional
     public MatePostResponse getMatePost(Long postId, Long userId) {
         MatePost post = matePostService.getMatePostById(postId);
+        if (userBlockService.isBlockedBetween(userId, post.getUserId())) {
+            throw new BusinessException(ErrorCode.NO_PERMISSION, "차단한 사용자의 게시글입니다.");
+        }
         post.incrementViewCount();
         return buildSinglePostResponse(post, userId);
     }

@@ -31,18 +31,18 @@ public class BoardPostService {
         return boardPostRepository.findAllById(postIds);
     }
 
-    public List<BoardPost> getBoardPostsWithCursor(Long cursor, String subCursor, int size, BoardPostSortType postSortType) {
+    public List<BoardPost> getBoardPostsWithCursor(Long cursor, String subCursor, int size, BoardPostSortType postSortType, List<Long> excludedUserIds) {
         if (postSortType == null) {
             throw new BusinessException(ErrorCode.NOT_SUPPORT_SORT_TYPE);
         }
-        return boardPostQueryRepository.findBoardPostsWithCursor(cursor, subCursor, size, postSortType, true);
+        return boardPostQueryRepository.findBoardPostsWithCursor(cursor, subCursor, size, postSortType, true, excludedUserIds);
     }
 
     public List<BoardPost> getBoardPostsWithCursorForAdmin(Long cursor, String subCursor, int size, BoardPostSortType postSortType) {
         if (postSortType == null) {
             throw new BusinessException(ErrorCode.NOT_SUPPORT_SORT_TYPE);
         }
-        return boardPostQueryRepository.findBoardPostsWithCursor(cursor, subCursor, size, postSortType, false);
+        return boardPostQueryRepository.findBoardPostsWithCursor(cursor, subCursor, size, postSortType, false, List.of());
     }
 
     public List<BoardPost> getBoardPostsByUser(Long userId, Long cursor, int size) {

@@ -6,5 +6,5 @@ import com.line7studio.boulderside.domain.mate.enums.MatePostSortType;
 import java.util.List;
 
 public interface MatePostQueryRepository {
-    List<MatePost> findMatePostsWithCursor(Long cursor, String subCursor, int size, MatePostSortType postSortType, boolean activeOnly);
+    List<MatePost> findMatePostsWithCursor(Long cursor, String subCursor, int size, MatePostSortType postSortType, boolean activeOnly, List<Long> excludedUserIds);
 }

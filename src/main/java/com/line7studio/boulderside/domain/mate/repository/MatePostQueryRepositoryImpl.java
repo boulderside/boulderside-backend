@@ -23,10 +23,13 @@ public class MatePostQueryRepositoryImpl implements MatePostQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<MatePost> findMatePostsWithCursor(Long cursor, String subCursor, int size, MatePostSortType postSortType, boolean activeOnly) {
+    public List<MatePost> findMatePostsWithCursor(Long cursor, String subCursor, int size, MatePostSortType postSortType, boolean activeOnly, List<Long> excludedUserIds) {
         BooleanBuilder builder = new BooleanBuilder();
         if (activeOnly) {
             builder.and(matePost.status.eq(PostStatus.ACTIVE));
+        }
+        if (excludedUserIds != null && !excludedUserIds.isEmpty()) {
+            builder.and(matePost.userId.notIn(excludedUserIds));
         }
 
         if (cursor != null && subCursor != null && postSortType != null) {

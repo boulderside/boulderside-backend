@@ -20,10 +20,13 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Comment> findCommentsWithCursor(Long cursor, int size, Long domainId, CommentDomainType commentDomainType, boolean activeOnly) {
+    public List<Comment> findCommentsWithCursor(Long cursor, int size, Long domainId, CommentDomainType commentDomainType, boolean activeOnly, List<Long> excludedUserIds) {
         BooleanBuilder builder = new BooleanBuilder();
         if (activeOnly) {
             builder.and(comment.status.eq(PostStatus.ACTIVE));
+        }
+        if (excludedUserIds != null && !excludedUserIds.isEmpty()) {
+            builder.and(comment.userId.notIn(excludedUserIds));
         }
 
         // 도메인 ID 필터링

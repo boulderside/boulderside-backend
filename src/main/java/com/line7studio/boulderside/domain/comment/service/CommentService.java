@@ -19,8 +19,8 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentQueryRepository commentQueryRepository;
 
-    public List<Comment> getCommentsWithCursor(Long cursor, int size, Long domainId, CommentDomainType commentDomainType, boolean activeOnly) {
-        return commentQueryRepository.findCommentsWithCursor(cursor, size, domainId, commentDomainType, activeOnly);
+    public List<Comment> getCommentsWithCursor(Long cursor, int size, Long domainId, CommentDomainType commentDomainType, boolean activeOnly, List<Long> excludedUserIds) {
+        return commentQueryRepository.findCommentsWithCursor(cursor, size, domainId, commentDomainType, activeOnly, excludedUserIds);
     }
 
     public List<Comment> getCommentsByUserWithCursor(Long cursor, int size, Long userId) {

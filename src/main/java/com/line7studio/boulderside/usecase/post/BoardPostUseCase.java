@@ -1,20 +1,23 @@
 package com.line7studio.boulderside.usecase.post;
 
 import com.line7studio.boulderside.common.dto.UserInfo;
+import com.line7studio.boulderside.common.exception.BusinessException;
+import com.line7studio.boulderside.common.exception.ErrorCode;
+import com.line7studio.boulderside.common.util.CursorPageUtil;
+import com.line7studio.boulderside.common.util.CursorPageUtil.CursorPageWithSubCursor;
 import com.line7studio.boulderside.controller.boardpost.request.CreateBoardPostRequest;
 import com.line7studio.boulderside.controller.boardpost.request.UpdateBoardPostRequest;
 import com.line7studio.boulderside.controller.boardpost.response.BoardPostPageResponse;
 import com.line7studio.boulderside.controller.boardpost.response.BoardPostResponse;
 import com.line7studio.boulderside.controller.common.request.UpdatePostStatusRequest;
-import com.line7studio.boulderside.domain.comment.enums.CommentDomainType;
-import com.line7studio.boulderside.domain.comment.service.CommentService;
 import com.line7studio.boulderside.domain.board.BoardPost;
 import com.line7studio.boulderside.domain.board.enums.BoardPostSortType;
 import com.line7studio.boulderside.domain.board.service.BoardPostService;
+import com.line7studio.boulderside.domain.comment.enums.CommentDomainType;
+import com.line7studio.boulderside.domain.comment.service.CommentService;
 import com.line7studio.boulderside.domain.user.User;
 import com.line7studio.boulderside.domain.user.service.UserService;
-import com.line7studio.boulderside.common.util.CursorPageUtil;
-import com.line7studio.boulderside.common.util.CursorPageUtil.CursorPageWithSubCursor;
+import com.line7studio.boulderside.domain.user.service.UserBlockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,9 +36,11 @@ public class BoardPostUseCase {
     private final BoardPostService boardPostService;
     private final UserService userService;
     private final CommentService commentService;
+    private final UserBlockService userBlockService;
 
     public BoardPostPageResponse getBoardPostPage(Long cursor, String subCursor, int size, BoardPostSortType sortType, Long userId) {
-        List<BoardPost> posts = boardPostService.getBoardPostsWithCursor(cursor, subCursor, size + 1, sortType);
+        List<Long> blockedUserIds = userBlockService.getBlockedOrBlockingUserIds(userId);
+        List<BoardPost> posts = boardPostService.getBoardPostsWithCursor(cursor, subCursor, size + 1, sortType, blockedUserIds);
         return buildCursorPageResponse(posts, size, sortType, userId);
     }
 
@@ -102,6 +107,9 @@ public class BoardPostUseCase {
     @Transactional
     public BoardPostResponse getBoardPost(Long postId, Long userId) {
         BoardPost post = boardPostService.getBoardPostById(postId);
+        if (userBlockService.isBlockedBetween(userId, post.getUserId())) {
+            throw new BusinessException(ErrorCode.NO_PERMISSION, "차단한 사용자의 게시글입니다.");
+        }
         post.incrementViewCount();
         return buildSinglePostResponse(post, userId);
     }

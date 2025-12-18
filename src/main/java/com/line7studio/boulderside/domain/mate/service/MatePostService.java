@@ -35,18 +35,18 @@ public class MatePostService {
         return matePostRepository.findAllById(postIds);
     }
 
-    public List<MatePost> getMatePostsWithCursor(Long cursor, String subCursor, int size, MatePostSortType postSortType) {
+    public List<MatePost> getMatePostsWithCursor(Long cursor, String subCursor, int size, MatePostSortType postSortType, List<Long> excludedUserIds) {
         if (postSortType == null) {
             throw new BusinessException(ErrorCode.NOT_SUPPORT_SORT_TYPE);
         }
-        return matePostQueryRepository.findMatePostsWithCursor(cursor, subCursor, size, postSortType, true);
+        return matePostQueryRepository.findMatePostsWithCursor(cursor, subCursor, size, postSortType, true, excludedUserIds);
     }
 
     public List<MatePost> getMatePostsWithCursorForAdmin(Long cursor, String subCursor, int size, MatePostSortType postSortType) {
         if (postSortType == null) {
             throw new BusinessException(ErrorCode.NOT_SUPPORT_SORT_TYPE);
         }
-        return matePostQueryRepository.findMatePostsWithCursor(cursor, subCursor, size, postSortType, false);
+        return matePostQueryRepository.findMatePostsWithCursor(cursor, subCursor, size, postSortType, false, List.of());
     }
 
     public List<MatePost> getMatePostsByUser(Long userId, Long cursor, int size) {

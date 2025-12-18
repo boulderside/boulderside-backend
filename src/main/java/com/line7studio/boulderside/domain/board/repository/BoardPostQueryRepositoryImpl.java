@@ -22,10 +22,13 @@ public class BoardPostQueryRepositoryImpl implements BoardPostQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<BoardPost> findBoardPostsWithCursor(Long cursor, String subCursor, int size, BoardPostSortType postSortType, boolean activeOnly) {
+    public List<BoardPost> findBoardPostsWithCursor(Long cursor, String subCursor, int size, BoardPostSortType postSortType, boolean activeOnly, List<Long> excludedUserIds) {
         BooleanBuilder builder = new BooleanBuilder();
         if (activeOnly) {
             builder.and(boardPost.status.eq(PostStatus.ACTIVE));
+        }
+        if (excludedUserIds != null && !excludedUserIds.isEmpty()) {
+            builder.and(boardPost.userId.notIn(excludedUserIds));
         }
 
         if (cursor != null && subCursor != null && postSortType != null) {
