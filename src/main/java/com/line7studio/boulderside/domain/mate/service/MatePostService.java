@@ -111,4 +111,16 @@ public class MatePostService {
         return matePostRepository.findById(postId)
             .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
     }
+
+    public void updateMatePostsStatusByUser(Long userId, PostStatus status) {
+        List<MatePost> posts = matePostRepository.findAllByUserId(userId);
+        posts.forEach(post -> post.updateStatus(status));
+        matePostRepository.saveAll(posts);
+    }
+
+    public void restoreMatePostsStatusByUser(Long userId) {
+        List<MatePost> posts = matePostRepository.findAllByUserId(userId);
+        posts.forEach(MatePost::activate);
+        matePostRepository.saveAll(posts);
+    }
 }

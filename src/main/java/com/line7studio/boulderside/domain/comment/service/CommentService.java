@@ -98,4 +98,16 @@ public class CommentService {
         comment.updateStatus(status);
         commentRepository.save(comment);
     }
+
+    public void updateCommentsStatusByUser(Long userId, PostStatus status) {
+        List<Comment> comments = commentRepository.findAllByUserId(userId);
+        comments.forEach(comment -> comment.updateStatus(status));
+        commentRepository.saveAll(comments);
+    }
+
+    public void restoreCommentsStatusByUser(Long userId) {
+        List<Comment> comments = commentRepository.findAllByUserId(userId);
+        comments.forEach(Comment::activate);
+        commentRepository.saveAll(comments);
+    }
 }

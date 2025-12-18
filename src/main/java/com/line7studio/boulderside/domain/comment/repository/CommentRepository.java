@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     Long countCommentsByDomainIdAndCommentDomainTypeAndStatus(Long domainId, CommentDomainType commentDomainType, PostStatus status);
+
+    java.util.List<Comment> findAllByUserId(Long userId);
 }

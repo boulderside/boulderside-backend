@@ -107,4 +107,16 @@ public class BoardPostService {
         return boardPostRepository.findById(postId)
             .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
     }
+
+    public void updateBoardPostsStatusByUser(Long userId, PostStatus status) {
+        List<BoardPost> posts = boardPostRepository.findAllByUserId(userId);
+        posts.forEach(post -> post.updateStatus(status));
+        boardPostRepository.saveAll(posts);
+    }
+
+    public void restoreBoardPostsStatusByUser(Long userId) {
+        List<BoardPost> posts = boardPostRepository.findAllByUserId(userId);
+        posts.forEach(BoardPost::activate);
+        boardPostRepository.saveAll(posts);
+    }
 }

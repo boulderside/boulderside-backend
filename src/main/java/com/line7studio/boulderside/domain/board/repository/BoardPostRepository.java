@@ -14,4 +14,6 @@ public interface BoardPostRepository extends JpaRepository<BoardPost, Long> {
     List<BoardPost> findByUserIdAndIdLessThanAndStatusOrderByIdDesc(Long userId, Long id, PostStatus status, Pageable pageable);
 
     Optional<BoardPost> findByIdAndStatus(Long postId, PostStatus status);
+
+    List<BoardPost> findAllByUserId(Long userId);
 }

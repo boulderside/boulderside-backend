@@ -14,4 +14,6 @@ public interface MatePostRepository extends JpaRepository<MatePost, Long> {
     List<MatePost> findByUserIdAndIdLessThanAndStatusOrderByIdDesc(Long userId, Long id, PostStatus status, Pageable pageable);
 
     Optional<MatePost> findByIdAndStatus(Long postId, PostStatus status);
+
+    List<MatePost> findAllByUserId(Long userId);
 }
