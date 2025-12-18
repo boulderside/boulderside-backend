@@ -24,6 +24,9 @@ public enum ErrorCode {
 	NOT_SUPPORTED_AUTH_PROVIDER("D015", "지원하지 않는 인증 제공자입니다.", HttpStatus.BAD_REQUEST),
 	NICKNAME_ALREADY_EXISTS("D016", "이미 사용 중인 닉네임입니다.", HttpStatus.CONFLICT),
 	USER_NOT_REGISTERED("D017", "아직 회원가입이 완료되지 않은 사용자입니다.", HttpStatus.NOT_FOUND),
+	USER_PENDING("D018", "승인 대기 중인 사용자입니다.", HttpStatus.FORBIDDEN),
+	USER_BANNED("D019", "이용이 제한된 사용자입니다.", HttpStatus.FORBIDDEN),
+	USER_WITHDRAWAL_COOLDOWN("D020", "탈퇴 후 30일이 지나지 않아 재가입이 불가능합니다.", HttpStatus.FORBIDDEN),
 
 	// Validation (V001~V099)
 	VALIDATION_FAILED("V001", "잘못된 입력값입니다.", HttpStatus.BAD_REQUEST),

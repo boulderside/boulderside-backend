@@ -1,9 +1,14 @@
 package com.line7studio.boulderside.common.security.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.line7studio.boulderside.common.response.ErrorResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
+import com.line7studio.boulderside.common.security.exception.JwtAuthenticationException;
+import com.line7studio.boulderside.common.security.exception.SecurityErrorCode;
 import com.line7studio.boulderside.common.security.provider.TokenProvider;
 import com.line7studio.boulderside.domain.user.User;
 import com.line7studio.boulderside.domain.user.enums.UserRole;
+import com.line7studio.boulderside.domain.user.enums.UserStatus;
 import com.line7studio.boulderside.domain.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,6 +33,7 @@ import java.util.List;
 public class JWTFilter extends OncePerRequestFilter {
 	private final TokenProvider tokenProvider;
 	private final UserRepository userRepository;
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	// OPTIONS는 CORS의 요청이기 때문에 굳이 JWT 인청 필터를 거칠 필요가 없음.
 	@Override
@@ -53,12 +59,17 @@ public class JWTFilter extends OncePerRequestFilter {
 			String token = authorizationHeader.substring(7);
 			boolean isExpired = tokenProvider.isExpired(token);
 			if (isExpired) {
-				handleInvalidToken(response);
-				return;
+				throw new JwtAuthenticationException(SecurityErrorCode.ACCESS_TOKEN_EXPIRED);
 			}
 
 			Long userId = tokenProvider.getUserId(token);
-			User user = userRepository.findById(userId).orElseThrow();
+			User user = userRepository.findById(userId)
+				.orElseThrow(() -> new JwtAuthenticationException(SecurityErrorCode.ACCESS_TOKEN_INVALID));
+
+			if (user.getUserStatus() != UserStatus.ACTIVE) {
+				throw new JwtAuthenticationException(SecurityErrorCode.USER_INACTIVE);
+			}
+
 			CustomUserDetails customUserDetails = CustomUserDetails.from(user);
 
 			UserRole role = tokenProvider.getRole(token);
@@ -76,15 +87,24 @@ public class JWTFilter extends OncePerRequestFilter {
 			securityContext.setAuthentication(authentication);
 			SecurityContextHolder.setContext(securityContext);
 
+		} catch (JwtAuthenticationException e) {
+			writeSecurityError(response, e.getErrorCode());
+			return;
 		} catch (Exception e) {
-			handleInvalidToken(response);
+			writeSecurityError(response, SecurityErrorCode.UNKNOWN_AUTHENTICATION_ERROR);
 			return;
 		}
 
 		filterChain.doFilter(request, response);
 	}
 
-	private void handleInvalidToken(HttpServletResponse response) throws IOException {
-		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
+	private void writeSecurityError(HttpServletResponse response, SecurityErrorCode errorCode) throws IOException {
+		response.setStatus(errorCode.getHttpStatus().value());
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType("application/json");
+
+		ErrorResponse errorResponse = ErrorResponse.of(errorCode.getCode(), errorCode.getMessage());
+		OBJECT_MAPPER.writeValue(response.getWriter(), errorResponse);
+		response.getWriter().flush();
 	}
 }
