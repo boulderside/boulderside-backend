@@ -6,6 +6,7 @@ import com.line7studio.boulderside.domain.board.BoardPost;
 import com.line7studio.boulderside.domain.board.enums.BoardPostSortType;
 import com.line7studio.boulderside.domain.board.repository.BoardPostQueryRepository;
 import com.line7studio.boulderside.domain.board.repository.BoardPostRepository;
+import com.line7studio.boulderside.domain.enums.PostStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +23,7 @@ public class BoardPostService {
     private final BoardPostQueryRepository boardPostQueryRepository;
 
     public BoardPost getBoardPostById(Long postId) {
-        return boardPostRepository.findById(postId)
+        return boardPostRepository.findByIdAndStatus(postId, PostStatus.ACTIVE)
             .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
     }
 
@@ -30,19 +31,26 @@ public class BoardPostService {
         return boardPostRepository.findAllById(postIds);
     }
 
-    public List<BoardPost> getBoardPostsWithCursor(Long cursor, String subCursor, int size, BoardPostSortType postSortType) {
+    public List<BoardPost> getBoardPostsWithCursor(Long cursor, String subCursor, int size, BoardPostSortType postSortType, List<Long> excludedUserIds) {
         if (postSortType == null) {
             throw new BusinessException(ErrorCode.NOT_SUPPORT_SORT_TYPE);
         }
-        return boardPostQueryRepository.findBoardPostsWithCursor(cursor, subCursor, size, postSortType);
+        return boardPostQueryRepository.findBoardPostsWithCursor(cursor, subCursor, size, postSortType, true, excludedUserIds);
+    }
+
+    public List<BoardPost> getBoardPostsWithCursorForAdmin(Long cursor, String subCursor, int size, BoardPostSortType postSortType) {
+        if (postSortType == null) {
+            throw new BusinessException(ErrorCode.NOT_SUPPORT_SORT_TYPE);
+        }
+        return boardPostQueryRepository.findBoardPostsWithCursor(cursor, subCursor, size, postSortType, false, List.of());
     }
 
     public List<BoardPost> getBoardPostsByUser(Long userId, Long cursor, int size) {
         Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "id"));
         if (cursor == null) {
-            return boardPostRepository.findByUserIdOrderByIdDesc(userId, pageable);
+            return boardPostRepository.findByUserIdAndStatusOrderByIdDesc(userId, PostStatus.ACTIVE, pageable);
         }
-        return boardPostRepository.findByUserIdAndIdLessThanOrderByIdDesc(userId, cursor, pageable);
+        return boardPostRepository.findByUserIdAndIdLessThanAndStatusOrderByIdDesc(userId, cursor, PostStatus.ACTIVE, pageable);
     }
 
     public BoardPost createBoardPost(Long userId, String title, String content) {
@@ -85,5 +93,30 @@ public class BoardPostService {
             .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
         boardPostRepository.delete(boardPost);
+    }
+
+    public void updateBoardPostStatus(Long postId, PostStatus status) {
+        BoardPost boardPost = boardPostRepository.findById(postId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+
+        boardPost.updateStatus(status);
+        boardPostRepository.save(boardPost);
+    }
+
+    public BoardPost getBoardPostByIdForAdmin(Long postId) {
+        return boardPostRepository.findById(postId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+    }
+
+    public void updateBoardPostsStatusByUser(Long userId, PostStatus status) {
+        List<BoardPost> posts = boardPostRepository.findAllByUserId(userId);
+        posts.forEach(post -> post.updateStatus(status));
+        boardPostRepository.saveAll(posts);
+    }
+
+    public void restoreBoardPostsStatusByUser(Long userId) {
+        List<BoardPost> posts = boardPostRepository.findAllByUserId(userId);
+        posts.forEach(BoardPost::activate);
+        boardPostRepository.saveAll(posts);
     }
 }

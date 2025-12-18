@@ -1,5 +1,6 @@
 package com.line7studio.boulderside.domain.mate.repository;
 
+import com.line7studio.boulderside.domain.enums.PostStatus;
 import com.line7studio.boulderside.domain.mate.MatePost;
 import com.line7studio.boulderside.domain.mate.enums.MatePostSortType;
 import com.querydsl.core.BooleanBuilder;
@@ -22,8 +23,14 @@ public class MatePostQueryRepositoryImpl implements MatePostQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<MatePost> findMatePostsWithCursor(Long cursor, String subCursor, int size, MatePostSortType postSortType) {
+    public List<MatePost> findMatePostsWithCursor(Long cursor, String subCursor, int size, MatePostSortType postSortType, boolean activeOnly, List<Long> excludedUserIds) {
         BooleanBuilder builder = new BooleanBuilder();
+        if (activeOnly) {
+            builder.and(matePost.status.eq(PostStatus.ACTIVE));
+        }
+        if (excludedUserIds != null && !excludedUserIds.isEmpty()) {
+            builder.and(matePost.userId.notIn(excludedUserIds));
+        }
 
         if (cursor != null && subCursor != null && postSortType != null) {
             switch (postSortType) {

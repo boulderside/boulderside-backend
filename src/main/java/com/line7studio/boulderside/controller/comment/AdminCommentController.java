@@ -6,6 +6,7 @@ import com.line7studio.boulderside.controller.comment.request.CreateAdminComment
 import com.line7studio.boulderside.controller.comment.request.UpdateCommentRequest;
 import com.line7studio.boulderside.controller.comment.response.CommentResponse;
 import com.line7studio.boulderside.controller.comment.response.CommentPageResponse;
+import com.line7studio.boulderside.controller.common.request.UpdatePostStatusRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,7 @@ public class AdminCommentController {
         @RequestParam(defaultValue = "20") int size,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        CommentPageResponse response = commentUseCase.getCommentPage(
+        CommentPageResponse response = commentUseCase.getCommentPageForAdmin(
             cursor, size, domainId, CommentDomainType.fromPath(domainType), userDetails.userId()
         );
         return ResponseEntity.ok(ApiResponse.of(response));
@@ -61,5 +62,14 @@ public class AdminCommentController {
     public ResponseEntity<ApiResponse<CommentCountResponse>> deleteComment(@PathVariable Long commentId) {
         Integer count = commentUseCase.adminDeleteComment(commentId);
         return ResponseEntity.ok(ApiResponse.of(CommentCountResponse.of(count)));
+    }
+
+    @PatchMapping("/{commentId}/status")
+    public ResponseEntity<ApiResponse<Void>> updateCommentStatus(
+        @PathVariable Long commentId,
+        @Valid @RequestBody UpdatePostStatusRequest request
+    ) {
+        commentUseCase.updateCommentStatus(commentId, request);
+        return ResponseEntity.ok(ApiResponse.success());
     }
 }

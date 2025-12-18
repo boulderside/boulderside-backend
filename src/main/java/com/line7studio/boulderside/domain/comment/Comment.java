@@ -2,6 +2,7 @@ package com.line7studio.boulderside.domain.comment;
 
 import com.line7studio.boulderside.domain.BaseEntity;
 import com.line7studio.boulderside.domain.comment.enums.CommentDomainType;
+import com.line7studio.boulderside.domain.enums.PostStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +38,41 @@ public class Comment extends BaseEntity {
     @Column(name = "content")
     private String content;
 
+    /** 댓글 상태 */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    @Builder.Default
+    private PostStatus status = PostStatus.ACTIVE;
+
     public void update(String content) {
         this.content = content;
+    }
+
+    /**
+     * 댓글 상태 변경 (관리자용)
+     */
+    public void updateStatus(PostStatus status) {
+        this.status = status;
+    }
+
+    /**
+     * 댓글 차단
+     */
+    public void block() {
+        this.status = PostStatus.BLOCKED;
+    }
+
+    /**
+     * 댓글 활성화
+     */
+    public void activate() {
+        this.status = PostStatus.ACTIVE;
+    }
+
+    /**
+     * 댓글 삭제 처리
+     */
+    public void delete() {
+        this.status = PostStatus.DELETED;
     }
 }

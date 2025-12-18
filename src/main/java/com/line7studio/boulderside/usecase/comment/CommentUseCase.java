@@ -8,6 +8,7 @@ import com.line7studio.boulderside.controller.comment.response.CommentPageRespon
 import com.line7studio.boulderside.controller.comment.response.CommentResponse;
 import com.line7studio.boulderside.controller.comment.response.MyCommentPageResponse;
 import com.line7studio.boulderside.controller.comment.response.MyCommentResponse;
+import com.line7studio.boulderside.controller.common.request.UpdatePostStatusRequest;
 import com.line7studio.boulderside.domain.comment.Comment;
 import com.line7studio.boulderside.domain.comment.enums.CommentDomainType;
 import com.line7studio.boulderside.domain.comment.service.CommentService;
@@ -21,6 +22,7 @@ import com.line7studio.boulderside.domain.route.Route;
 import com.line7studio.boulderside.domain.route.service.RouteService;
 import com.line7studio.boulderside.domain.user.User;
 import com.line7studio.boulderside.domain.user.service.UserService;
+import com.line7studio.boulderside.domain.user.service.UserBlockService;
 import com.line7studio.boulderside.common.util.CursorPageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,10 +44,20 @@ public class CommentUseCase {
     private final MatePostService matePostService;
     private final BoardPostReadService boardPostReadService;
     private final MatePostReadService matePostReadService;
+    private final UserBlockService userBlockService;
 
     @Transactional(readOnly = true)
     public CommentPageResponse getCommentPage(Long cursor, int size, Long domainId, CommentDomainType commentDomainType, Long userId) {
-        List<Comment> commentList = commentService.getCommentsWithCursor(cursor, size + 1, domainId, commentDomainType);
+        List<Long> blockedUserIds = userBlockService.getBlockedOrBlockingUserIds(userId);
+        return getCommentPageInternal(cursor, size, domainId, commentDomainType, userId, true, blockedUserIds);
+    }
+
+    public CommentPageResponse getCommentPageForAdmin(Long cursor, int size, Long domainId, CommentDomainType commentDomainType, Long adminUserId) {
+        return getCommentPageInternal(cursor, size, domainId, commentDomainType, adminUserId, false, List.of());
+    }
+
+    private CommentPageResponse getCommentPageInternal(Long cursor, int size, Long domainId, CommentDomainType commentDomainType, Long userId, boolean activeOnly, List<Long> blockedUserIds) {
+        List<Comment> commentList = commentService.getCommentsWithCursor(cursor, size + 1, domainId, commentDomainType, activeOnly, blockedUserIds);
 
         CursorPageUtil<Comment> page = CursorPageUtil.of(commentList, size, Comment::getId);
 
@@ -280,5 +292,10 @@ public class CommentUseCase {
 
         boolean isMine = targetUserId.equals(adminUserId);
         return CommentResponse.of(savedComment, userInfo, isMine, commentCount);
+    }
+
+    @Transactional
+    public void updateCommentStatus(Long commentId, UpdatePostStatusRequest request) {
+        commentService.updateCommentStatus(commentId, request.status());
     }
 }

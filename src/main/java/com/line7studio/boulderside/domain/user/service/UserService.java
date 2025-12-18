@@ -2,6 +2,10 @@ package com.line7studio.boulderside.domain.user.service;
 
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
+import com.line7studio.boulderside.domain.board.service.BoardPostService;
+import com.line7studio.boulderside.domain.comment.service.CommentService;
+import com.line7studio.boulderside.domain.enums.PostStatus;
+import com.line7studio.boulderside.domain.mate.service.MatePostService;
 import com.line7studio.boulderside.domain.user.User;
 import com.line7studio.boulderside.domain.user.UserConsentHistory;
 import com.line7studio.boulderside.domain.user.UserLoginHistory;
@@ -39,6 +43,9 @@ public class UserService {
 	private final UserConsentHistoryRepository userConsentHistoryRepository;
 	private final UserStatusHistoryRepository userStatusHistoryRepository;
 	private final UserLoginHistoryRepository userLoginHistoryRepository;
+	private final BoardPostService boardPostService;
+	private final MatePostService matePostService;
+	private final CommentService commentService;
 
 	public User getUserById(Long userId) {
 		return userRepository.findById(userId)
@@ -139,6 +146,11 @@ public class UserService {
 		user.updateStatus(UserStatus.INACTIVE);
 		userRepository.save(user);
 
+		// 사용자 콘텐츠 상태 삭제 처리
+		boardPostService.updateBoardPostsStatusByUser(userId, PostStatus.DELETED);
+		matePostService.updateMatePostsStatusByUser(userId, PostStatus.DELETED);
+		commentService.updateCommentsStatusByUser(userId, PostStatus.DELETED);
+
 		// 이력 저장
 		saveStatusHistory(userId, previousStatus, UserStatus.INACTIVE, UserStatusChangeReason.USER_REQUEST, reason, userId);
 	}
@@ -194,6 +206,15 @@ public class UserService {
 
 		user.updateStatus(newStatus);
 		userRepository.save(user);
+		if (newStatus == UserStatus.BANNED) {
+			boardPostService.updateBoardPostsStatusByUser(userId, PostStatus.BLOCKED);
+			matePostService.updateMatePostsStatusByUser(userId, PostStatus.BLOCKED);
+			commentService.updateCommentsStatusByUser(userId, PostStatus.BLOCKED);
+		} else if (previousStatus == UserStatus.BANNED && newStatus == UserStatus.ACTIVE) {
+			boardPostService.restoreBoardPostsStatusByUser(userId);
+			matePostService.restoreMatePostsStatusByUser(userId);
+			commentService.restoreCommentsStatusByUser(userId);
+		}
 		saveStatusHistory(
 			userId,
 			previousStatus,
