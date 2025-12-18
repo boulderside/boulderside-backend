@@ -55,7 +55,7 @@ public class ProjectController {
 			throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD);
 		}
 		ProjectResponse response = projectUseCase.createProject(
-			userDetails.userId(), request.routeId(), request.completed(), request.memo(), request.attemptHistories());
+			userDetails.userId(), request.routeId(), request.completed(), request.memo(), request.attempts());
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
@@ -65,7 +65,7 @@ public class ProjectController {
 		@Valid @RequestBody ProjectRequest request,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 		ProjectResponse response = projectUseCase.updateProject(
-			userDetails.userId(), projectId, request.completed(), request.memo(), request.attemptHistories());
+			userDetails.userId(), projectId, request.completed(), request.memo(), request.attempts());
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 

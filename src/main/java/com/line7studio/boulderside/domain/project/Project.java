@@ -43,14 +43,14 @@ public class Project extends BaseEntity {
 	@ElementCollection
 	@CollectionTable(name = "project_attempts", joinColumns = @JoinColumn(name = "project_id"))
 	@Default
-	private List<ProjectAttemptHistory> attemptHistories = new ArrayList<>();
+	private List<Attempt> attempts = new ArrayList<>();
 
-	public void update(boolean completed, String memo, List<ProjectAttemptHistory> attemptHistories) {
+	public void update(boolean completed, String memo, List<Attempt> attempts) {
 		this.completed = completed;
 		this.memo = memo;
-		if (attemptHistories != null) {
-			this.attemptHistories.clear();
-			this.attemptHistories.addAll(attemptHistories);
+		if (attempts != null) {
+			this.attempts.clear();
+			this.attempts.addAll(attempts);
 		}
 	}
 }

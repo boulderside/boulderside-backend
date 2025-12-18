@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-public record ProjectAttemptHistoryRequest(
+public record AttemptRequest(
     @NotNull LocalDate attemptedDate,
     @NotNull @Min(0) Integer attemptCount
 ) {}

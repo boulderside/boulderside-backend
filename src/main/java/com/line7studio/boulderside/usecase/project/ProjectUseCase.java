@@ -1,10 +1,10 @@
 package com.line7studio.boulderside.usecase.project;
 
-import com.line7studio.boulderside.controller.project.request.ProjectAttemptHistoryRequest;
+import com.line7studio.boulderside.controller.project.request.AttemptRequest;
 import com.line7studio.boulderside.controller.project.response.ProjectPageResponse;
 import com.line7studio.boulderside.controller.project.response.ProjectResponse;
 import com.line7studio.boulderside.domain.project.Project;
-import com.line7studio.boulderside.domain.project.ProjectAttemptHistory;
+import com.line7studio.boulderside.domain.project.Attempt;
 import com.line7studio.boulderside.domain.project.enums.ProjectSortType;
 import com.line7studio.boulderside.domain.project.service.ProjectService;
 import com.line7studio.boulderside.domain.route.Route;
@@ -43,17 +43,17 @@ public class ProjectUseCase {
 	}
 
 	public ProjectResponse createProject(Long userId, Long routeId, boolean completed, String memo,
-		List<ProjectAttemptHistoryRequest> attemptHistories) {
+		List<AttemptRequest> attempts) {
 		Project project = projectService.create(
-			userId, routeId, completed, memo, mapAttemptHistories(attemptHistories));
+			userId, routeId, completed, memo, mapAttempts(attempts));
 		Route route = routeService.getById(project.getRouteId());
 		return ProjectResponse.from(project, route);
 	}
 
 	public ProjectResponse updateProject(Long userId, Long projectId, boolean completed, String memo,
-		List<ProjectAttemptHistoryRequest> attemptHistories) {
+		List<AttemptRequest> attempts) {
 		Project project = projectService.update(
-			userId, projectId, completed, memo, mapAttemptHistories(attemptHistories));
+			userId, projectId, completed, memo, mapAttempts(attempts));
 		Route route = routeService.getById(project.getRouteId());
 		return ProjectResponse.from(project, route);
 	}
@@ -99,12 +99,12 @@ public class ProjectUseCase {
 		};
 	}
 
-	private List<ProjectAttemptHistory> mapAttemptHistories(List<ProjectAttemptHistoryRequest> attemptHistories) {
-		if (attemptHistories == null) {
+	private List<Attempt> mapAttempts(List<AttemptRequest> attempts) {
+		if (attempts == null) {
 			return List.of();
 		}
-		return attemptHistories.stream()
-			.map(history -> ProjectAttemptHistory.builder()
+		return attempts.stream()
+			.map(history -> Attempt.builder()
 				.attemptedDate(history.attemptedDate())
 				.attemptCount(history.attemptCount())
 				.build())

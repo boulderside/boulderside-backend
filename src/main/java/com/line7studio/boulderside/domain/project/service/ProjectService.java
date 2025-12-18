@@ -3,7 +3,7 @@ package com.line7studio.boulderside.domain.project.service;
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.domain.project.Project;
-import com.line7studio.boulderside.domain.project.ProjectAttemptHistory;
+import com.line7studio.boulderside.domain.project.Attempt;
 import com.line7studio.boulderside.domain.project.enums.ProjectSortType;
 import com.line7studio.boulderside.domain.project.repository.ProjectRepository;
 import com.line7studio.boulderside.domain.route.Route;
@@ -26,7 +26,7 @@ public class ProjectService {
 	private final RouteService routeService;
 
 	public Project create(Long userId, Long routeId, boolean completed, String memo,
-		List<ProjectAttemptHistory> attemptHistories) {
+		List<Attempt> attempts) {
 		projectRepository.findByUserIdAndRouteId(userId, routeId)
 			.ifPresent(existing -> {
 				throw new BusinessException(ErrorCode.ROUTE_COMPLETION_ALREADY_EXISTS);
@@ -37,7 +37,7 @@ public class ProjectService {
 			.routeId(routeId)
 			.completed(completed)
 			.memo(memo)
-			.attemptHistories(copyAttemptsOrDefault(attemptHistories))
+			.attempts(copyAttemptsOrDefault(attempts))
 			.build();
 
 		Route route = routeService.getById(routeId);
@@ -49,7 +49,7 @@ public class ProjectService {
 	}
 
 	public Project update(Long userId, Long projectId, boolean completed, String memo,
-		List<ProjectAttemptHistory> attemptHistories) {
+		List<Attempt> attempts) {
 		Project project = get(userId, projectId);
 		Long routeId = project.getRouteId();
 		boolean wasCompleted = Boolean.TRUE.equals(project.getCompleted());
@@ -61,7 +61,7 @@ public class ProjectService {
 				route.decrementClimberCount();
 			}
 		}
-		project.update(completed, memo, copyAttempts(attemptHistories));
+		project.update(completed, memo, copyAttempts(attempts));
 		return project;
 	}
 
@@ -115,11 +115,11 @@ public class ProjectService {
 		}
 	}
 
-	private List<ProjectAttemptHistory> copyAttempts(List<ProjectAttemptHistory> attemptHistories) {
-		return attemptHistories == null ? null : new ArrayList<>(attemptHistories);
+	private List<Attempt> copyAttempts(List<Attempt> attempts) {
+		return attempts == null ? null : new ArrayList<>(attempts);
 	}
 
-	private List<ProjectAttemptHistory> copyAttemptsOrDefault(List<ProjectAttemptHistory> attemptHistories) {
-		return attemptHistories == null ? new ArrayList<>() : new ArrayList<>(attemptHistories);
+	private List<Attempt> copyAttemptsOrDefault(List<Attempt> attempts) {
+		return attempts == null ? new ArrayList<>() : new ArrayList<>(attempts);
 	}
 }

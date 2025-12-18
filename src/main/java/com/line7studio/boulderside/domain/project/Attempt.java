@@ -10,14 +10,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 프로젝트 시도에 대한 날짜별 기록.
+ * 프로젝트 시도 Attempt.
  */
 @Embeddable
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectAttemptHistory {
+public class Attempt {
 
 	/** 시도 날짜 */
 	@Column(name = "attempted_date", nullable = false)

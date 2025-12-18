@@ -10,5 +10,5 @@ public record ProjectRequest(
     Long routeId,
     @NotNull Boolean completed,
     @Size(max = 500) String memo,
-    @Valid List<ProjectAttemptHistoryRequest> attemptHistories
+    @Valid List<AttemptRequest> attempts
 ) {}

@@ -16,7 +16,7 @@ public record ProjectResponse(
     Boolean completed,
     String memo,
     RouteInfo routeInfo,
-    List<ProjectAttemptHistoryResponse> attemptHistories,
+    List<AttemptResponse> attempts,
     LocalDateTime createdAt,
     LocalDateTime updatedAt
 ) {
@@ -41,11 +41,11 @@ public record ProjectResponse(
     }
 
     public static ProjectResponse from(Project project, Route route) {
-        List<ProjectAttemptHistoryResponse> histories = project.getAttemptHistories() == null
+        List<AttemptResponse> histories = project.getAttempts() == null
             ? Collections.emptyList()
-            : project.getAttemptHistories().stream()
-                .map(ProjectAttemptHistoryResponse::from)
-                .sorted(Comparator.comparing(ProjectAttemptHistoryResponse::attemptedDate).reversed())
+            : project.getAttempts().stream()
+                .map(AttemptResponse::from)
+                .sorted(Comparator.comparing(AttemptResponse::attemptedDate).reversed())
                 .toList();
 
         return new ProjectResponse(
