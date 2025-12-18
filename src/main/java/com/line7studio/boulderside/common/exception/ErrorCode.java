@@ -27,6 +27,7 @@ public enum ErrorCode {
 	USER_PENDING("D018", "승인 대기 중인 사용자입니다.", HttpStatus.FORBIDDEN),
 	USER_BANNED("D019", "이용이 제한된 사용자입니다.", HttpStatus.FORBIDDEN),
 	USER_WITHDRAWAL_COOLDOWN("D020", "탈퇴 후 30일이 지나지 않아 재가입이 불가능합니다.", HttpStatus.FORBIDDEN),
+	NOTICE_NOT_FOUND("D021", "해당 공지사항을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
 	// Validation (V001~V099)
 	VALIDATION_FAILED("V001", "잘못된 입력값입니다.", HttpStatus.BAD_REQUEST),
