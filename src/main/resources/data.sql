@@ -12,7 +12,7 @@ TRUNCATE TABLE approaches;
 TRUNCATE TABLE points;
 
 INSERT INTO users (id, nickname, user_role, profile_image_url, phone, user_sex, user_level, name, email, created_at, updated_at) VALUES
-    (1,'bouldertiger', 'ROLE_ADMIN', null, '010-1234-5678', 'MAN', 'V13', '김철수', 'example@com', '2025-01-01 09:00:00', '2025-01-01 09:00:00');
+    (1,'bouldertiger', 'ROLE_USER', null, '010-1234-5678', 'MAN', 'V13', '김철수', 'example@com', '2025-01-01 09:00:00', '2025-01-01 09:00:00');
 
 INSERT INTO sectors (id, sector_name, area_code, created_at, updated_at) VALUES
     (1, '을왕리', 'A-1', '2025-01-05 10:00:00', '2025-01-05 10:00:00'),
