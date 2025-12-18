@@ -81,6 +81,29 @@ VALUES
     ('default.png', 2, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 0, '2025-01-28 16:35:00', '2025-01-28 16:35:00'),
     ('default.png', 2, 'POINT', 'https://boulderside-bucket.s3.ap-northeast-2.amazonaws.com/default.png', 1, '2025-01-28 16:40:00', '2025-01-28 16:40:00');
 
+INSERT INTO notices (title, content, is_pinned, view_count, created_at, updated_at) VALUES
+    ('서비스 이용 안내 및 커뮤니티 운영 정책 안내', '안녕하세요.
+더 나은 서비스 환경을 위해 커뮤니티 운영 정책을 안내드립니다.
+
+욕설, 비방, 광고, 스팸 등 다른 이용자에게 불편을 주는 행위는 제한될 수 있으며,
+운영 정책에 따라 게시글 또는 댓글이 사전 안내 없이 숨김 또는 삭제될 수 있습니다.
+
+모든 이용자가 쾌적하게 서비스를 이용할 수 있도록
+서로를 존중하는 커뮤니티 문화를 만들어 주세요.
+
+감사합니다.', true, 0, now(), now());
+
+INSERT INTO notices (title, content, is_pinned, view_count, created_at, updated_at) VALUES
+    ('비매너 사용자 제재 안내', '안녕하세요.
+더 나은 서비스 환경을 위해 커뮤니티 운영 정책을 안내드립니다.
+
+욕설, 비방, 광고, 스팸 등 다른 이용자에게 불편을 주는 행위는 제한될 수 있으며,
+운영 정책에 따라 게시글 또는 댓글이 사전 안내 없이 숨김 또는 삭제될 수 있습니다.
+
+모든 이용자가 쾌적하게 서비스를 이용할 수 있도록
+서로를 존중하는 커뮤니티 문화를 만들어 주세요.
+
+감사합니다.', true, 0, now(), now());
 
 INSERT INTO regions (official_district_code, province, city, region_code)
 VALUES ('1100000000', '서울특별시', NULL, '11B10101'),
