@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.line7studio.boulderside.usecase.project.ProjectUseCase;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.common.exception.InvalidValueException;
 import com.line7studio.boulderside.common.response.ApiResponse;
@@ -20,7 +19,9 @@ import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.controller.project.request.ProjectRequest;
 import com.line7studio.boulderside.controller.project.response.ProjectPageResponse;
 import com.line7studio.boulderside.controller.project.response.ProjectResponse;
+import com.line7studio.boulderside.controller.project.response.ProjectRecordSummaryResponse;
 import com.line7studio.boulderside.domain.project.enums.ProjectSortType;
+import com.line7studio.boulderside.usecase.project.ProjectUseCase;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +56,7 @@ public class ProjectController {
 			throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD);
 		}
 		ProjectResponse response = projectUseCase.createProject(
-			userDetails.userId(), request.routeId(), request.completed(), request.memo(), request.attempts());
+			userDetails.userId(), request.routeId(), request.completed(), request.memo(), request.sessions());
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
@@ -65,7 +66,7 @@ public class ProjectController {
 		@Valid @RequestBody ProjectRequest request,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 		ProjectResponse response = projectUseCase.updateProject(
-			userDetails.userId(), projectId, request.completed(), request.memo(), request.attempts());
+			userDetails.userId(), projectId, request.completed(), request.memo(), request.sessions());
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
@@ -85,6 +86,13 @@ public class ProjectController {
 		@RequestParam(defaultValue = "LATEST_UPDATED") ProjectSortType sortType,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 		ProjectPageResponse response = projectUseCase.getProjectPage(userDetails.userId(), isCompleted, cursor, size, sortType);
+		return ResponseEntity.ok(ApiResponse.of(response));
+	}
+
+	@GetMapping("/summary")
+	public ResponseEntity<ApiResponse<ProjectRecordSummaryResponse>> getProjectSummary(
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
+		ProjectRecordSummaryResponse response = projectUseCase.getProjectSummary(userDetails.userId());
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 }

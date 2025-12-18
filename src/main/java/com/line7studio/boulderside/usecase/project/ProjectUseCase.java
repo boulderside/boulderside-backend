@@ -1,10 +1,15 @@
 package com.line7studio.boulderside.usecase.project;
 
-import com.line7studio.boulderside.controller.project.request.AttemptRequest;
+import com.line7studio.boulderside.common.enums.Level;
+import com.line7studio.boulderside.controller.project.request.SessionRequest;
 import com.line7studio.boulderside.controller.project.response.ProjectPageResponse;
+import com.line7studio.boulderside.controller.project.response.ProjectRecordSummaryResponse;
+import com.line7studio.boulderside.controller.project.response.ProjectRecordSummaryResponse.CompletedRouteResponse;
 import com.line7studio.boulderside.controller.project.response.ProjectResponse;
+import com.line7studio.boulderside.domain.completion.Completion;
+import com.line7studio.boulderside.domain.completion.service.CompletionService;
+import com.line7studio.boulderside.domain.project.Session;
 import com.line7studio.boulderside.domain.project.Project;
-import com.line7studio.boulderside.domain.project.Attempt;
 import com.line7studio.boulderside.domain.project.enums.ProjectSortType;
 import com.line7studio.boulderside.domain.project.service.ProjectService;
 import com.line7studio.boulderside.domain.route.Route;
@@ -13,11 +18,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -27,39 +35,100 @@ public class ProjectUseCase {
 
 	private final ProjectService projectService;
 	private final RouteService routeService;
+	private final CompletionService completionService;
 
 	@Transactional(readOnly = true)
 	public ProjectResponse getProject(Long userId, Long projectId) {
 		Project project = projectService.get(userId, projectId);
-		Route route = routeService.getById(project.getRouteId());
-		return ProjectResponse.from(project, route);
+		return ProjectResponse.from(project);
 	}
 
 	@Transactional(readOnly = true)
 	public ProjectResponse getProjectByRoute(Long userId, Long routeId) {
 		Project project = projectService.getByRoute(userId, routeId);
-		Route route = routeService.getById(project.getRouteId());
-		return ProjectResponse.from(project, route);
+		return ProjectResponse.from(project);
 	}
 
 	public ProjectResponse createProject(Long userId, Long routeId, boolean completed, String memo,
-		List<AttemptRequest> attempts) {
+		List<SessionRequest> attempts) {
 		Project project = projectService.create(
 			userId, routeId, completed, memo, mapAttempts(attempts));
-		Route route = routeService.getById(project.getRouteId());
-		return ProjectResponse.from(project, route);
+		return ProjectResponse.from(project);
 	}
 
 	public ProjectResponse updateProject(Long userId, Long projectId, boolean completed, String memo,
-		List<AttemptRequest> attempts) {
+		List<SessionRequest> attempts) {
 		Project project = projectService.update(
 			userId, projectId, completed, memo, mapAttempts(attempts));
-		Route route = routeService.getById(project.getRouteId());
-		return ProjectResponse.from(project, route);
+		return ProjectResponse.from(project);
 	}
 
 	public void deleteProject(Long userId, Long projectId) {
 		projectService.delete(userId, projectId);
+	}
+
+	@Transactional(readOnly = true)
+	public ProjectRecordSummaryResponse getProjectSummary(Long userId) {
+		List<Completion> completions = completionService.getAll(userId);
+		List<Project> projects = projectService.getAll(userId);
+
+		List<Project> completedProjects = projects.stream()
+			.filter(ProjectUseCase::isCompleted)
+			.toList();
+
+		long ongoingCount = projects.size() - completedProjects.size();
+
+		List<Long> routeIds = Stream.concat(
+				completions.stream().map(Completion::getRouteId),
+				completedProjects.stream().map(Project::getRouteId)
+			)
+			.distinct()
+			.toList();
+		Map<Long, Route> routeMap = routeService.getRoutesByIds(routeIds).stream()
+			.collect(Collectors.toMap(Route::getId, Function.identity()));
+
+		List<CompletedRouteResponse> completionRoutes = completions.stream()
+			.map(completion -> {
+				Route route = routeMap.get(completion.getRouteId());
+				if (route == null) {
+					return null;
+				}
+				return CompletedRouteResponse.of(route, completion.getCompletedDate());
+			})
+			.filter(Objects::nonNull)
+			.toList();
+
+		List<CompletedRouteResponse> projectRoutes = completedProjects.stream()
+			.map(project -> {
+				Route route = routeMap.get(project.getRouteId());
+				if (route == null) {
+					return null;
+				}
+				LocalDate completedDate = resolveCompletedDate(project);
+				return CompletedRouteResponse.of(route, completedDate);
+			})
+			.filter(Objects::nonNull)
+			.toList();
+
+		List<CompletedRouteResponse> completedRoutes = Stream.concat(
+				completionRoutes.stream(),
+				projectRoutes.stream()
+			)
+			.sorted(Comparator.comparing(
+				CompletedRouteResponse::completedDate,
+				Comparator.nullsLast(Comparator.reverseOrder())
+			))
+			.toList();
+
+		long completedCount = completions.size();
+
+		Level highestLevel = completedRoutes.stream()
+			.map(CompletedRouteResponse::routeLevel)
+			.filter(Objects::nonNull)
+			.max(Comparator.comparingInt(Level::ordinal))
+			.orElse(null);
+
+		return new ProjectRecordSummaryResponse(highestLevel, completedCount, ongoingCount, completedRoutes);
 	}
 
 	@Transactional(readOnly = true)
@@ -73,19 +142,8 @@ public class ProjectUseCase {
 		}
 		Long nextCursor = hasNext && !projects.isEmpty() ? projects.getLast().getId() : null;
 
-		// N+1 방지: 모든 routeId를 수집하여 한 번에 조회
-		List<Long> routeIds = projects.stream()
-			.map(Project::getRouteId)
-			.distinct()
-			.toList();
-		Map<Long, Route> routeMap = routeService.getRoutesByIds(routeIds).stream()
-			.collect(Collectors.toMap(Route::getId, Function.identity()));
-
 		List<ProjectResponse> content = projects.stream()
-			.map(project -> {
-				Route route = routeMap.get(project.getRouteId());
-				return ProjectResponse.from(project, route);
-			})
+			.map(ProjectResponse::from)
 			.sorted(getSortComparator(sortType))
 			.toList();
 
@@ -99,16 +157,31 @@ public class ProjectUseCase {
 		};
 	}
 
-	private List<Attempt> mapAttempts(List<AttemptRequest> attempts) {
+	private List<Session> mapAttempts(List<SessionRequest> attempts) {
 		if (attempts == null) {
 			return List.of();
 		}
 		return attempts.stream()
-			.map(history -> Attempt.builder()
-				.attemptedDate(history.attemptedDate())
-				.attemptCount(history.attemptCount())
+			.map(history -> Session.builder()
+				.sessiondDate(history.sessionDate())
+				.sessionCount(history.sessionCount())
 				.build())
 			.toList();
+	}
+
+	private static boolean isCompleted(Project project) {
+		return Boolean.TRUE.equals(project.getCompleted());
+	}
+
+	private LocalDate resolveCompletedDate(Project project) {
+		if (project.getSessions() != null && !project.getSessions().isEmpty()) {
+			return project.getSessions().stream()
+				.map(Session::getSessiondDate)
+				.filter(Objects::nonNull)
+				.max(LocalDate::compareTo)
+				.orElse(null);
+		}
+		return project.getUpdatedAt() != null ? project.getUpdatedAt().toLocalDate() : null;
 	}
 
 	private int normalizeSize(int size) {

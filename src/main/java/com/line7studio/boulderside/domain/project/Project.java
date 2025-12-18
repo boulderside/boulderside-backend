@@ -41,16 +41,16 @@ public class Project extends BaseEntity {
 
 	/** 프로젝트 시도 기록 */
 	@ElementCollection
-	@CollectionTable(name = "project_attempts", joinColumns = @JoinColumn(name = "project_id"))
+	@CollectionTable(name = "project_sessions", joinColumns = @JoinColumn(name = "project_id"))
 	@Default
-	private List<Attempt> attempts = new ArrayList<>();
+	private List<Session> sessions = new ArrayList<>();
 
-	public void update(boolean completed, String memo, List<Attempt> attempts) {
+	public void update(boolean completed, String memo, List<Session> sessions) {
 		this.completed = completed;
 		this.memo = memo;
-		if (attempts != null) {
-			this.attempts.clear();
-			this.attempts.addAll(attempts);
+		if (sessions != null) {
+			this.sessions.clear();
+			this.sessions.addAll(sessions);
 		}
 	}
 }

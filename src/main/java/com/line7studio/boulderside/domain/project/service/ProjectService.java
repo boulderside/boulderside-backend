@@ -3,11 +3,13 @@ package com.line7studio.boulderside.domain.project.service;
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.domain.project.Project;
-import com.line7studio.boulderside.domain.project.Attempt;
+import com.line7studio.boulderside.domain.project.Session;
 import com.line7studio.boulderside.domain.project.enums.ProjectSortType;
 import com.line7studio.boulderside.domain.project.repository.ProjectRepository;
 import com.line7studio.boulderside.domain.route.Route;
 import com.line7studio.boulderside.domain.route.service.RouteService;
+import com.line7studio.boulderside.domain.completion.repository.CompletionRepository;
+import com.line7studio.boulderside.domain.completion.service.CompletionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,32 +27,39 @@ import java.util.List;
 public class ProjectService {
 	private final ProjectRepository projectRepository;
 	private final RouteService routeService;
+	private final CompletionRepository completionRepository;
+	private final CompletionService completionService;
 
 	public Project create(Long userId, Long routeId, boolean completed, String memo,
-		List<Attempt> attempts) {
+		List<Session> sessions) {
 		projectRepository.findByUserIdAndRouteId(userId, routeId)
 			.ifPresent(existing -> {
 				throw new BusinessException(ErrorCode.ROUTE_COMPLETION_ALREADY_EXISTS);
 			});
+		if (completionRepository.existsByUserIdAndRouteId(userId, routeId)) {
+			throw new BusinessException(ErrorCode.ROUTE_COMPLETION_ALREADY_EXISTS);
+		}
 
 		Project project = Project.builder()
 			.userId(userId)
 			.routeId(routeId)
 			.completed(completed)
 			.memo(memo)
-			.attempts(copyAttemptsOrDefault(attempts))
+			.sessions(copyAttemptsOrDefault(sessions))
 			.build();
 
 		Route route = routeService.getById(routeId);
 		Project saved = projectRepository.save(project);
 		if (completed) {
 			route.incrementClimberCount();
+			LocalDate completedDate = resolveCompletedDate(saved);
+			completionService.syncFromProject(userId, routeId, completedDate, memo);
 		}
 		return saved;
 	}
 
 	public Project update(Long userId, Long projectId, boolean completed, String memo,
-		List<Attempt> attempts) {
+		List<Session> sessions) {
 		Project project = get(userId, projectId);
 		Long routeId = project.getRouteId();
 		boolean wasCompleted = Boolean.TRUE.equals(project.getCompleted());
@@ -61,7 +71,13 @@ public class ProjectService {
 				route.decrementClimberCount();
 			}
 		}
-		project.update(completed, memo, copyAttempts(attempts));
+		project.update(completed, memo, copyAttempts(sessions));
+		if (!wasCompleted && completed) {
+			LocalDate completedDate = resolveCompletedDate(project);
+			completionService.syncFromProject(userId, routeId, completedDate, memo);
+		} else if (wasCompleted && !completed) {
+			completionService.deleteByUserAndRoute(userId, routeId, false, false);
+		}
 		return project;
 	}
 
@@ -112,14 +128,26 @@ public class ProjectService {
 		projectRepository.delete(project);
 		if (Boolean.TRUE.equals(project.getCompleted())) {
 			routeService.getById(routeId).decrementClimberCount();
+			completionService.deleteByUserAndRoute(userId, routeId, false, false);
 		}
 	}
 
-	private List<Attempt> copyAttempts(List<Attempt> attempts) {
-		return attempts == null ? null : new ArrayList<>(attempts);
+	private List<Session> copyAttempts(List<Session> sessions) {
+		return sessions == null ? null : new ArrayList<>(sessions);
 	}
 
-	private List<Attempt> copyAttemptsOrDefault(List<Attempt> attempts) {
-		return attempts == null ? new ArrayList<>() : new ArrayList<>(attempts);
+	private List<Session> copyAttemptsOrDefault(List<Session> sessions) {
+		return sessions == null ? new ArrayList<>() : new ArrayList<>(sessions);
+	}
+
+	private LocalDate resolveCompletedDate(Project project) {
+		if (project.getSessions() != null && !project.getSessions().isEmpty()) {
+			return project.getSessions().stream()
+				.map(Session::getSessiondDate)
+				.filter(date -> date != null)
+				.max(LocalDate::compareTo)
+				.orElse(LocalDate.now());
+		}
+		return LocalDate.now();
 	}
 }

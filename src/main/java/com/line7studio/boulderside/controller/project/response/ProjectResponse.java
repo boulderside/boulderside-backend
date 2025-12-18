@@ -1,8 +1,6 @@
 package com.line7studio.boulderside.controller.project.response;
 
-import com.line7studio.boulderside.common.enums.Level;
 import com.line7studio.boulderside.domain.project.Project;
-import com.line7studio.boulderside.domain.route.Route;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -14,38 +12,18 @@ public record ProjectResponse(
     Long routeId,
     Long userId,
     Boolean completed,
+    Boolean registered,
     String memo,
-    RouteInfo routeInfo,
-    List<AttemptResponse> attempts,
+    List<SessionResponse> sessions,
     LocalDateTime createdAt,
     LocalDateTime updatedAt
 ) {
-    public record RouteInfo(
-        String name,
-        Level routeLevel,
-        Long climberCount,
-        Long likeCount,
-        Long viewCount,
-        Long commentCount
-    ) {
-        public static RouteInfo from(Route route) {
-            return new RouteInfo(
-                route.getName(),
-                route.getRouteLevel(),
-                route.getClimberCount(),
-                route.getLikeCount(),
-                route.getViewCount(),
-                route.getCommentCount()
-            );
-        }
-    }
-
-    public static ProjectResponse from(Project project, Route route) {
-        List<AttemptResponse> histories = project.getAttempts() == null
+    public static ProjectResponse from(Project project) {
+        List<SessionResponse> histories = project.getSessions() == null
             ? Collections.emptyList()
-            : project.getAttempts().stream()
-                .map(AttemptResponse::from)
-                .sorted(Comparator.comparing(AttemptResponse::attemptedDate).reversed())
+            : project.getSessions().stream()
+                .map(SessionResponse::from)
+                .sorted(Comparator.comparing(SessionResponse::sessionDate).reversed())
                 .toList();
 
         return new ProjectResponse(
@@ -53,8 +31,8 @@ public record ProjectResponse(
             project.getRouteId(),
             project.getUserId(),
             project.getCompleted(),
+            true,
             project.getMemo(),
-            RouteInfo.from(route),
             histories,
             project.getCreatedAt(),
             project.getUpdatedAt()

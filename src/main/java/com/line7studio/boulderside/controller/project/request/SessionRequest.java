@@ -1,11 +1,11 @@
 package com.line7studio.boulderside.controller.project.request;
 
-import java.time.LocalDate;
-
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-public record AttemptRequest(
-    @NotNull LocalDate attemptedDate,
-    @NotNull @Min(0) Integer attemptCount
+import java.time.LocalDate;
+
+public record SessionRequest(
+    @NotNull LocalDate sessionDate,
+    @NotNull @Min(0) Integer sessionCount
 ) {}
