@@ -1,5 +1,6 @@
 package com.line7studio.boulderside.controller.completion;
 
+import com.line7studio.boulderside.common.enums.Level;
 import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.controller.completion.request.CompletionRequest;
@@ -8,13 +9,18 @@ import com.line7studio.boulderside.controller.completion.response.CompletionResp
 import com.line7studio.boulderside.usecase.completion.CompletionUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @RestController
 @RequestMapping("/completions")
 @RequiredArgsConstructor
+@Slf4j
 public class CompletionController {
 	private final CompletionUseCase completionUseCase;
 
@@ -31,6 +37,23 @@ public class CompletionController {
 		@RequestParam Long routeId,
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 		CompletionResponse response = completionUseCase.getCompletionByRoute(userDetails.userId(), routeId);
+		return ResponseEntity.ok(ApiResponse.of(response));
+	}
+
+	@GetMapping("/date/{date}")
+	public ResponseEntity<ApiResponse<List<CompletionResponse>>> getCompletionsByDate(
+		@PathVariable LocalDate date,
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
+		List<CompletionResponse> response = completionUseCase.getCompletionsByDate(userDetails.userId(), date);
+		return ResponseEntity.ok(ApiResponse.of(response));
+	}
+
+	@GetMapping("/level/{level}")
+	public ResponseEntity<ApiResponse<List<CompletionResponse>>> getCompletionsByLevel(
+		@PathVariable Level level,
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
+        log.info(level.toString());
+		List<CompletionResponse> response = completionUseCase.getCompletionsByLevel(userDetails.userId(), level);
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
