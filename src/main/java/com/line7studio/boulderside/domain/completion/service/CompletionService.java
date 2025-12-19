@@ -1,5 +1,6 @@
 package com.line7studio.boulderside.domain.completion.service;
 
+import com.line7studio.boulderside.common.enums.Level;
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.common.exception.InvalidValueException;
@@ -53,6 +54,14 @@ public class CompletionService {
 	public Completion getByRoute(Long userId, Long routeId) {
 		return completionRepository.findByUserIdAndRouteId(userId, routeId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.ROUTE_COMPLETION_NOT_FOUND));
+	}
+
+	public List<Completion> getByDate(Long userId, LocalDate date) {
+		return completionRepository.findAllByUserIdAndCompletedDate(userId, date);
+	}
+
+	public List<Completion> getByLevel(Long userId, Level level) {
+		return completionRepository.findAllByUserIdAndRouteLevel(userId, level);
 	}
 
 	public List<Completion> getAll(Long userId) {

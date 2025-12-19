@@ -1,28 +1,23 @@
 package com.line7studio.boulderside.controller.project.response;
 
 import com.line7studio.boulderside.common.enums.Level;
-import com.line7studio.boulderside.domain.route.Route;
-
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public record ProjectRecordSummaryResponse(
     Level highestCompletedLevel,
     long completedRouteCount,
     long ongoingProjectCount,
-    List<CompletedRouteResponse> completedRoutes
+    List<CompletedRouteCountResponse> completedRoutes,
+    Map<Level, List<Long>> completionIdsByLevel
 ) {
-    public record CompletedRouteResponse(
-        Long routeId,
+    public record CompletedRouteCountResponse(
         LocalDate completedDate,
-        Level routeLevel
+        long cumulativeCount
     ) {
-        public static CompletedRouteResponse of(Route route, LocalDate completedDate) {
-            return new CompletedRouteResponse(
-                route.getId(),
-                completedDate,
-                route.getRouteLevel()
-            );
+        public static CompletedRouteCountResponse of(LocalDate completedDate, long cumulativeCount) {
+            return new CompletedRouteCountResponse(completedDate, cumulativeCount);
         }
     }
 }
