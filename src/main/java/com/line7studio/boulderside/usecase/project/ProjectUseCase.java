@@ -4,7 +4,7 @@ import com.line7studio.boulderside.common.enums.Level;
 import com.line7studio.boulderside.controller.project.request.SessionRequest;
 import com.line7studio.boulderside.controller.project.response.ProjectPageResponse;
 import com.line7studio.boulderside.controller.project.response.ProjectRecordSummaryResponse;
-import com.line7studio.boulderside.controller.project.response.ProjectRecordSummaryResponse.CompletedRouteResponse;
+import com.line7studio.boulderside.controller.project.response.ProjectRecordSummaryResponse.CompletedRouteCountResponse;
 import com.line7studio.boulderside.controller.project.response.ProjectResponse;
 import com.line7studio.boulderside.domain.completion.Completion;
 import com.line7studio.boulderside.domain.completion.service.CompletionService;
@@ -19,10 +19,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -87,48 +90,48 @@ public class ProjectUseCase {
 		Map<Long, Route> routeMap = routeService.getRoutesByIds(routeIds).stream()
 			.collect(Collectors.toMap(Route::getId, Function.identity()));
 
-		List<CompletedRouteResponse> completionRoutes = completions.stream()
-			.map(completion -> {
-				Route route = routeMap.get(completion.getRouteId());
-				if (route == null) {
-					return null;
-				}
-				return CompletedRouteResponse.of(route, completion.getCompletedDate());
-			})
+		Map<LocalDate, Long> completionCountByDate = completions.stream()
+			.map(Completion::getCompletedDate)
 			.filter(Objects::nonNull)
-			.toList();
+			.collect(Collectors.groupingBy(date -> date, TreeMap::new, Collectors.counting()));
 
-		List<CompletedRouteResponse> projectRoutes = completedProjects.stream()
-			.map(project -> {
-				Route route = routeMap.get(project.getRouteId());
-				if (route == null) {
-					return null;
-				}
-				LocalDate completedDate = resolveCompletedDate(project);
-				return CompletedRouteResponse.of(route, completedDate);
-			})
-			.filter(Objects::nonNull)
-			.toList();
+		List<CompletedRouteCountResponse> completedRoutes = new ArrayList<>();
+		long cumulativeCount = 0;
+		for (Map.Entry<LocalDate, Long> entry : completionCountByDate.entrySet()) {
+			cumulativeCount += entry.getValue();
+			completedRoutes.add(CompletedRouteCountResponse.of(entry.getKey(), cumulativeCount));
+		}
 
-		List<CompletedRouteResponse> completedRoutes = Stream.concat(
-				completionRoutes.stream(),
-				projectRoutes.stream()
-			)
-			.sorted(Comparator.comparing(
-				CompletedRouteResponse::completedDate,
-				Comparator.nullsLast(Comparator.reverseOrder())
-			))
-			.toList();
+		Map<Level, List<Long>> completionIdsByLevel = new EnumMap<>(Level.class);
+		for (Level level : Level.values()) {
+			completionIdsByLevel.put(level, new ArrayList<>());
+		}
+		completions.forEach(completion -> {
+			Route route = routeMap.get(completion.getRouteId());
+			if (route == null || route.getRouteLevel() == null) {
+				return;
+			}
+			completionIdsByLevel.get(route.getRouteLevel()).add(completion.getId());
+		});
 
 		long completedCount = completions.size();
 
-		Level highestLevel = completedRoutes.stream()
-			.map(CompletedRouteResponse::routeLevel)
+		Level highestLevel = completions.stream()
+			.map(completion -> {
+				Route route = routeMap.get(completion.getRouteId());
+				return route != null ? route.getRouteLevel() : null;
+			})
 			.filter(Objects::nonNull)
 			.max(Comparator.comparingInt(Level::ordinal))
 			.orElse(null);
 
-		return new ProjectRecordSummaryResponse(highestLevel, completedCount, ongoingCount, completedRoutes);
+		return new ProjectRecordSummaryResponse(
+			highestLevel,
+			completedCount,
+			ongoingCount,
+			completedRoutes,
+			completionIdsByLevel
+		);
 	}
 
 	@Transactional(readOnly = true)
@@ -171,17 +174,6 @@ public class ProjectUseCase {
 
 	private static boolean isCompleted(Project project) {
 		return Boolean.TRUE.equals(project.getCompleted());
-	}
-
-	private LocalDate resolveCompletedDate(Project project) {
-		if (project.getSessions() != null && !project.getSessions().isEmpty()) {
-			return project.getSessions().stream()
-				.map(Session::getSessiondDate)
-				.filter(Objects::nonNull)
-				.max(LocalDate::compareTo)
-				.orElse(null);
-		}
-		return project.getUpdatedAt() != null ? project.getUpdatedAt().toLocalDate() : null;
 	}
 
 	private int normalizeSize(int size) {
