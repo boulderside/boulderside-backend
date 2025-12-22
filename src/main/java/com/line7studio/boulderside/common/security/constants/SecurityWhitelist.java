@@ -12,11 +12,14 @@ public final class SecurityWhitelist {
 		"/auth/**", "/users/nickname/availability"
 	};
 
-    public static final String[] ADMIN_PUBLIC = {
-            "/admin/**"
-    };
+	public static final String[] ADMIN_PUBLIC = {
+		"/admin/*.html",
+		"/admin/js/**",
+		"/admin/css/**",
+		"/admin/images/**"
+	};
 
 	public static final String[] ADMIN = {
-        "/api/admin/**"
+		"/admin/**"
 	};
 }

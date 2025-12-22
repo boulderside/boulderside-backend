@@ -32,6 +32,9 @@ public enum ErrorCode {
 	USER_BLOCK_ALREADY_EXISTS("D023", "이미 차단한 사용자입니다.", HttpStatus.CONFLICT),
 	USER_BLOCK_NOT_FOUND("D024", "차단 내역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 	CANNOT_BLOCK_SELF("D025", "자기 자신은 차단할 수 없습니다.", HttpStatus.BAD_REQUEST),
+	INSTAGRAM_NOT_FOUND("D026", "해당 Instagram 게시물을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+	ROUTE_INSTAGRAM_ALREADY_EXISTS("D027", "이미 연결된 Instagram 게시물입니다.", HttpStatus.CONFLICT),
+	ROUTE_INSTAGRAM_NOT_FOUND("D028", "루트와 Instagram 연결을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
 	// Validation (V001~V099)
 	VALIDATION_FAILED("V001", "잘못된 입력값입니다.", HttpStatus.BAD_REQUEST),

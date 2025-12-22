@@ -17,14 +17,22 @@ import com.line7studio.boulderside.domain.user.User;
 import com.line7studio.boulderside.domain.user.enums.UserRole;
 import com.line7studio.boulderside.domain.user.enums.UserStatus;
 import com.line7studio.boulderside.domain.user.service.UserService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthUseCase {
 	private final OAuthClientRegistry oAuthClientRegistry;
 	private final UserService userService;
@@ -33,13 +41,28 @@ public class AuthUseCase {
 
 	private static final long WITHDRAWAL_REJOIN_COOLDOWN_DAYS = 30L;
 
+	@Value("${admin.oauth.provider-user-ids:}")
+	private String adminProviderUserIdsRaw;
+
+	private Set<String> adminProviderUserIds = Collections.emptySet();
+
+	@PostConstruct
+	void initAdminProviderUserIds() {
+		adminProviderUserIds = parseAdminProviderUserIds(adminProviderUserIdsRaw);
+	}
+
 	@Transactional
 	public LoginResponse loginWithOAuth(OAuthLoginRequest request, String ipAddress, String userAgent) {
 		OAuthClient client = oAuthClientRegistry.getClient(request.providerType());
 		OAuthUserProfile profile = client.fetchUserProfile(request.identityToken());
+		boolean isAdminProviderUserId = isAdminProviderUserId(profile.providerUserId());
 
 		User user = userService.findByProvider(request.providerType(), profile.providerUserId())
 			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_REGISTERED));
+
+		if (isAdminProviderUserId && user.getUserRole() != UserRole.ROLE_ADMIN) {
+			user = userService.updateUserRole(user.getId(), UserRole.ROLE_ADMIN);
+		}
 
 		validateLoginStatus(user);
 
@@ -62,6 +85,7 @@ public class AuthUseCase {
 	public LoginResponse signupWithOAuth(OAuthSignupRequest request, String ipAddress, String userAgent) {
 		OAuthClient client = oAuthClientRegistry.getClient(request.providerType());
 		OAuthUserProfile profile = client.fetchUserProfile(request.identityToken());
+		boolean isAdminProviderUserId = isAdminProviderUserId(profile.providerUserId());
 
 		userService.findByProvider(request.providerType(), profile.providerUserId())
 			.ifPresent(this::validateSignupAvailability);
@@ -71,7 +95,7 @@ public class AuthUseCase {
 			.providerType(profile.providerType())
 			.providerUserId(profile.providerUserId())
 			.providerEmail(null)
-			.userRole(UserRole.ROLE_USER)
+			.userRole(isAdminProviderUserId ? UserRole.ROLE_ADMIN : UserRole.ROLE_USER)
 			.privacyAgreed(request.privacyAgreed())
 			.serviceTermsAgreed(request.serviceTermsAgreed())
 			.overFourteenAgreed(request.overFourteenAgreed())
@@ -170,5 +194,19 @@ public class AuthUseCase {
 			case BANNED -> throw new BusinessException(ErrorCode.USER_BANNED);
 			default -> throw new BusinessException(ErrorCode.USER_INACTIVE);
 		}
+	}
+
+	private boolean isAdminProviderUserId(String providerUserId) {
+		return providerUserId != null && adminProviderUserIds.contains(providerUserId);
+	}
+
+	private Set<String> parseAdminProviderUserIds(String raw) {
+		if (raw == null || raw.isBlank()) {
+			return Collections.emptySet();
+		}
+		return Arrays.stream(raw.split(","))
+			.map(String::trim)
+			.filter(value -> !value.isEmpty())
+			.collect(Collectors.toUnmodifiableSet());
 	}
 }
