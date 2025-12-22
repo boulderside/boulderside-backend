@@ -18,6 +18,8 @@ public interface CompletionRepository extends JpaRepository<Completion, Long> {
 
 	boolean existsByUserIdAndRouteId(Long userId, Long routeId);
 
+	List<Completion> findAllByUserIdAndRouteIdIn(Long userId, List<Long> routeIds);
+
 	List<Completion> findByUserId(Long userId, Pageable pageable);
 
 	List<Completion> findByUserIdAndIdLessThan(Long userId, Long id, Pageable pageable);

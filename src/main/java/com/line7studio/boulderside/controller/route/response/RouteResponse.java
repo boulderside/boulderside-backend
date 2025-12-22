@@ -19,6 +19,7 @@ public record RouteResponse(
     Level routeLevel,
     Long likeCount,
     Boolean liked,
+    Boolean completed,
     Long viewCount,
     Long climberCount,
     Long commentCount,
@@ -36,7 +37,7 @@ public record RouteResponse(
     }
 
     public static RouteResponse of(Route route, String province, String city, String boulderName, String sectorName, String areaCode,
-        List<ImageInfo> imageInfoList, Long likeCount, Boolean liked) {
+        List<ImageInfo> imageInfoList, Long likeCount, Boolean liked, Boolean completed) {
         return new RouteResponse(
             route.getId(),
             BoulderInfo.of(route.getBoulderId(), boulderName),
@@ -49,6 +50,7 @@ public record RouteResponse(
             route.getRouteLevel(),
             likeCount,
             liked,
+            completed,
             route.getViewCount(),
             route.getClimberCount(),
             route.getCommentCount(),

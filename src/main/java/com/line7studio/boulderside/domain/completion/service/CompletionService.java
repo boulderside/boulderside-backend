@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +57,21 @@ public class CompletionService {
 	public Completion getByRoute(Long userId, Long routeId) {
 		return completionRepository.findByUserIdAndRouteId(userId, routeId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.ROUTE_COMPLETION_NOT_FOUND));
+	}
+
+	public boolean existsByUserIdAndRouteId(Long userId, Long routeId) {
+		return completionRepository.existsByUserIdAndRouteId(userId, routeId);
+	}
+
+	public Map<Long, Boolean> getCompletionExistsMapForRoutes(List<Long> routeIds, Long userId) {
+		if (routeIds == null || routeIds.isEmpty()) {
+			return Map.of();
+		}
+		Set<Long> completedRouteIds = completionRepository.findAllByUserIdAndRouteIdIn(userId, routeIds).stream()
+			.map(Completion::getRouteId)
+			.collect(Collectors.toSet());
+		return routeIds.stream().distinct()
+			.collect(Collectors.toMap(routeId -> routeId, completedRouteIds::contains));
 	}
 
 	public List<Completion> getByDate(Long userId, LocalDate date) {
