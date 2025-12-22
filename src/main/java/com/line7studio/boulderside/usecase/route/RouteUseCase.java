@@ -7,6 +7,7 @@ import com.line7studio.boulderside.controller.route.response.RoutePageResponse;
 import com.line7studio.boulderside.controller.route.response.RouteResponse;
 import com.line7studio.boulderside.domain.boulder.Boulder;
 import com.line7studio.boulderside.domain.boulder.service.BoulderService;
+import com.line7studio.boulderside.domain.completion.service.CompletionService;
 import com.line7studio.boulderside.domain.image.Image;
 import com.line7studio.boulderside.domain.image.enums.ImageDomainType;
 import com.line7studio.boulderside.domain.image.service.ImageService;
@@ -42,6 +43,7 @@ public class RouteUseCase {
 	private final RegionService regionService;
 	private final SectorService sectorService;
 	private final UserRouteLikeService userRouteLikeService;
+	private final CompletionService completionService;
 
 	@Transactional(readOnly = true)
 	public RoutePageResponse getRoutePage(Long userId, RouteSortType sortType, Long cursor, String subCursor, int size) {
@@ -103,6 +105,7 @@ public class RouteUseCase {
 			sector.getAreaCode(),
 			Collections.emptyList(),
 			0L,
+			false,
 			false
 		);
 	}
@@ -125,6 +128,7 @@ public class RouteUseCase {
 		);
 
 		boolean liked = userRouteLikeService.existsIsLikedByUserId(routeId, userId);
+		boolean completed = completionService.existsByUserIdAndRouteId(userId, routeId);
 		long likeCount = updatedRoute.getLikeCount() != null ? updatedRoute.getLikeCount() : 0L;
 		List<ImageInfo> imageInfoList = getImageInfoList(routeId);
 
@@ -137,7 +141,8 @@ public class RouteUseCase {
 			sector.getAreaCode(),
 			imageInfoList,
 			likeCount,
-			liked
+			liked,
+			completed
 		);
 	}
 
@@ -167,6 +172,9 @@ public class RouteUseCase {
 		// 좋아요 정보 조회
 		Map<Long, Boolean> userLikeMap = userRouteLikeService.getIsLikedByUserIdForRouteList(routeIdList, userId);
 
+		// 완등 정보 조회
+		Map<Long, Boolean> completionMap = completionService.getCompletionExistsMapForRoutes(routeIdList, userId);
+
 		// 이미지 조회
 		Map<Long, List<ImageInfo>> routeImageInfoMap = getImageInfoMapForRoutes(routeIdList);
 
@@ -190,6 +198,7 @@ public class RouteUseCase {
 			.map(route -> {
 				long likeCount = route.getLikeCount() != null ? route.getLikeCount() : 0L;
 				boolean liked = userLikeMap.getOrDefault(route.getId(), false);
+				boolean completed = completionMap.getOrDefault(route.getId(), false);
 				List<ImageInfo> imageInfoList = routeImageInfoMap.getOrDefault(route.getId(), Collections.emptyList());
 				
 				Boulder boulder = boulderMap.get(route.getBoulderId());
@@ -205,7 +214,8 @@ public class RouteUseCase {
 					sector != null ? sector.getAreaCode() : null,
 					imageInfoList,
 					likeCount,
-					liked
+					liked,
+					completed
 				);
 			})
 			.toList();
@@ -217,6 +227,7 @@ public class RouteUseCase {
 		Sector sector = sectorService.getSectorById(boulder.getSectorId());
 
 		boolean liked = userRouteLikeService.existsIsLikedByUserId(route.getId(), userId);
+		boolean completed = completionService.existsByUserIdAndRouteId(userId, route.getId());
 		long likeCount = route.getLikeCount() != null ? route.getLikeCount() : 0L;
 		List<ImageInfo> imageInfoList = getImageInfoList(route.getId());
 
@@ -229,7 +240,8 @@ public class RouteUseCase {
 			sector.getAreaCode(),
 			imageInfoList,
 			likeCount,
-			liked
+			liked,
+			completed
 		);
 	}
 
