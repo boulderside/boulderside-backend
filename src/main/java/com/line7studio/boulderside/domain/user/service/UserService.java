@@ -170,6 +170,16 @@ public class UserService {
 		return userRepository.findAll();
 	}
 
+	@Transactional(readOnly = true)
+	public List<String> getAllFcmTokens() {
+		return userRepository.findAllFcmTokens();
+	}
+
+	@Transactional(readOnly = true)
+	public Optional<String> getFcmTokenForPush(Long userId) {
+		return userRepository.findFcmTokenByUserIdAndPushEnabled(userId);
+	}
+
 	public boolean isNicknameAvailable(String nickname) {
 		return !userRepository.existsByNickname(nickname);
 	}
@@ -231,6 +241,19 @@ public class UserService {
 	public void updateRefreshToken(Long userId, String refreshToken) {
 		User user = getUserById(userId);
 		user.updateRefreshToken(refreshToken);
+	}
+
+	@Transactional
+	public void updateFcmToken(Long userId, String fcmToken) {
+		User user = getUserById(userId);
+		user.updateFcmToken(fcmToken);
+	}
+
+	@Transactional
+	public void logout(Long userId) {
+		User user = getUserById(userId);
+		user.updateRefreshToken(null);
+		user.updateFcmToken(null);
 	}
 
 	public boolean isWithdrawnWithinDays(Long userId, long days) {
