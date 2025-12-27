@@ -8,9 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.line7studio.boulderside.controller.user.request.WithdrawUserRequest;
 import com.line7studio.boulderside.controller.user.request.UpdateConsentRequest;
+import com.line7studio.boulderside.controller.user.request.UpdateFcmTokenRequest;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -79,6 +81,23 @@ public class UserController {
 		@RequestBody @Valid UpdateNicknameRequest request
 	) {
 		userService.updateNickname(userDetails.userId(), request.nickname());
+		return ResponseEntity.ok(ApiResponse.success());
+	}
+
+	@PatchMapping("/me/fcm-token")
+	public ResponseEntity<ApiResponse<Void>> updateFcmToken(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestBody @Valid UpdateFcmTokenRequest request
+	) {
+		userService.updateFcmToken(userDetails.userId(), request.fcmToken());
+		return ResponseEntity.ok(ApiResponse.success());
+	}
+
+	@PostMapping("/me/logout")
+	public ResponseEntity<ApiResponse<Void>> logout(
+		@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		userService.logout(userDetails.userId());
 		return ResponseEntity.ok(ApiResponse.success());
 	}
 

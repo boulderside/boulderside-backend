@@ -81,6 +81,10 @@ public class User extends BaseEntity {
 	@Column(name = "refresh_token")
 	private String refreshToken;
 
+	/** FCM Token */
+	@Column(name = "fcm_token", length = 512)
+	private String fcmToken;
+
 	/** 사용자 상태 (예: ACTIVE, INACTIVE, BANNED 등) */
 	@Enumerated(EnumType.STRING)
 	@Column(name = "user_status")
@@ -105,5 +109,9 @@ public class User extends BaseEntity {
 
 	public void updateRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
+	}
+
+	public void updateFcmToken(String fcmToken) {
+		this.fcmToken = fcmToken;
 	}
 }

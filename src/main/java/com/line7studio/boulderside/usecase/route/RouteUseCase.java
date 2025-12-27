@@ -3,6 +3,9 @@ package com.line7studio.boulderside.usecase.route;
 import com.line7studio.boulderside.controller.route.request.CreateRouteRequest;
 import com.line7studio.boulderside.controller.route.request.UpdateRouteRequest;
 import com.line7studio.boulderside.common.dto.ImageInfo;
+import com.line7studio.boulderside.common.notification.NotificationDomainType;
+import com.line7studio.boulderside.common.notification.NotificationTarget;
+import com.line7studio.boulderside.common.notification.PushMessage;
 import com.line7studio.boulderside.controller.route.response.RoutePageResponse;
 import com.line7studio.boulderside.controller.route.response.RouteResponse;
 import com.line7studio.boulderside.domain.boulder.Boulder;
@@ -19,11 +22,15 @@ import com.line7studio.boulderside.domain.route.service.RouteService;
 import com.line7studio.boulderside.domain.sector.Sector;
 import com.line7studio.boulderside.domain.sector.service.SectorService;
 import com.line7studio.boulderside.domain.route.interaction.like.service.UserRouteLikeService;
+import com.line7studio.boulderside.domain.user.service.UserService;
+import com.line7studio.boulderside.infrastructure.fcm.FcmService;
 import com.line7studio.boulderside.common.util.CursorPageUtil;
 import com.line7studio.boulderside.common.util.CursorPageUtil.CursorPageWithSubCursor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,6 +51,8 @@ public class RouteUseCase {
 	private final SectorService sectorService;
 	private final UserRouteLikeService userRouteLikeService;
 	private final CompletionService completionService;
+	private final UserService userService;
+	private final FcmService fcmService;
 
 	@Transactional(readOnly = true)
 	public RoutePageResponse getRoutePage(Long userId, RouteSortType sortType, Long cursor, String subCursor, int size) {
@@ -94,6 +103,7 @@ public class RouteUseCase {
 
 		// 저장
 		Route savedRoute = routeService.save(route);
+		publishRoutePushAfterCommit(savedRoute, boulder);
 
 		// Domain → Response 변환
 		return RouteResponse.of(
@@ -219,6 +229,27 @@ public class RouteUseCase {
 				);
 			})
 			.toList();
+	}
+
+	private void publishRoutePushAfterCommit(Route route, Boulder boulder) {
+		if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+			sendRoutePush(route, boulder);
+			return;
+		}
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+			@Override
+			public void afterCommit() {
+				sendRoutePush(route, boulder);
+			}
+		});
+	}
+
+	private void sendRoutePush(Route route, Boulder boulder) {
+		List<String> tokens = userService.getAllFcmTokens();
+		NotificationTarget target = new NotificationTarget(NotificationDomainType.ROUTE, String.valueOf(route.getId()));
+		String body = boulder != null ? boulder.getName() + " · " + route.getName() : route.getName();
+		PushMessage message = new PushMessage("새 루트 등록", body, target);
+		fcmService.sendMessageToAll(tokens, message);
 	}
 
 	private RouteResponse buildSingleRouteResponse(Route route, Long userId) {

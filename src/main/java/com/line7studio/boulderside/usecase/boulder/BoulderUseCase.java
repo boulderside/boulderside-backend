@@ -1,6 +1,9 @@
 package com.line7studio.boulderside.usecase.boulder;
 
 import com.line7studio.boulderside.common.dto.ImageInfo;
+import com.line7studio.boulderside.common.notification.NotificationDomainType;
+import com.line7studio.boulderside.common.notification.NotificationTarget;
+import com.line7studio.boulderside.common.notification.PushMessage;
 import com.line7studio.boulderside.controller.boulder.request.CreateBoulderRequest;
 import com.line7studio.boulderside.controller.boulder.request.UpdateBoulderRequest;
 import com.line7studio.boulderside.controller.boulder.response.BoulderPageResponse;
@@ -17,11 +20,15 @@ import com.line7studio.boulderside.domain.region.service.RegionService;
 import com.line7studio.boulderside.domain.route.service.RouteService;
 import com.line7studio.boulderside.domain.sector.Sector;
 import com.line7studio.boulderside.domain.sector.service.SectorService;
+import com.line7studio.boulderside.domain.user.service.UserService;
+import com.line7studio.boulderside.infrastructure.fcm.FcmService;
 import com.line7studio.boulderside.common.util.CursorPageUtil;
 import com.line7studio.boulderside.common.util.CursorPageUtil.CursorPageWithSubCursor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.*;
 import java.util.function.Function;
@@ -37,6 +44,8 @@ public class BoulderUseCase {
 	private final BoulderService boulderService;
 	private final RouteService routeService;
 	private final UserBoulderLikeService userBoulderLikeService;
+	private final UserService userService;
+	private final FcmService fcmService;
 
 	@Transactional(readOnly = true)
 	public BoulderPageResponse getBoulderPage(Long userId, BoulderSortType sortType, Long cursor, String subCursor, int size) {
@@ -96,6 +105,7 @@ public class BoulderUseCase {
 
 		// 저장
 		Boulder savedBoulder = boulderService.save(boulder);
+		publishBoulderPushAfterCommit(savedBoulder);
 
 		// 이미지 생성 (ImageService에 위임)
 		List<Image> images = imageService.createImagesForDomain(
@@ -253,5 +263,25 @@ public class BoulderUseCase {
 			.map(ImageInfo::from)
 			.sorted(Comparator.comparing(img -> Optional.ofNullable(img.getOrderIndex()).orElse(0)))
 			.toList();
+	}
+
+	private void publishBoulderPushAfterCommit(Boulder boulder) {
+		if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+			sendBoulderPush(boulder);
+			return;
+		}
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+			@Override
+			public void afterCommit() {
+				sendBoulderPush(boulder);
+			}
+		});
+	}
+
+	private void sendBoulderPush(Boulder boulder) {
+		List<String> tokens = userService.getAllFcmTokens();
+		NotificationTarget target = new NotificationTarget(NotificationDomainType.BOULDER, String.valueOf(boulder.getId()));
+		PushMessage message = new PushMessage("새 바위 등록", boulder.getName(), target);
+		fcmService.sendMessageToAll(tokens, message);
 	}
 }

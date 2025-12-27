@@ -1,6 +1,9 @@
 package com.line7studio.boulderside.usecase.comment;
 
 import com.line7studio.boulderside.common.dto.UserInfo;
+import com.line7studio.boulderside.common.notification.NotificationDomainType;
+import com.line7studio.boulderside.common.notification.NotificationTarget;
+import com.line7studio.boulderside.common.notification.PushMessage;
 import com.line7studio.boulderside.controller.comment.request.CreateAdminCommentRequest;
 import com.line7studio.boulderside.controller.comment.request.CreateCommentRequest;
 import com.line7studio.boulderside.controller.comment.request.UpdateCommentRequest;
@@ -24,14 +27,18 @@ import com.line7studio.boulderside.domain.user.User;
 import com.line7studio.boulderside.domain.user.service.UserService;
 import com.line7studio.boulderside.domain.user.service.UserBlockService;
 import com.line7studio.boulderside.common.util.CursorPageUtil;
+import com.line7studio.boulderside.infrastructure.fcm.FcmService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,6 +52,7 @@ public class CommentUseCase {
     private final BoardPostReadService boardPostReadService;
     private final MatePostReadService matePostReadService;
     private final UserBlockService userBlockService;
+    private final FcmService fcmService;
 
     @Transactional(readOnly = true)
     public CommentPageResponse getCommentPage(Long cursor, int size, Long domainId, CommentDomainType commentDomainType, Long userId) {
@@ -158,6 +166,7 @@ public class CommentUseCase {
     public CommentResponse createComment(Long postId, CommentDomainType commentDomainType, CreateCommentRequest request, Long userId) {
         User user = userService.getUserById(userId);
         UserInfo userInfo = UserInfo.from(user);
+        PostAuthorInfo postAuthorInfo = getPostAuthorInfo(postId, commentDomainType);
 
         Comment savedComment = commentService.createComment(
                 user.getId(),
@@ -177,6 +186,7 @@ public class CommentUseCase {
             commentCount = route.getCommentCount();
         }
 
+        publishCommentPushAfterCommit(commentDomainType, postId, postAuthorInfo, userId);
         return CommentResponse.of(savedComment, userInfo, true, commentCount);
     }
 
@@ -271,6 +281,7 @@ public class CommentUseCase {
         UserInfo userInfo = UserInfo.from(user);
 
         CommentDomainType domainType = CommentDomainType.fromPath(request.domainType());
+        PostAuthorInfo postAuthorInfo = getPostAuthorInfo(request.domainId(), domainType);
 
         Comment savedComment = commentService.createComment(
             user.getId(),
@@ -291,6 +302,7 @@ public class CommentUseCase {
         }
 
         boolean isMine = targetUserId.equals(adminUserId);
+        publishCommentPushAfterCommit(domainType, request.domainId(), postAuthorInfo, targetUserId);
         return CommentResponse.of(savedComment, userInfo, isMine, commentCount);
     }
 
@@ -298,4 +310,53 @@ public class CommentUseCase {
     public void updateCommentStatus(Long commentId, UpdatePostStatusRequest request) {
         commentService.updateCommentStatus(commentId, request.status());
     }
+
+    private PostAuthorInfo getPostAuthorInfo(Long postId, CommentDomainType commentDomainType) {
+        if (commentDomainType == CommentDomainType.BOARD_POST) {
+            BoardPost post = boardPostService.getBoardPostById(postId);
+            return new PostAuthorInfo(post.getUserId(), post.getTitle());
+        }
+        if (commentDomainType == CommentDomainType.MATE_POST) {
+            MatePost post = matePostService.getMatePostById(postId);
+            return new PostAuthorInfo(post.getUserId(), post.getTitle());
+        }
+        return new PostAuthorInfo(null, null);
+    }
+
+    private void publishCommentPushAfterCommit(CommentDomainType domainType, Long postId, PostAuthorInfo postAuthorInfo, Long commenterId) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            sendCommentPush(domainType, postId, postAuthorInfo, commenterId);
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                sendCommentPush(domainType, postId, postAuthorInfo, commenterId);
+            }
+        });
+    }
+
+    private void sendCommentPush(CommentDomainType domainType, Long postId, PostAuthorInfo postAuthorInfo, Long commenterId) {
+        if (postAuthorInfo.userId() == null || postAuthorInfo.userId().equals(commenterId)) {
+            return;
+        }
+        NotificationDomainType targetType = switch (domainType) {
+            case MATE_POST -> NotificationDomainType.MATE_POST;
+            case BOARD_POST -> NotificationDomainType.BOARD_POST;
+            default -> null;
+        };
+        if (targetType == null) {
+            return;
+        }
+        Optional<String> token = userService.getFcmTokenForPush(postAuthorInfo.userId());
+        if (token.isEmpty()) {
+            return;
+        }
+        String title = domainType == CommentDomainType.MATE_POST ? "내 동행글 댓글" : "내 게시글 댓글";
+        String body = postAuthorInfo.title() != null ? postAuthorInfo.title() : "새 댓글이 달렸어요";
+        PushMessage message = new PushMessage(title, body, new NotificationTarget(targetType, String.valueOf(postId)));
+        fcmService.sendMessageToAll(List.of(token.get()), message);
+    }
+
+    private record PostAuthorInfo(Long userId, String title) {}
 }

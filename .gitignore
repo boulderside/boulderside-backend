@@ -44,3 +44,5 @@ out/
 .env
 local.env
 prod.env
+src/main/resources/static/admin/
+src/main/resources/*.json
