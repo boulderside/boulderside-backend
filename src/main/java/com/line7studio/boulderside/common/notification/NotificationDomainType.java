@@ -5,5 +5,6 @@ public enum NotificationDomainType {
 	BOULDER,
 	ROUTE,
 	MATE_POST,
-	BOARD_POST
+	BOARD_POST,
+	INSTAGRAM
 }

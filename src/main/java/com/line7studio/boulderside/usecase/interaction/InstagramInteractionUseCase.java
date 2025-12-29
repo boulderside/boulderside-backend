@@ -1,5 +1,8 @@
 package com.line7studio.boulderside.usecase.interaction;
 
+import com.line7studio.boulderside.common.notification.NotificationDomainType;
+import com.line7studio.boulderside.common.notification.NotificationTarget;
+import com.line7studio.boulderside.common.notification.PushMessage;
 import com.line7studio.boulderside.controller.instagram.response.InstagramLikeResponse;
 import com.line7studio.boulderside.controller.instagram.response.LikedInstagramItemResponse;
 import com.line7studio.boulderside.controller.instagram.response.LikedInstagramPageResponse;
@@ -13,14 +16,19 @@ import com.line7studio.boulderside.domain.instagram.service.InstagramService;
 import com.line7studio.boulderside.domain.instagram.service.RouteInstagramService;
 import com.line7studio.boulderside.domain.route.Route;
 import com.line7studio.boulderside.domain.route.service.RouteService;
+import com.line7studio.boulderside.domain.user.service.UserService;
+import com.line7studio.boulderside.infrastructure.fcm.FcmService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,6 +43,8 @@ public class InstagramInteractionUseCase {
 	private final RouteInstagramService routeInstagramService;
 	private final RouteService routeService;
 	private final BoulderService boulderService;
+	private final UserService userService;
+	private final FcmService fcmService;
 
 	public InstagramLikeResponse toggleLike(Long userId, Long instagramId) {
 		Instagram instagram = instagramService.getById(instagramId);
@@ -48,6 +58,7 @@ public class InstagramInteractionUseCase {
 
 		if (liked) {
 			instagram.incrementLikeCount();
+			publishInstagramLikePushAfterCommit(instagram, userId);
 		} else {
 			instagram.decrementLikeCount();
 		}
@@ -133,5 +144,36 @@ public class InstagramInteractionUseCase {
 				);
 			})
 			.toList();
+	}
+
+	private void publishInstagramLikePushAfterCommit(Instagram instagram, Long likerId) {
+		if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+			sendInstagramLikePush(instagram, likerId);
+			return;
+		}
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+			@Override
+			public void afterCommit() {
+				sendInstagramLikePush(instagram, likerId);
+			}
+		});
+	}
+
+	private void sendInstagramLikePush(Instagram instagram, Long likerId) {
+		// 좋아요를 누른 사람과 Instagram 작성자가 같으면 알림 발송하지 않음
+		if (instagram.getUserId() == null || instagram.getUserId().equals(likerId)) {
+			return;
+		}
+
+		// Instagram 작성자의 FCM 토큰 조회
+		Optional<String> token = userService.getFcmTokenForPush(instagram.getUserId());
+		if (token.isEmpty()) {
+			return;
+		}
+
+		// 알림 메시지 생성 및 발송
+		NotificationTarget target = new NotificationTarget(NotificationDomainType.INSTAGRAM, String.valueOf(instagram.getId()));
+		PushMessage message = new PushMessage("내 인스타그램 좋아요", "새로운 좋아요가 달렸어요", target);
+		fcmService.sendMessageToAll(List.of(token.get()), message);
 	}
 }
