@@ -186,7 +186,7 @@ public class CommentUseCase {
             commentCount = route.getCommentCount();
         }
 
-        publishCommentPushAfterCommit(commentDomainType, postId, postAuthorInfo, userId);
+        publishCommentPushAfterCommit(commentDomainType, postId, postAuthorInfo, userId, user.getNickname(), savedComment.getContent());
         return CommentResponse.of(savedComment, userInfo, true, commentCount);
     }
 
@@ -302,7 +302,7 @@ public class CommentUseCase {
         }
 
         boolean isMine = targetUserId.equals(adminUserId);
-        publishCommentPushAfterCommit(domainType, request.domainId(), postAuthorInfo, targetUserId);
+        publishCommentPushAfterCommit(domainType, request.domainId(), postAuthorInfo, targetUserId, user.getNickname(), savedComment.getContent());
         return CommentResponse.of(savedComment, userInfo, isMine, commentCount);
     }
 
@@ -323,20 +323,20 @@ public class CommentUseCase {
         return new PostAuthorInfo(null, null);
     }
 
-    private void publishCommentPushAfterCommit(CommentDomainType domainType, Long postId, PostAuthorInfo postAuthorInfo, Long commenterId) {
+    private void publishCommentPushAfterCommit(CommentDomainType domainType, Long postId, PostAuthorInfo postAuthorInfo, Long commenterId, String commenterNickname, String commentContent) {
         if (!TransactionSynchronizationManager.isSynchronizationActive()) {
-            sendCommentPush(domainType, postId, postAuthorInfo, commenterId);
+            sendCommentPush(domainType, postId, postAuthorInfo, commenterId, commenterNickname, commentContent);
             return;
         }
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-                sendCommentPush(domainType, postId, postAuthorInfo, commenterId);
+                sendCommentPush(domainType, postId, postAuthorInfo, commenterId, commenterNickname, commentContent);
             }
         });
     }
 
-    private void sendCommentPush(CommentDomainType domainType, Long postId, PostAuthorInfo postAuthorInfo, Long commenterId) {
+    private void sendCommentPush(CommentDomainType domainType, Long postId, PostAuthorInfo postAuthorInfo, Long commenterId, String commenterNickname, String commentContent) {
         if (postAuthorInfo.userId() == null || postAuthorInfo.userId().equals(commenterId)) {
             return;
         }
@@ -353,9 +353,15 @@ public class CommentUseCase {
             return;
         }
         String title = domainType == CommentDomainType.MATE_POST ? "내 동행글 댓글" : "내 게시글 댓글";
-        String body = postAuthorInfo.title() != null ? postAuthorInfo.title() : "새 댓글이 달렸어요";
+        String body = commenterNickname + ": " + truncate(commentContent, 30);
         PushMessage message = new PushMessage(title, body, new NotificationTarget(targetType, String.valueOf(postId)));
         fcmService.sendMessageToAll(List.of(token.get()), message);
+    }
+
+    private String truncate(String text, int maxLength) {
+        if (text == null) return "";
+        if (text.length() <= maxLength) return text;
+        return text.substring(0, maxLength) + "...";
     }
 
     private record PostAuthorInfo(Long userId, String title) {}

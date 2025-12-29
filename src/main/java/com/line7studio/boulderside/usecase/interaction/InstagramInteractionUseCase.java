@@ -16,6 +16,7 @@ import com.line7studio.boulderside.domain.instagram.service.InstagramService;
 import com.line7studio.boulderside.domain.instagram.service.RouteInstagramService;
 import com.line7studio.boulderside.domain.route.Route;
 import com.line7studio.boulderside.domain.route.service.RouteService;
+import com.line7studio.boulderside.domain.user.User;
 import com.line7studio.boulderside.domain.user.service.UserService;
 import com.line7studio.boulderside.infrastructure.fcm.FcmService;
 import lombok.RequiredArgsConstructor;
@@ -171,9 +172,14 @@ public class InstagramInteractionUseCase {
 			return;
 		}
 
+		// 좋아요 누른 사용자 정보 조회
+		User liker = userService.getUserById(likerId);
+		String likerNickname = liker.getNickname();
+
 		// 알림 메시지 생성 및 발송
 		NotificationTarget target = new NotificationTarget(NotificationDomainType.INSTAGRAM, String.valueOf(instagram.getId()));
-		PushMessage message = new PushMessage("내 인스타그램 좋아요", "새로운 좋아요가 달렸어요", target);
+		String body = likerNickname + "님이 회원님의 게시글을 좋아합니다";
+		PushMessage message = new PushMessage("내 인스타그램 좋아요", body, target);
 		fcmService.sendMessageToAll(List.of(token.get()), message);
 	}
 }
