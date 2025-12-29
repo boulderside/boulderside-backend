@@ -16,7 +16,6 @@ public enum ErrorCode {
     COMMENT_NOT_FOUND("D007", "해당 댓글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     NO_PERMISSION("D008", "해당 작업에 대한 권한이 없습니다.", HttpStatus.FORBIDDEN),
 	ROUTE_NOT_FOUND("D009", "해당 루트를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-	SECTOR_NOT_FOUND("D010", "해당 섹터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 	ROUTE_COMPLETION_ALREADY_EXISTS("D011", "이미 등록된 루트 등반 기록이 있습니다.", HttpStatus.CONFLICT),
 	ROUTE_COMPLETION_NOT_FOUND("D012", "루트 등반 기록을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 	APPROACH_NOT_FOUND("D013", "해당 진입로를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),

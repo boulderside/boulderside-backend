@@ -19,8 +19,6 @@ import com.line7studio.boulderside.domain.region.service.RegionService;
 import com.line7studio.boulderside.domain.route.Route;
 import com.line7studio.boulderside.domain.route.enums.RouteSortType;
 import com.line7studio.boulderside.domain.route.service.RouteService;
-import com.line7studio.boulderside.domain.sector.Sector;
-import com.line7studio.boulderside.domain.sector.service.SectorService;
 import com.line7studio.boulderside.domain.route.interaction.like.service.UserRouteLikeService;
 import com.line7studio.boulderside.domain.user.service.UserService;
 import com.line7studio.boulderside.infrastructure.fcm.FcmService;
@@ -48,7 +46,6 @@ public class RouteUseCase {
 	private final BoulderService boulderService;
 	private final ImageService imageService;
 	private final RegionService regionService;
-	private final SectorService sectorService;
 	private final UserRouteLikeService userRouteLikeService;
 	private final CompletionService completionService;
 	private final UserService userService;
@@ -90,7 +87,6 @@ public class RouteUseCase {
 		// 연관 도메인 조회
 		Boulder boulder = boulderService.getById(request.boulderId());
 		Region region = regionService.getRegionById(boulder.getRegionId());
-		Sector sector = sectorService.getSectorById(boulder.getSectorId());
 
 		// Request → Domain 변환 (정적 팩토리 메서드 사용)
 		Route route = Route.create(
@@ -111,8 +107,6 @@ public class RouteUseCase {
 			region.getProvince(),
 			region.getCity(),
 			boulder.getName(),
-			sector.getSectorName(),
-			sector.getAreaCode(),
 			Collections.emptyList(),
 			0L,
 			false,
@@ -125,7 +119,6 @@ public class RouteUseCase {
 		// 연관 도메인 조회
 		Boulder boulder = boulderService.getById(request.boulderId());
 		Region region = regionService.getRegionById(boulder.getRegionId());
-		Sector sector = sectorService.getSectorById(boulder.getSectorId());
 
 		// 업데이트
 		Route updatedRoute = routeService.update(
@@ -147,8 +140,6 @@ public class RouteUseCase {
 			region.getProvince(),
 			region.getCity(),
 			boulder.getName(),
-			sector.getSectorName(),
-			sector.getAreaCode(),
 			imageInfoList,
 			likeCount,
 			liked,
@@ -198,11 +189,6 @@ public class RouteUseCase {
 		Map<Long, Region> regionMap = regionService.getRegionsByIds(regionIdList).stream()
 			.collect(Collectors.toMap(Region::getId, Function.identity()));
 
-		// Sector 조회
-		List<Long> sectorIdList = boulderMap.values().stream().map(Boulder::getSectorId).distinct().toList();
-		Map<Long, Sector> sectorMap = sectorService.getSectorsByIds(sectorIdList).stream()
-			.collect(Collectors.toMap(Sector::getId, Function.identity()));
-
 		// Response 조립
 		return routeList.stream()
 			.map(route -> {
@@ -210,18 +196,15 @@ public class RouteUseCase {
 				boolean liked = userLikeMap.getOrDefault(route.getId(), false);
 				boolean completed = completionMap.getOrDefault(route.getId(), false);
 				List<ImageInfo> imageInfoList = routeImageInfoMap.getOrDefault(route.getId(), Collections.emptyList());
-				
+
 				Boulder boulder = boulderMap.get(route.getBoulderId());
 				Region region = boulder != null ? regionMap.get(boulder.getRegionId()) : null;
-				Sector sector = boulder != null ? sectorMap.get(boulder.getSectorId()) : null;
 
 				return RouteResponse.of(
 					route,
 					region != null ? region.getProvince() : null,
 					region != null ? region.getCity() : null,
 					boulder != null ? boulder.getName() : null,
-					sector != null ? sector.getSectorName() : null,
-					sector != null ? sector.getAreaCode() : null,
 					imageInfoList,
 					likeCount,
 					liked,
@@ -256,7 +239,6 @@ public class RouteUseCase {
 	private RouteResponse buildSingleRouteResponse(Route route, Long userId) {
 		Boulder boulder = boulderService.getById(route.getBoulderId());
 		Region region = regionService.getRegionById(boulder.getRegionId());
-		Sector sector = sectorService.getSectorById(boulder.getSectorId());
 
 		boolean liked = userRouteLikeService.existsIsLikedByUserId(route.getId(), userId);
 		boolean completed = completionService.existsByUserIdAndRouteId(userId, route.getId());
@@ -268,8 +250,6 @@ public class RouteUseCase {
 			region.getProvince(),
 			region.getCity(),
 			boulder.getName(),
-			sector.getSectorName(),
-			sector.getAreaCode(),
 			imageInfoList,
 			likeCount,
 			liked,

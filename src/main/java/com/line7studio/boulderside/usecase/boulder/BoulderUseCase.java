@@ -18,8 +18,6 @@ import com.line7studio.boulderside.domain.image.service.ImageService;
 import com.line7studio.boulderside.domain.region.Region;
 import com.line7studio.boulderside.domain.region.service.RegionService;
 import com.line7studio.boulderside.domain.route.service.RouteService;
-import com.line7studio.boulderside.domain.sector.Sector;
-import com.line7studio.boulderside.domain.sector.service.SectorService;
 import com.line7studio.boulderside.domain.user.service.UserService;
 import com.line7studio.boulderside.infrastructure.fcm.FcmService;
 import com.line7studio.boulderside.common.util.CursorPageUtil;
@@ -40,7 +38,6 @@ import java.util.stream.Collectors;
 public class BoulderUseCase {
 	private final ImageService imageService;
 	private final RegionService regionService;
-	private final SectorService sectorService;
 	private final BoulderService boulderService;
 	private final RouteService routeService;
 	private final UserBoulderLikeService userBoulderLikeService;
@@ -91,12 +88,10 @@ public class BoulderUseCase {
 	public BoulderResponse createBoulder(CreateBoulderRequest request) {
 		// 연관 도메인 조회
 		Region region = regionService.getRegionByProvinceAndCity(request.province(), request.city());
-		Sector sector = sectorService.getSectorById(request.sectorId());
 
 		// Request → Domain 변환 (정적 팩토리 메서드 사용)
 		Boulder boulder = Boulder.create(
 			region.getId(),
-			request.sectorId(),
 			request.name(),
 			request.description(),
 			request.latitude(),
@@ -105,7 +100,7 @@ public class BoulderUseCase {
 
 		// 저장
 		Boulder savedBoulder = boulderService.save(boulder);
-		publishBoulderPushAfterCommit(savedBoulder, region, sector);
+		publishBoulderPushAfterCommit(savedBoulder, region);
 
 		// 이미지 생성 (ImageService에 위임)
 		List<Image> images = imageService.createImagesForDomain(
@@ -117,8 +112,6 @@ public class BoulderUseCase {
 			savedBoulder,
 			region.getProvince(),
 			region.getCity(),
-			sector.getSectorName(),
-			sector.getAreaCode(),
 			imageInfoList,
 			0L,
 			false
@@ -129,13 +122,11 @@ public class BoulderUseCase {
 	public BoulderResponse updateBoulder(Long userId, Long boulderId, UpdateBoulderRequest request) {
 		// 연관 도메인 조회
 		Region region = regionService.getRegionByProvinceAndCity(request.province(), request.city());
-		Sector sector = sectorService.getSectorById(request.sectorId());
 
 		// 업데이트
 		Boulder boulder = boulderService.update(
 			boulderId,
 			region.getId(),
-			request.sectorId(),
 			request.name(),
 			request.description(),
 			request.latitude(),
@@ -154,8 +145,6 @@ public class BoulderUseCase {
 			boulder,
 			region.getProvince(),
 			region.getCity(),
-			sector.getSectorName(),
-			sector.getAreaCode(),
 			imageInfoList,
 			likeCount,
 			liked
@@ -193,16 +182,10 @@ public class BoulderUseCase {
 		// 이미지 조회
 		Map<Long, List<ImageInfo>> boulderImageInfoMap = getImageInfoMapForBoulders(boulderIdList);
 
-		// Sector 조회
-		List<Long> sectorIdList = boulderList.stream().map(Boulder::getSectorId).distinct().toList();
-		Map<Long, Sector> sectorMap = sectorService.getSectorsByIds(sectorIdList).stream()
-			.collect(Collectors.toMap(Sector::getId, Function.identity()));
-
 		// Response 조립
 		return boulderList.stream()
 			.map(boulder -> {
 				Region region = regionMap.get(boulder.getRegionId());
-				Sector sector = sectorMap.get(boulder.getSectorId());
 				List<ImageInfo> images = boulderImageInfoMap.getOrDefault(boulder.getId(), Collections.emptyList());
 				long likeCount = Optional.ofNullable(boulder.getLikeCount()).orElse(0L);
 				boolean liked = userLikeMap.getOrDefault(boulder.getId(), false);
@@ -210,8 +193,6 @@ public class BoulderUseCase {
 					boulder,
 					region.getProvince(),
 					region.getCity(),
-					sector != null ? sector.getSectorName() : null,
-					sector != null ? sector.getAreaCode() : null,
 					images,
 					likeCount,
 					liked
@@ -222,7 +203,6 @@ public class BoulderUseCase {
 
 	private BoulderResponse buildSingleBoulderResponse(Boulder boulder, Long userId) {
 		Region region = regionService.getRegionById(boulder.getRegionId());
-		Sector sector = sectorService.getSectorById(boulder.getSectorId());
 
 		List<Image> imageList = imageService.getImageListByImageDomainTypeAndDomainId(
 			ImageDomainType.BOULDER, boulder.getId());
@@ -235,8 +215,6 @@ public class BoulderUseCase {
 			boulder,
 			region.getProvince(),
 			region.getCity(),
-			sector.getSectorName(),
-			sector.getAreaCode(),
 			imageInfoList,
 			likeCount,
 			liked
@@ -265,23 +243,23 @@ public class BoulderUseCase {
 			.toList();
 	}
 
-	private void publishBoulderPushAfterCommit(Boulder boulder, Region region, Sector sector) {
+	private void publishBoulderPushAfterCommit(Boulder boulder, Region region) {
 		if (!TransactionSynchronizationManager.isSynchronizationActive()) {
-			sendBoulderPush(boulder, region, sector);
+			sendBoulderPush(boulder, region);
 			return;
 		}
 		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
 			@Override
 			public void afterCommit() {
-				sendBoulderPush(boulder, region, sector);
+				sendBoulderPush(boulder, region);
 			}
 		});
 	}
 
-	private void sendBoulderPush(Boulder boulder, Region region, Sector sector) {
+	private void sendBoulderPush(Boulder boulder, Region region) {
 		List<String> tokens = userService.getAllFcmTokens();
 		NotificationTarget target = new NotificationTarget(NotificationDomainType.BOULDER, String.valueOf(boulder.getId()));
-		String location = region.getProvince() + " " + sector.getSectorName();
+		String location = region.getProvince() + (region.getCity() != null ? " " + region.getCity() : "");
 		String body = location + "에 새 바위 '" + boulder.getName() + "'이 등록되었습니다";
 		PushMessage message = new PushMessage("새 바위 등록", body, target);
 		fcmService.sendMessageToAll(tokens, message);

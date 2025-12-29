@@ -10,7 +10,6 @@ public record UpdateBoulderRequest(
     String description,
     @NotNull(message = "위도는 필수입니다") Double latitude,
     @NotNull(message = "경도는 필수입니다") Double longitude,
-    @NotNull(message = "섹터 ID는 필수입니다") Long sectorId,
     String province,
     String city,
     List<String> imageUrlList
