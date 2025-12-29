@@ -4,6 +4,7 @@ import com.line7studio.boulderside.common.response.ApiResponse;
 import com.line7studio.boulderside.common.security.details.CustomUserDetails;
 import com.line7studio.boulderside.controller.instagram.request.CreateInstagramRequest;
 import com.line7studio.boulderside.controller.instagram.request.UpdateInstagramRequest;
+import com.line7studio.boulderside.controller.instagram.response.InstagramDetailResponse;
 import com.line7studio.boulderside.controller.instagram.response.InstagramPageResponse;
 import com.line7studio.boulderside.controller.instagram.response.InstagramResponse;
 import com.line7studio.boulderside.controller.instagram.response.RouteInstagramPageResponse;
@@ -31,19 +32,23 @@ public class InstagramController {
 	}
 
 	@GetMapping("/{instagramId}")
-	public ResponseEntity<ApiResponse<InstagramResponse>> getInstagram(
+	public ResponseEntity<ApiResponse<InstagramDetailResponse>> getInstagramDetail(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable Long instagramId
 	) {
-		InstagramResponse response = instagramUseCase.getInstagram(instagramId);
+		Long userId = userDetails != null ? userDetails.userId() : null;
+		InstagramDetailResponse response = instagramUseCase.getInstagramDetail(instagramId, userId);
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
 	@GetMapping("/page")
 	public ResponseEntity<ApiResponse<InstagramPageResponse>> getInstagramsPage(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestParam(required = false) Long cursor,
 		@RequestParam(defaultValue = "10") int size
 	) {
-		InstagramPageResponse response = instagramUseCase.getInstagramsPage(cursor, size);
+		Long userId = userDetails != null ? userDetails.userId() : null;
+		InstagramPageResponse response = instagramUseCase.getInstagramsPage(userId, cursor, size);
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
@@ -53,7 +58,7 @@ public class InstagramController {
 		@RequestParam(required = false) Long cursor,
 		@RequestParam(defaultValue = "10") int size
 	) {
-		InstagramPageResponse response = instagramUseCase.getInstagramsByUserIdPage(userDetails.userId(), cursor, size);
+		InstagramPageResponse response = instagramUseCase.getInstagramsByUserIdPage(userDetails.userId(), userDetails.userId(), cursor, size);
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 
@@ -80,11 +85,13 @@ public class InstagramController {
 
 	@GetMapping(params = "routeId")
 	public ResponseEntity<ApiResponse<RouteInstagramPageResponse>> getInstagramsByRouteId(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestParam Long routeId,
 		@RequestParam(required = false) Long cursor,
 		@RequestParam(defaultValue = "10") int size
 	) {
-		RouteInstagramPageResponse response = instagramUseCase.getInstagramsByRouteIdPage(routeId, cursor, size);
+		Long userId = userDetails != null ? userDetails.userId() : null;
+		RouteInstagramPageResponse response = instagramUseCase.getInstagramsByRouteIdPage(routeId, userId, cursor, size);
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
 }

@@ -34,10 +34,15 @@ public class Instagram extends BaseEntity {
 	@Column(name = "url", nullable = false, length = 500)
 	private String url;
 
+	/** 좋아요 수 */
+	@Column(name = "like_count")
+	private Long likeCount;
+
 	@Builder(access = AccessLevel.PRIVATE)
 	private Instagram(String url, Long userId) {
 		this.url = url;
 		this.userId = userId;
+		this.likeCount = 0L;
 	}
 
 	/**
@@ -62,6 +67,14 @@ public class Instagram extends BaseEntity {
 
 		this.url = url;
 		this.userId = userId;
+	}
+
+	public void incrementLikeCount() {
+		this.likeCount = (this.likeCount == null) ? 1 : this.likeCount + 1;
+	}
+
+	public void decrementLikeCount() {
+		this.likeCount = (this.likeCount == null || this.likeCount <= 0) ? 0 : this.likeCount - 1;
 	}
 
 	// === Private 검증 메서드들 ===

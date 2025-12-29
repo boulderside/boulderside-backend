@@ -2,23 +2,32 @@ package com.line7studio.boulderside.usecase.instagram;
 
 import com.line7studio.boulderside.common.exception.BusinessException;
 import com.line7studio.boulderside.common.exception.ErrorCode;
+import com.line7studio.boulderside.common.dto.UserInfo;
 import com.line7studio.boulderside.controller.instagram.request.CreateInstagramRequest;
 import com.line7studio.boulderside.controller.instagram.request.UpdateInstagramRequest;
+import com.line7studio.boulderside.controller.instagram.response.InstagramDetailResponse;
 import com.line7studio.boulderside.controller.instagram.response.InstagramPageResponse;
 import com.line7studio.boulderside.controller.instagram.response.InstagramResponse;
 import com.line7studio.boulderside.controller.instagram.response.RouteInstagramPageResponse;
 import com.line7studio.boulderside.controller.instagram.response.RouteInstagramResponse;
+import com.line7studio.boulderside.domain.boulder.Boulder;
+import com.line7studio.boulderside.domain.boulder.service.BoulderService;
 import com.line7studio.boulderside.domain.instagram.Instagram;
 import com.line7studio.boulderside.domain.instagram.RouteInstagram;
+import com.line7studio.boulderside.domain.instagram.interaction.like.service.UserInstagramLikeService;
 import com.line7studio.boulderside.domain.instagram.service.InstagramService;
 import com.line7studio.boulderside.domain.instagram.service.RouteInstagramService;
+import com.line7studio.boulderside.domain.route.Route;
 import com.line7studio.boulderside.domain.route.service.RouteService;
+import com.line7studio.boulderside.domain.user.User;
 import com.line7studio.boulderside.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +40,8 @@ public class InstagramUseCase {
 	private final RouteInstagramService routeInstagramService;
 	private final RouteService routeService;
 	private final UserService userService;
+	private final UserInstagramLikeService userInstagramLikeService;
+	private final BoulderService boulderService;
 
 	@Transactional
 	public InstagramResponse createInstagram(Long userId, CreateInstagramRequest request) {
@@ -43,9 +54,14 @@ public class InstagramUseCase {
 		Instagram savedInstagram = instagramService.save(instagram);
 
 		// Route 연결
-		List<Long> routeIds = linkRoutes(savedInstagram.getId(), request.routeIds());
+		linkRoutes(savedInstagram.getId(), request.routeIds());
+		List<InstagramResponse.RouteInfo> routes = getRouteInfosByInstagramId(savedInstagram.getId());
 
-		return InstagramResponse.of(savedInstagram, routeIds);
+		// User 정보 조회
+		User user = userService.getUserById(userId);
+		UserInfo userInfo = UserInfo.from(user);
+
+		return InstagramResponse.of(savedInstagram, userInfo, routes);
 	}
 
 	@Transactional
@@ -66,9 +82,14 @@ public class InstagramUseCase {
 
 		// 기존 Route 연결 삭제 후 새로 연결
 		routeInstagramService.deleteByInstagramId(instagramId);
-		List<Long> routeIds = linkRoutes(instagramId, request.routeIds());
+		linkRoutes(instagramId, request.routeIds());
+		List<InstagramResponse.RouteInfo> routes = getRouteInfosByInstagramId(instagramId);
 
-		return InstagramResponse.of(instagram, routeIds);
+		// User 정보 조회
+		User user = userService.getUserById(userId);
+		UserInfo userInfo = UserInfo.from(user);
+
+		return InstagramResponse.of(instagram, userInfo, routes);
 	}
 
 	private List<Long> linkRoutes(Long instagramId, List<Long> routeIds) {
@@ -113,9 +134,14 @@ public class InstagramUseCase {
 		Instagram savedInstagram = instagramService.save(instagram);
 
 		// Route 연결
-		List<Long> linkedRouteIds = linkRoutes(savedInstagram.getId(), routeIds);
+		linkRoutes(savedInstagram.getId(), routeIds);
+		List<InstagramResponse.RouteInfo> routes = getRouteInfosByInstagramId(savedInstagram.getId());
 
-		return InstagramResponse.of(savedInstagram, linkedRouteIds);
+		// User 정보 조회
+		User user = userService.getUserById(userId);
+		UserInfo userInfo = UserInfo.from(user);
+
+		return InstagramResponse.of(savedInstagram, userInfo, routes);
 	}
 
 	@Transactional
@@ -131,9 +157,14 @@ public class InstagramUseCase {
 
 		// 기존 Route 연결 삭제 후 새로 연결
 		routeInstagramService.deleteByInstagramId(instagramId);
-		List<Long> linkedRouteIds = linkRoutes(instagramId, routeIds);
+		linkRoutes(instagramId, routeIds);
+		List<InstagramResponse.RouteInfo> routes = getRouteInfosByInstagramId(instagramId);
 
-		return InstagramResponse.of(instagram, linkedRouteIds);
+		// User 정보 조회
+		User user = userService.getUserById(userId);
+		UserInfo userInfo = UserInfo.from(user);
+
+		return InstagramResponse.of(instagram, userInfo, routes);
 	}
 
 	@Transactional
@@ -146,8 +177,44 @@ public class InstagramUseCase {
 	@Transactional(readOnly = true)
 	public InstagramResponse getInstagram(Long instagramId) {
 		Instagram instagram = instagramService.getById(instagramId);
-		List<Long> routeIds = getRouteIdsByInstagramId(instagramId);
-		return InstagramResponse.of(instagram, routeIds);
+		List<InstagramResponse.RouteInfo> routes = getRouteInfosByInstagramId(instagramId);
+
+		// User 정보 조회
+		User user = userService.getUserById(instagram.getUserId());
+		UserInfo userInfo = UserInfo.from(user);
+
+		return InstagramResponse.of(instagram, userInfo, routes);
+	}
+
+	@Transactional(readOnly = true)
+	public InstagramDetailResponse getInstagramDetail(Long instagramId, Long requestUserId) {
+		// Instagram 정보 조회
+		Instagram instagram = instagramService.getById(instagramId);
+
+		// User 정보 조회
+		User user = userService.getUserById(instagram.getUserId());
+		UserInfo userInfo = UserInfo.from(user);
+
+		// 연결된 Route 정보 조회
+		List<RouteInstagram> routeInstagrams = routeInstagramService.findByInstagramId(instagramId);
+		List<InstagramDetailResponse.RouteInfo> routes = routeInstagrams.stream()
+			.map(ri -> {
+				Route route = routeService.getById(ri.getRouteId());
+				Boulder boulder = boulderService.getById(route.getBoulderId());
+				return InstagramDetailResponse.RouteInfo.of(
+					route.getId(),
+					route.getName(),
+					boulder.getName()
+				);
+			})
+			.toList();
+
+		// 좋아요 여부 조회
+		Boolean isLiked = requestUserId != null
+			? userInstagramLikeService.existsIsLikedByUserId(instagramId, requestUserId)
+			: null;
+
+		return InstagramDetailResponse.of(instagram, userInfo, routes, isLiked);
 	}
 
 	private List<Long> getRouteIdsByInstagramId(Long instagramId) {
@@ -156,19 +223,40 @@ public class InstagramUseCase {
 			.collect(Collectors.toList());
 	}
 
+	private List<InstagramResponse.RouteInfo> getRouteInfosByInstagramId(Long instagramId) {
+		return routeInstagramService.findByInstagramId(instagramId).stream()
+			.map(ri -> {
+				Route route = routeService.getById(ri.getRouteId());
+				Boulder boulder = boulderService.getById(route.getBoulderId());
+				return InstagramResponse.RouteInfo.of(
+					route.getId(),
+					route.getName(),
+					boulder.getName()
+				);
+			})
+			.toList();
+	}
+
 	@Transactional(readOnly = true)
 	public List<InstagramResponse> getAllInstagrams() {
 		List<Instagram> instagrams = instagramService.findAll();
 		return instagrams.stream()
 			.map(instagram -> {
-				List<Long> routeIds = getRouteIdsByInstagramId(instagram.getId());
-				return InstagramResponse.of(instagram, routeIds);
+				List<InstagramResponse.RouteInfo> routes = getRouteInfosByInstagramId(instagram.getId());
+				User user = userService.getUserById(instagram.getUserId());
+				UserInfo userInfo = UserInfo.from(user);
+				return InstagramResponse.of(instagram, userInfo, routes);
 			})
 			.collect(Collectors.toList());
 	}
 
 	@Transactional(readOnly = true)
 	public InstagramPageResponse getInstagramsPage(Long cursor, int size) {
+		return getInstagramsPage(null, cursor, size);
+	}
+
+	@Transactional(readOnly = true)
+	public InstagramPageResponse getInstagramsPage(Long userId, Long cursor, int size) {
 		int pageSize = normalizeSize(size);
 		List<Instagram> instagrams = instagramService.findAllWithCursor(cursor, pageSize + 1);
 
@@ -178,10 +266,23 @@ public class InstagramUseCase {
 		}
 		Long nextCursor = hasNext && !instagrams.isEmpty() ? instagrams.get(instagrams.size() - 1).getId() : null;
 
+		// 좋아요 여부 조회
+		Map<Long, Boolean> likedMap = Map.of();
+		if (userId != null && !instagrams.isEmpty()) {
+			List<Long> instagramIds = instagrams.stream()
+				.map(Instagram::getId)
+				.toList();
+			likedMap = userInstagramLikeService.getIsLikedByUserIdForInstagramList(instagramIds, userId);
+		}
+
+		Map<Long, Boolean> finalLikedMap = likedMap;
 		List<InstagramResponse> content = instagrams.stream()
 			.map(instagram -> {
-				List<Long> routeIds = getRouteIdsByInstagramId(instagram.getId());
-				return InstagramResponse.of(instagram, routeIds);
+				List<InstagramResponse.RouteInfo> routes = getRouteInfosByInstagramId(instagram.getId());
+				User user = userService.getUserById(instagram.getUserId());
+				UserInfo userInfo = UserInfo.from(user);
+				Boolean isLiked = userId != null ? finalLikedMap.getOrDefault(instagram.getId(), false) : null;
+				return InstagramResponse.of(instagram, userInfo, routes, isLiked);
 			})
 			.collect(Collectors.toList());
 
@@ -193,14 +294,21 @@ public class InstagramUseCase {
 		List<Instagram> instagrams = instagramService.findByUserId(userId);
 		return instagrams.stream()
 			.map(instagram -> {
-				List<Long> routeIds = getRouteIdsByInstagramId(instagram.getId());
-				return InstagramResponse.of(instagram, routeIds);
+				List<InstagramResponse.RouteInfo> routes = getRouteInfosByInstagramId(instagram.getId());
+				User user = userService.getUserById(instagram.getUserId());
+				UserInfo userInfo = UserInfo.from(user);
+				return InstagramResponse.of(instagram, userInfo, routes);
 			})
 			.collect(Collectors.toList());
 	}
 
 	@Transactional(readOnly = true)
 	public InstagramPageResponse getInstagramsByUserIdPage(Long userId, Long cursor, int size) {
+		return getInstagramsByUserIdPage(userId, null, cursor, size);
+	}
+
+	@Transactional(readOnly = true)
+	public InstagramPageResponse getInstagramsByUserIdPage(Long userId, Long requestUserId, Long cursor, int size) {
 		int pageSize = normalizeSize(size);
 		List<Instagram> instagrams = instagramService.findByUserIdWithCursor(userId, cursor, pageSize + 1);
 
@@ -210,10 +318,23 @@ public class InstagramUseCase {
 		}
 		Long nextCursor = hasNext && !instagrams.isEmpty() ? instagrams.get(instagrams.size() - 1).getId() : null;
 
+		// 좋아요 여부 조회
+		Map<Long, Boolean> likedMap = Map.of();
+		if (requestUserId != null && !instagrams.isEmpty()) {
+			List<Long> instagramIds = instagrams.stream()
+				.map(Instagram::getId)
+				.toList();
+			likedMap = userInstagramLikeService.getIsLikedByUserIdForInstagramList(instagramIds, requestUserId);
+		}
+
+		Map<Long, Boolean> finalLikedMap = likedMap;
 		List<InstagramResponse> content = instagrams.stream()
 			.map(instagram -> {
-				List<Long> routeIds = getRouteIdsByInstagramId(instagram.getId());
-				return InstagramResponse.of(instagram, routeIds);
+				List<InstagramResponse.RouteInfo> routes = getRouteInfosByInstagramId(instagram.getId());
+				User user = userService.getUserById(instagram.getUserId());
+				UserInfo userInfo = UserInfo.from(user);
+				Boolean isLiked = requestUserId != null ? finalLikedMap.getOrDefault(instagram.getId(), false) : null;
+				return InstagramResponse.of(instagram, userInfo, routes, isLiked);
 			})
 			.collect(Collectors.toList());
 
@@ -229,14 +350,21 @@ public class InstagramUseCase {
 		return routeInstagrams.stream()
 			.map(ri -> {
 				Instagram instagram = instagramService.getById(ri.getInstagramId());
-				List<Long> routeIds = getRouteIdsByInstagramId(ri.getInstagramId());
-				return RouteInstagramResponse.of(ri, instagram, routeIds);
+				List<InstagramResponse.RouteInfo> routes = getRouteInfosByInstagramId(ri.getInstagramId());
+				User user = userService.getUserById(instagram.getUserId());
+				UserInfo userInfo = UserInfo.from(user);
+				return RouteInstagramResponse.of(ri, instagram, userInfo, routes);
 			})
 			.collect(Collectors.toList());
 	}
 
 	@Transactional(readOnly = true)
 	public RouteInstagramPageResponse getInstagramsByRouteIdPage(Long routeId, Long cursor, int size) {
+		return getInstagramsByRouteIdPage(routeId, null, cursor, size);
+	}
+
+	@Transactional(readOnly = true)
+	public RouteInstagramPageResponse getInstagramsByRouteIdPage(Long routeId, Long userId, Long cursor, int size) {
 		int pageSize = normalizeSize(size);
 		List<RouteInstagram> routeInstagrams = routeInstagramService.findByRouteIdWithCursor(routeId, cursor, pageSize + 1);
 
@@ -246,11 +374,25 @@ public class InstagramUseCase {
 		}
 		Long nextCursor = hasNext && !routeInstagrams.isEmpty() ? routeInstagrams.get(routeInstagrams.size() - 1).getId() : null;
 
+		// 좋아요 여부 조회
+		Map<Long, Boolean> likedMap = Map.of();
+		if (userId != null && !routeInstagrams.isEmpty()) {
+			List<Long> instagramIds = routeInstagrams.stream()
+				.map(RouteInstagram::getInstagramId)
+				.distinct()
+				.toList();
+			likedMap = userInstagramLikeService.getIsLikedByUserIdForInstagramList(instagramIds, userId);
+		}
+
+		Map<Long, Boolean> finalLikedMap = likedMap;
 		List<RouteInstagramResponse> content = routeInstagrams.stream()
 			.map(ri -> {
 				Instagram instagram = instagramService.getById(ri.getInstagramId());
-				List<Long> routeIds = getRouteIdsByInstagramId(ri.getInstagramId());
-				return RouteInstagramResponse.of(ri, instagram, routeIds);
+				List<InstagramResponse.RouteInfo> routes = getRouteInfosByInstagramId(ri.getInstagramId());
+				User user = userService.getUserById(instagram.getUserId());
+				UserInfo userInfo = UserInfo.from(user);
+				Boolean isLiked = userId != null ? finalLikedMap.getOrDefault(ri.getInstagramId(), false) : null;
+				return RouteInstagramResponse.of(ri, instagram, userInfo, routes, isLiked);
 			})
 			.collect(Collectors.toList());
 
@@ -261,10 +403,13 @@ public class InstagramUseCase {
 	public List<RouteInstagramResponse> getRoutesByInstagramId(Long instagramId) {
 		Instagram instagram = instagramService.getById(instagramId);
 		List<RouteInstagram> routeInstagrams = routeInstagramService.findByInstagramId(instagramId);
-		List<Long> routeIds = getRouteIdsByInstagramId(instagramId);
+		List<InstagramResponse.RouteInfo> routes = getRouteInfosByInstagramId(instagramId);
+
+		User user = userService.getUserById(instagram.getUserId());
+		UserInfo userInfo = UserInfo.from(user);
 
 		return routeInstagrams.stream()
-			.map(ri -> RouteInstagramResponse.of(ri, instagram, routeIds))
+			.map(ri -> RouteInstagramResponse.of(ri, instagram, userInfo, routes))
 			.collect(Collectors.toList());
 	}
 
