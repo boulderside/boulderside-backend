@@ -105,7 +105,7 @@ public class BoulderUseCase {
 
 		// 저장
 		Boulder savedBoulder = boulderService.save(boulder);
-		publishBoulderPushAfterCommit(savedBoulder);
+		publishBoulderPushAfterCommit(savedBoulder, region, sector);
 
 		// 이미지 생성 (ImageService에 위임)
 		List<Image> images = imageService.createImagesForDomain(
@@ -265,23 +265,25 @@ public class BoulderUseCase {
 			.toList();
 	}
 
-	private void publishBoulderPushAfterCommit(Boulder boulder) {
+	private void publishBoulderPushAfterCommit(Boulder boulder, Region region, Sector sector) {
 		if (!TransactionSynchronizationManager.isSynchronizationActive()) {
-			sendBoulderPush(boulder);
+			sendBoulderPush(boulder, region, sector);
 			return;
 		}
 		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
 			@Override
 			public void afterCommit() {
-				sendBoulderPush(boulder);
+				sendBoulderPush(boulder, region, sector);
 			}
 		});
 	}
 
-	private void sendBoulderPush(Boulder boulder) {
+	private void sendBoulderPush(Boulder boulder, Region region, Sector sector) {
 		List<String> tokens = userService.getAllFcmTokens();
 		NotificationTarget target = new NotificationTarget(NotificationDomainType.BOULDER, String.valueOf(boulder.getId()));
-		PushMessage message = new PushMessage("새 바위 등록", boulder.getName(), target);
+		String location = region.getProvince() + " " + sector.getSectorName();
+		String body = location + "에 새 바위 '" + boulder.getName() + "'이 등록되었습니다";
+		PushMessage message = new PushMessage("새 바위 등록", body, target);
 		fcmService.sendMessageToAll(tokens, message);
 	}
 }

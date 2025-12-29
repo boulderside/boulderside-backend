@@ -247,7 +247,8 @@ public class RouteUseCase {
 	private void sendRoutePush(Route route, Boulder boulder) {
 		List<String> tokens = userService.getAllFcmTokens();
 		NotificationTarget target = new NotificationTarget(NotificationDomainType.ROUTE, String.valueOf(route.getId()));
-		String body = boulder != null ? boulder.getName() + " · " + route.getName() : route.getName();
+		String routeLevel = route.getRouteLevel() != null ? " (" + route.getRouteLevel().name() + ")" : "";
+		String body = boulder != null ? boulder.getName() + " · " + route.getName() + routeLevel : route.getName() + routeLevel;
 		PushMessage message = new PushMessage("새 루트 등록", body, target);
 		fcmService.sendMessageToAll(tokens, message);
 	}
