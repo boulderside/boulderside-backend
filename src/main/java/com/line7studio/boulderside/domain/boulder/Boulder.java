@@ -30,10 +30,6 @@ public class Boulder extends BaseEntity {
 	@Column(name = "region_id", nullable = false)
 	private Long regionId;
 
-	/** 연관 섹터 ID (FK) */
-	@Column(name = "sector_id", nullable = false)
-	private Long sectorId;
-
 	/** 바위 이름 */
 	@Column(name = "name")
 	private String name;
@@ -59,9 +55,8 @@ public class Boulder extends BaseEntity {
     private Long likeCount;
 
 	@Builder(access = AccessLevel.PRIVATE)
-	private Boulder(Long regionId, Long sectorId, String name, String description, Double latitude, Double longitude) {
+	private Boulder(Long regionId, String name, String description, Double latitude, Double longitude) {
 		this.regionId = regionId;
-		this.sectorId = sectorId;
 		this.name = name;
 		this.description = description;
 		this.latitude = latitude;
@@ -73,16 +68,14 @@ public class Boulder extends BaseEntity {
 	/**
 	 * 정적 팩토리 메서드 - 바위 생성
 	 */
-	public static Boulder create(Long regionId, Long sectorId, String name, String description, Double latitude, Double longitude) {
+	public static Boulder create(Long regionId, String name, String description, Double latitude, Double longitude) {
 		validateRegionId(regionId);
-		validateSectorId(sectorId);
 		validateName(name);
 		validateDescription(description);
 		validateCoordinates(latitude, longitude);
 
 		return Boulder.builder()
 			.regionId(regionId)
-			.sectorId(sectorId)
 			.name(name)
 			.description(description)
 			.latitude(latitude)
@@ -93,15 +86,13 @@ public class Boulder extends BaseEntity {
 	/**
 	 * 바위 정보 업데이트 (검증 포함)
 	 */
-	public void update(Long regionId, Long sectorId, String name, String description, Double latitude, Double longitude) {
+	public void update(Long regionId, String name, String description, Double latitude, Double longitude) {
 		validateRegionId(regionId);
-		validateSectorId(sectorId);
 		validateName(name);
 		validateDescription(description);
 		validateCoordinates(latitude, longitude);
 
 		this.regionId = regionId;
-		this.sectorId = sectorId;
 		this.name = name;
 		this.description = description;
 		this.latitude = latitude;
@@ -125,12 +116,6 @@ public class Boulder extends BaseEntity {
 	private static void validateRegionId(Long regionId) {
 		if (regionId == null) {
 			throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD, "지역 ID는 필수입니다.");
-		}
-	}
-
-	private static void validateSectorId(Long sectorId) {
-		if (sectorId == null) {
-			throw new InvalidValueException(ErrorCode.MISSING_REQUIRED_FIELD, "섹터 ID는 필수입니다.");
 		}
 	}
 

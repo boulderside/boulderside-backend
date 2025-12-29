@@ -53,9 +53,9 @@ public class BoulderService {
 	/**
 	 * Boulder 정보를 업데이트합니다.
 	 */
-	public Boulder update(Long boulderId, Long regionId, Long sectorId, String name, String description, Double latitude, Double longitude) {
+	public Boulder update(Long boulderId, Long regionId, String name, String description, Double latitude, Double longitude) {
 		Boulder boulder = getById(boulderId);
-		boulder.update(regionId, sectorId, name, description, latitude, longitude);
+		boulder.update(regionId, name, description, latitude, longitude);
 		return boulder;
 	}
 

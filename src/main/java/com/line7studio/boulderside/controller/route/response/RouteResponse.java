@@ -14,8 +14,6 @@ public record RouteResponse(
     String city,
     String name,
     String pioneerName,
-    String sectorName,
-    String areaCode,
     Level routeLevel,
     Long likeCount,
     Boolean liked,
@@ -36,7 +34,7 @@ public record RouteResponse(
         }
     }
 
-    public static RouteResponse of(Route route, String province, String city, String boulderName, String sectorName, String areaCode,
+    public static RouteResponse of(Route route, String province, String city, String boulderName,
         List<ImageInfo> imageInfoList, Long likeCount, Boolean liked, Boolean completed) {
         return new RouteResponse(
             route.getId(),
@@ -45,8 +43,6 @@ public record RouteResponse(
             city,
             route.getName(),
             route.getPioneerName(),
-            sectorName,
-            areaCode,
             route.getRouteLevel(),
             likeCount,
             liked,
