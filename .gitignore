@@ -46,3 +46,4 @@ local.env
 prod.env
 src/main/resources/static/admin/
 src/main/resources/*.json
+src/main/resources/*.p8

@@ -55,6 +55,7 @@ public class AuthUseCase {
 	public LoginResponse loginWithOAuth(OAuthLoginRequest request, String ipAddress, String userAgent) {
 		OAuthClient client = oAuthClientRegistry.getClient(request.providerType());
 		OAuthUserProfile profile = client.fetchUserProfile(request.identityToken());
+
 		boolean isAdminProviderUserId = isAdminProviderUserId(profile.providerUserId());
 
 		User user = userService.findByProvider(request.providerType(), profile.providerUserId())
