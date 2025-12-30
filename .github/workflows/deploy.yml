@@ -63,6 +63,19 @@ jobs:
             APP_DIR=~/boulderside
             mkdir -p $APP_DIR
 
+            # Docker 설치 (없을 경우에만)
+            if ! command -v docker >/dev/null 2>&1; then
+              sudo apt-get update
+              sudo apt-get install -y ca-certificates curl gnupg
+              sudo install -m 0755 -d /etc/apt/keyrings
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+              sudo chmod a+r /etc/apt/keyrings/docker.gpg
+              echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+              sudo apt-get update
+              sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+              sudo usermod -aG docker $USER
+            fi
+
             # 설정 파일 이동
             mv ~/prod.env $APP_DIR/
             mv ~/apple_authkey.p8 $APP_DIR/
@@ -71,7 +84,7 @@ jobs:
 
             # Docker 이미지 로드
             echo "Loading Docker image..."
-            gunzip -c ~/boulderside-image.tar.gz | docker load
+            gunzip -c ~/boulderside-image.tar.gz | sudo docker load
             rm ~/boulderside-image.tar.gz
 
             # 서비스 재시작
@@ -79,17 +92,17 @@ jobs:
             echo "Restarting services..."
             
             # docker compose 명령어 결정 (v2 및 v1 지원)
-            if docker compose version >/dev/null 2>&1; then
-              DC="docker compose"
+            if sudo docker compose version >/dev/null 2>&1; then
+              DC="sudo docker compose"
             else
-              DC="docker-compose"
+              DC="sudo docker-compose"
             fi
 
             $DC -f docker-compose.prod.yml down --remove-orphans || true
             $DC --env-file prod.env -f docker-compose.prod.yml up -d
 
             # 사용되지 않는 이미지 정리
-            docker image prune -f
+            sudo docker image prune -f
           EOF
 
           # 로컬 키 정리
