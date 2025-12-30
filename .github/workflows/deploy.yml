@@ -37,9 +37,9 @@ jobs:
           # secrets에서 prod.env 생성 및 DOCKER_IMAGE 추가
           echo "${{ secrets.PROD_ENV }}" > prod.env
           echo "DOCKER_IMAGE=$IMAGE_NAME:$IMAGE_TAG" >> prod.env
-          # 비밀 키/JSON 파일 복원
-          echo "${{ secrets.APPLE_P8_BASE64 }}" > apple_authkey.p8
-          echo "${{ secrets.SERVICE_JSON_BASE64 }}" > service.json
+          # 비밀 키/JSON 파일 복원 (따옴표/개행 보존)
+          printf "%s" "${{ secrets.APPLE_P8_BASE64 }}" > apple_authkey.p8
+          printf "%s" "${{ secrets.SERVICE_JSON_BASE64 }}" > service.json
           docker save $IMAGE_NAME:$IMAGE_TAG | gzip > boulderside-image.tar.gz
 
       - name: Deploy to EC2
