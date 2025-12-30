@@ -12,6 +12,11 @@ services:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: prod
+      FIREBASE_CREDENTIALS_PATH: /app/service.json
+      APPLE_PRIVATE_KEY_PATH: /app/apple_authkey.p8
+    volumes:
+      - ./service.json:/app/service.json:ro
+      - ./apple_authkey.p8:/app/apple_authkey.p8:ro
     restart: always
     networks:
       - backend
