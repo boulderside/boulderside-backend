@@ -4,12 +4,17 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: boulderside
       IMAGE_TAG: ${{ github.sha }}
+      REGISTRY: ghcr.io
       EC2_HOST: ${{ secrets.EC2_HOST }}
       EC2_USER: ${{ secrets.EC2_USER }}
       EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
@@ -23,24 +28,60 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
+          cache: 'gradle'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - name: Run tests
         run: |
           chmod +x gradlew
           ./gradlew clean test
 
-      - name: Build Docker image
-        run: docker build -t $IMAGE_NAME:$IMAGE_TAG .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}
+          tags: |
+            type=sha,prefix=,format=long
+            type=raw,value=latest
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository }}:latest
+          cache-to: type=inline
 
       - name: Prepare deployment files
         run: |
           # secrets에서 prod.env 생성 및 DOCKER_IMAGE 추가
           echo "${{ secrets.PROD_ENV }}" > prod.env
-          echo "DOCKER_IMAGE=$IMAGE_NAME:$IMAGE_TAG" >> prod.env
+          echo "DOCKER_IMAGE=${{ env.REGISTRY }}/${{ github.repository }}:${{ github.sha }}" >> prod.env
           # 비밀 키/JSON 파일 복원 (따옴표/개행 보존)
           printf "%s" "${{ secrets.APPLE_P8_BASE64 }}" > apple_authkey.p8
           printf "%s" "${{ secrets.SERVICE_JSON_BASE64 }}" | base64 -d > service.json
-          docker save $IMAGE_NAME:$IMAGE_TAG | gzip > boulderside-image.tar.gz
 
       - name: Deploy to EC2
         run: |
@@ -48,14 +89,13 @@ jobs:
           echo "$EC2_SSH_KEY" > key.pem
           chmod 600 key.pem
 
-          # 파일 전송 (이미지, 환경변수, compose 파일)
+          # 파일 전송 (환경변수, compose 파일, 인증 파일)
           scp -o StrictHostKeyChecking=no -i key.pem \
-            boulderside-image.tar.gz \
             prod.env \
             apple_authkey.p8 \
             service.json \
             docker-compose.prod.yml \
-            $EC2_USER@$EC2_HOST:~ 
+            $EC2_USER@$EC2_HOST:~
 
           # 원격 배포 명령어 실행
           ssh -o StrictHostKeyChecking=no -i key.pem $EC2_USER@$EC2_HOST << 'EOF'
@@ -82,15 +122,10 @@ jobs:
             mv ~/service.json $APP_DIR/
             mv ~/docker-compose.prod.yml $APP_DIR/
 
-            # Docker 이미지 로드
-            echo "Loading Docker image..."
-            gunzip -c ~/boulderside-image.tar.gz | sudo docker load
-            rm ~/boulderside-image.tar.gz
-
             # 서비스 재시작
             cd $APP_DIR
             echo "Restarting services..."
-            
+
             # docker compose 명령어 결정 (v2 및 v1 지원)
             if sudo docker compose version >/dev/null 2>&1; then
               DC="sudo docker compose"
@@ -98,10 +133,17 @@ jobs:
               DC="sudo docker-compose"
             fi
 
+            # 기존 서비스 중지
             $DC -f docker-compose.prod.yml down --remove-orphans || true
+
+            # 새 이미지 pull 및 서비스 시작
+            $DC --env-file prod.env -f docker-compose.prod.yml pull
             $DC --env-file prod.env -f docker-compose.prod.yml up -d
 
-            # 사용되지 않는 이미지 정리
+            # 오래된 이미지 정리 (3개 이상의 이미지 유지하지 않음)
+            echo "Cleaning up old images..."
+            sudo docker images 'ghcr.io/*boulderside*' --format "{{.ID}} {{.CreatedAt}}" | \
+              tail -n +4 | awk '{print $1}' | xargs -r sudo docker rmi -f || true
             sudo docker image prune -f
           EOF
 
