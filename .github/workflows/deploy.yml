@@ -39,7 +39,7 @@ jobs:
           echo "DOCKER_IMAGE=$IMAGE_NAME:$IMAGE_TAG" >> prod.env
           # 비밀 키/JSON 파일 복원 (따옴표/개행 보존)
           printf "%s" "${{ secrets.APPLE_P8_BASE64 }}" > apple_authkey.p8
-          printf "%s" "${{ secrets.SERVICE_JSON_BASE64 }}" > service.json
+          printf "%s" "${{ secrets.SERVICE_JSON_BASE64 }}" | base64 -d > service.json
           docker save $IMAGE_NAME:$IMAGE_TAG | gzip > boulderside-image.tar.gz
 
       - name: Deploy to EC2
