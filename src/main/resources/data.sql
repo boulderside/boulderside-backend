@@ -1,14 +1,5 @@
 -- ▶ 0. 외래 키 제약 잠시 비활성화
 SET FOREIGN_KEY_CHECKS = 0;
-TRUNCATE TABLE user_credentials;
-TRUNCATE TABLE users;
-TRUNCATE TABLE boulders;
-TRUNCATE TABLE regions;
-TRUNCATE TABLE images;
-TRUNCATE TABLE comments;
-TRUNCATE TABLE routes;
-TRUNCATE TABLE approaches;
-TRUNCATE TABLE points;
 
 INSERT INTO users (id, nickname, user_role, profile_image_url, phone, user_sex, user_level, name, email, created_at, updated_at) VALUES
     (1,'bouldertiger', 'ROLE_USER', null, '010-1234-5678', 'MAN', 'V13', '김철수', 'example@com', '2025-01-01 09:00:00', '2025-01-01 09:00:00');
