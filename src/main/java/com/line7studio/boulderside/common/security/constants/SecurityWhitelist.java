@@ -9,7 +9,7 @@ public final class SecurityWhitelist {
 	};
 
 	public static final String[] PUBLIC = {
-		"/auth/**", "/users/nickname/availability"
+		"/api/auth/**", "/api/users/nickname/availability", "index.html"
 	};
 
 	public static final String[] ADMIN_PUBLIC = {
@@ -20,6 +20,6 @@ public final class SecurityWhitelist {
 	};
 
 	public static final String[] ADMIN = {
-		"/admin/**"
+		"/api/admin/**"
 	};
 }
