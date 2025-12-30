@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   spring:
     image: ${DOCKER_IMAGE}
@@ -14,27 +12,22 @@ services:
       SPRING_PROFILES_ACTIVE: prod
       FIREBASE_CREDENTIALS_PATH: file:/app/service.json
       APPLE_PRIVATE_KEY_PATH: file:/app/apple_authkey.p8
-      JAVA_OPTS: "-Xms512m -Xmx768m -XX:+UseG1GC -XX:MaxGCPauseMillis=200"
     volumes:
       - ./service.json:/app/service.json:ro
       - ./apple_authkey.p8:/app/apple_authkey.p8:ro
-    restart: always
+    restart: unless-stopped
     deploy:
       resources:
         limits:
           memory: 1G
-          cpus: '1.0'
         reservations:
           memory: 512M
-          cpus: '0.5'
-    networks:
-      - backend
 
   redis:
     image: redis:7-alpine
     container_name: redis
-    command: ["/bin/sh", "-c", "redis-server --appendonly yes --requirepass '$REDIS_PASSWORD' --maxmemory 200mb --maxmemory-policy allkeys-lru" ]
-    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD} --maxmemory 256mb --maxmemory-policy allkeys-lru
+    restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:
@@ -43,15 +36,6 @@ services:
       resources:
         limits:
           memory: 256M
-          cpus: '0.5'
-        reservations:
-          memory: 128M
-          cpus: '0.25'
-    networks:
-      - backend
-
-networks:
-  backend:
 
 volumes:
   redis-data:

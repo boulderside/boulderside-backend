@@ -4,20 +4,12 @@ on:
   push:
     branches: [ main ]
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: boulderside
       IMAGE_TAG: ${{ github.sha }}
-      REGISTRY: ghcr.io
-      EC2_HOST: ${{ secrets.EC2_HOST }}
-      EC2_USER: ${{ secrets.EC2_USER }}
-      EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
 
     steps:
       - name: Checkout code
@@ -30,122 +22,49 @@ jobs:
           java-version: '21'
           cache: 'gradle'
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
       - name: Run tests
-        run: |
-          chmod +x gradlew
-          ./gradlew clean test
+        run: ./gradlew test
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Build Docker image
+        run: docker build -t $IMAGE_NAME:$IMAGE_TAG .
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ github.repository }}
-          tags: |
-            type=sha,prefix=,format=long
-            type=raw,value=latest
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ github.repository }}:latest
-          cache-to: type=inline
+      - name: Save Docker image
+        run: docker save $IMAGE_NAME:$IMAGE_TAG | gzip > image.tar.gz
 
       - name: Prepare deployment files
         run: |
-          # secrets에서 prod.env 생성 및 DOCKER_IMAGE 추가
           echo "${{ secrets.PROD_ENV }}" > prod.env
-          echo "DOCKER_IMAGE=${{ env.REGISTRY }}/${{ github.repository }}:${{ github.sha }}" >> prod.env
-          # 비밀 키/JSON 파일 복원 (따옴표/개행 보존)
+          echo "DOCKER_IMAGE=$IMAGE_NAME:$IMAGE_TAG" >> prod.env
           printf "%s" "${{ secrets.APPLE_P8_BASE64 }}" > apple_authkey.p8
           printf "%s" "${{ secrets.SERVICE_JSON_BASE64 }}" | base64 -d > service.json
 
       - name: Deploy to EC2
         run: |
-          # 임시 SSH 키 설정
-          echo "$EC2_SSH_KEY" > key.pem
+          echo "${{ secrets.EC2_SSH_KEY }}" > key.pem
           chmod 600 key.pem
 
-          # 파일 전송 (환경변수, compose 파일, 인증 파일)
           scp -o StrictHostKeyChecking=no -i key.pem \
-            prod.env \
-            apple_authkey.p8 \
-            service.json \
-            docker-compose.prod.yml \
-            $EC2_USER@$EC2_HOST:~
+            image.tar.gz prod.env apple_authkey.p8 service.json docker-compose.prod.yml \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~
 
-          # 원격 배포 명령어 실행
-          ssh -o StrictHostKeyChecking=no -i key.pem $EC2_USER@$EC2_HOST << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             set -e
-            APP_DIR=~/boulderside
-            mkdir -p $APP_DIR
 
-            # Docker 설치 (없을 경우에만)
-            if ! command -v docker >/dev/null 2>&1; then
-              sudo apt-get update
-              sudo apt-get install -y ca-certificates curl gnupg
-              sudo install -m 0755 -d /etc/apt/keyrings
-              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-              sudo chmod a+r /etc/apt/keyrings/docker.gpg
-              echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-              sudo apt-get update
-              sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-              sudo usermod -aG docker $USER
-            fi
+            # 이미지 로드
+            docker load < ~/image.tar.gz
+            rm ~/image.tar.gz
 
-            # 설정 파일 이동
-            mv ~/prod.env $APP_DIR/
-            mv ~/apple_authkey.p8 $APP_DIR/
-            mv ~/service.json $APP_DIR/
-            mv ~/docker-compose.prod.yml $APP_DIR/
+            # 파일 이동
+            mkdir -p ~/boulderside
+            mv ~/prod.env ~/apple_authkey.p8 ~/service.json ~/docker-compose.prod.yml ~/boulderside/
+            cd ~/boulderside
 
-            # 서비스 재시작
-            cd $APP_DIR
-            echo "Restarting services..."
+            # 재배포
+            docker compose --env-file prod.env -f docker-compose.prod.yml down || true
+            docker compose --env-file prod.env -f docker-compose.prod.yml up -d
 
-            # docker compose 명령어 결정 (v2 및 v1 지원)
-            if sudo docker compose version >/dev/null 2>&1; then
-              DC="sudo docker compose"
-            else
-              DC="sudo docker-compose"
-            fi
-
-            # 기존 서비스 중지
-            $DC -f docker-compose.prod.yml down --remove-orphans || true
-
-            # 새 이미지 pull 및 서비스 시작
-            $DC --env-file prod.env -f docker-compose.prod.yml pull
-            $DC --env-file prod.env -f docker-compose.prod.yml up -d
-
-            # 오래된 이미지 정리 (3개 이상의 이미지 유지하지 않음)
-            echo "Cleaning up old images..."
-            sudo docker images 'ghcr.io/*boulderside*' --format "{{.ID}} {{.CreatedAt}}" | \
-              tail -n +4 | awk '{print $1}' | xargs -r sudo docker rmi -f || true
-            sudo docker image prune -f
+            # 정리
+            docker image prune -af --filter "until=72h"
           EOF
 
-          # 로컬 키 정리
           rm key.pem
