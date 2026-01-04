@@ -20,21 +20,19 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	@Query("""
 		select u.fcmToken
 		from User u
-		join UserMeta m on m.userId = u.id
 		where u.fcmToken is not null
 			and u.fcmToken <> ''
-			and m.pushEnabled = true
+			and u.pushEnabled = true
 		""")
 	List<String> findAllFcmTokens();
 
 	@Query("""
 		select u.fcmToken
 		from User u
-		join UserMeta m on m.userId = u.id
 		where u.id = :userId
 			and u.fcmToken is not null
 			and u.fcmToken <> ''
-			and m.pushEnabled = true
+			and u.pushEnabled = true
 		""")
 	Optional<String> findFcmTokenByUserIdAndPushEnabled(@Param("userId") Long userId);
 }
