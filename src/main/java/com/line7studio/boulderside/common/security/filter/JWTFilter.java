@@ -61,6 +61,10 @@ public class JWTFilter extends OncePerRequestFilter {
 			if (isExpired) {
 				throw new JwtAuthenticationException(SecurityErrorCode.ACCESS_TOKEN_EXPIRED);
 			}
+			String category = tokenProvider.getCategory(token);
+			if (!"access".equals(category)) {
+				throw new JwtAuthenticationException(SecurityErrorCode.ACCESS_TOKEN_INVALID);
+			}
 
 			Long userId = tokenProvider.getUserId(token);
 			User user = userRepository.findById(userId)
