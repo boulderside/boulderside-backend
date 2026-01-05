@@ -1,6 +1,8 @@
 package com.line7studio.boulderside.usecase.comment;
 
 import com.line7studio.boulderside.common.dto.UserInfo;
+import com.line7studio.boulderside.common.exception.BusinessException;
+import com.line7studio.boulderside.common.exception.ErrorCode;
 import com.line7studio.boulderside.common.notification.NotificationDomainType;
 import com.line7studio.boulderside.common.notification.NotificationTarget;
 import com.line7studio.boulderside.common.notification.PushMessage;
@@ -21,6 +23,7 @@ import com.line7studio.boulderside.domain.board.service.BoardPostReadService;
 import com.line7studio.boulderside.domain.board.service.BoardPostService;
 import com.line7studio.boulderside.domain.mate.service.MatePostReadService;
 import com.line7studio.boulderside.domain.mate.service.MatePostService;
+import com.line7studio.boulderside.domain.enums.PostStatus;
 import com.line7studio.boulderside.domain.route.Route;
 import com.line7studio.boulderside.domain.route.service.RouteService;
 import com.line7studio.boulderside.domain.user.User;
@@ -167,6 +170,12 @@ public class CommentUseCase {
         User user = userService.getUserById(userId);
         UserInfo userInfo = UserInfo.from(user);
         PostAuthorInfo postAuthorInfo = getPostAuthorInfo(postId, commentDomainType);
+        if (postAuthorInfo.userId() != null && userBlockService.isBlockedBetween(userId, postAuthorInfo.userId())) {
+            throw new BusinessException(
+                ErrorCode.NO_PERMISSION,
+                "차단한 사용자의 게시글에는 댓글을 작성할 수 없습니다."
+            );
+        }
 
         Comment savedComment = commentService.createComment(
                 user.getId(),
@@ -308,7 +317,14 @@ public class CommentUseCase {
 
     @Transactional
     public void updateCommentStatus(Long commentId, UpdatePostStatusRequest request) {
-        commentService.updateCommentStatus(commentId, request.status());
+        Comment comment = commentService.getCommentById(commentId);
+        PostStatus previousStatus = comment.getStatus();
+        PostStatus nextStatus = request.status();
+        if (previousStatus == nextStatus) {
+            return;
+        }
+        commentService.updateCommentStatus(commentId, nextStatus);
+        adjustCommentCountOnStatusChange(comment, previousStatus, nextStatus);
     }
 
     private PostAuthorInfo getPostAuthorInfo(Long postId, CommentDomainType commentDomainType) {
@@ -362,6 +378,34 @@ public class CommentUseCase {
         if (text == null) return "";
         if (text.length() <= maxLength) return text;
         return text.substring(0, maxLength) + "...";
+    }
+
+    private void adjustCommentCountOnStatusChange(Comment comment, PostStatus previousStatus, PostStatus nextStatus) {
+        boolean wasActive = previousStatus == PostStatus.ACTIVE;
+        boolean isActive = nextStatus == PostStatus.ACTIVE;
+        if (wasActive == isActive) {
+            return;
+        }
+        if (comment.getCommentDomainType() == CommentDomainType.BOARD_POST) {
+            if (isActive) {
+                boardPostReadService.incrementCommentCount(comment.getDomainId());
+            } else {
+                boardPostReadService.decrementCommentCount(comment.getDomainId());
+            }
+        } else if (comment.getCommentDomainType() == CommentDomainType.MATE_POST) {
+            if (isActive) {
+                matePostReadService.incrementCommentCount(comment.getDomainId());
+            } else {
+                matePostReadService.decrementCommentCount(comment.getDomainId());
+            }
+        } else if (comment.getCommentDomainType() == CommentDomainType.ROUTE) {
+            Route route = routeService.getById(comment.getDomainId());
+            if (isActive) {
+                route.incrementCommentCount();
+            } else {
+                route.decrementCommentCount();
+            }
+        }
     }
 
     private record PostAuthorInfo(Long userId, String title) {}
