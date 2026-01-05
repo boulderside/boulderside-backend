@@ -43,6 +43,13 @@ public class UserRouteLikeService {
 	public boolean existsIsLikedByUserId(Long routeId, Long userId) {
 		return userRouteLikeRepository.existsByUserIdAndRouteId(userId, routeId);
 	}
+
+	public long getCountByRouteId(Long routeId) {
+		if (routeId == null) {
+			throw new InvalidValueException(ErrorCode.VALIDATION_FAILED);
+		}
+		return userRouteLikeRepository.countByRouteId(routeId);
+	}
 	
 	public Map<Long, Boolean> getIsLikedByUserIdForRouteList(List<Long> routeIdList, Long userId) {
 		if (routeIdList == null || routeIdList.isEmpty() || userId == null) {

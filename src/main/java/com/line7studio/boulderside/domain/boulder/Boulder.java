@@ -111,6 +111,10 @@ public class Boulder extends BaseEntity {
 		this.likeCount = (this.likeCount == null || this.likeCount <= 0) ? 0 : this.likeCount - 1;
 	}
 
+	public void updateLikeCount(long likeCount) {
+		this.likeCount = Math.max(likeCount, 0L);
+	}
+
 	// === Private 검증 메서드들 ===
 
 	private static void validateRegionId(Long regionId) {

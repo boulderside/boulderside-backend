@@ -121,6 +121,10 @@ public class Route extends BaseEntity {
 		this.likeCount = (this.likeCount == null || this.likeCount <= 0) ? 0 : this.likeCount - 1;
 	}
 
+	public void updateLikeCount(long likeCount) {
+		this.likeCount = Math.max(likeCount, 0L);
+	}
+
 	public void incrementClimberCount() {
 		this.climberCount = (this.climberCount == null) ? 1 : this.climberCount + 1;
 	}
