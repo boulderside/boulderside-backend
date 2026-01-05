@@ -33,25 +33,30 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class BoardPostUseCase {
 
+    private static final int MAX_PAGE_SIZE = 50;
+
     private final BoardPostService boardPostService;
     private final UserService userService;
     private final CommentService commentService;
     private final UserBlockService userBlockService;
 
     public BoardPostPageResponse getBoardPostPage(Long cursor, String subCursor, int size, BoardPostSortType sortType, Long userId) {
+        int pageSize = normalizeSize(size);
         List<Long> blockedUserIds = userBlockService.getBlockedOrBlockingUserIds(userId);
-        List<BoardPost> posts = boardPostService.getBoardPostsWithCursor(cursor, subCursor, size + 1, sortType, blockedUserIds);
-        return buildCursorPageResponse(posts, size, sortType, userId);
+        List<BoardPost> posts = boardPostService.getBoardPostsWithCursor(cursor, subCursor, pageSize + 1, sortType, blockedUserIds);
+        return buildCursorPageResponse(posts, pageSize, sortType, userId);
     }
 
     public BoardPostPageResponse getBoardPostPageForAdmin(Long cursor, String subCursor, int size, BoardPostSortType sortType, Long adminUserId) {
-        List<BoardPost> posts = boardPostService.getBoardPostsWithCursorForAdmin(cursor, subCursor, size + 1, sortType);
-        return buildCursorPageResponse(posts, size, sortType, adminUserId);
+        int pageSize = normalizeSize(size);
+        List<BoardPost> posts = boardPostService.getBoardPostsWithCursorForAdmin(cursor, subCursor, pageSize + 1, sortType);
+        return buildCursorPageResponse(posts, pageSize, sortType, adminUserId);
     }
 
     public BoardPostPageResponse getMyBoardPosts(Long cursor, int size, Long userId) {
-        List<BoardPost> posts = boardPostService.getBoardPostsByUser(userId, cursor, size + 1);
-        return buildMyPostPageResponse(posts, size, userId);
+        int pageSize = normalizeSize(size);
+        List<BoardPost> posts = boardPostService.getBoardPostsByUser(userId, cursor, pageSize + 1);
+        return buildMyPostPageResponse(posts, pageSize, userId);
     }
 
     private BoardPostPageResponse buildCursorPageResponse(List<BoardPost> posts, int size, BoardPostSortType sortType, Long userId) {
@@ -102,6 +107,13 @@ public class BoardPostUseCase {
             case LATEST_CREATED -> post.getCreatedAt().toString();
             case MOST_VIEWED -> post.getViewCount().toString();
         };
+    }
+
+    private int normalizeSize(int size) {
+        if (size <= 0) {
+            return 10;
+        }
+        return Math.min(size, MAX_PAGE_SIZE);
     }
 
     @Transactional
