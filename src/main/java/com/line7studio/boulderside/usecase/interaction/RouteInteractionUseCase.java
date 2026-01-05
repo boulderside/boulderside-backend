@@ -39,13 +39,8 @@ public class RouteInteractionUseCase {
 			.build();
 
 		boolean liked = userRouteLikeService.toggle(userRouteLike);
-
-		if (liked) {
-			route.incrementLikeCount();
-		} else {
-			route.decrementLikeCount();
-		}
-		long likeCount = route.getLikeCount() != null ? route.getLikeCount() : 0L;
+		long likeCount = userRouteLikeService.getCountByRouteId(route.getId());
+		route.updateLikeCount(likeCount);
 
 		return RouteLikeResponse.of(routeId, liked, likeCount);
 	}

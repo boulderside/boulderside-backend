@@ -13,7 +13,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_consent_history")
+@Table(name = "user_consent_history", indexes = {
+    @Index(name = "idx_user_consent_history_user_id", columnList = "user_id")
+})
 public class UserConsentHistory extends BaseEntity {
 
     @Id

@@ -35,7 +35,7 @@ public class Instagram extends BaseEntity {
 	private String url;
 
 	/** 좋아요 수 */
-	@Column(name = "like_count")
+	@Column(name = "like_count", nullable = false)
 	private Long likeCount;
 
 	@Builder(access = AccessLevel.PRIVATE)

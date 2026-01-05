@@ -1,8 +1,41 @@
 -- ▶ 0. 외래 키 제약 잠시 비활성화
 SET FOREIGN_KEY_CHECKS = 0;
 
-INSERT INTO users (id, nickname, user_role, profile_image_url, phone, user_sex, user_level, name, email, created_at, updated_at) VALUES
-    (1,'bouldertiger', 'ROLE_USER', null, '010-1234-5678', 'MAN', 'V13', '김철수', 'example@com', '2025-01-01 09:00:00', '2025-01-01 09:00:00');
+INSERT INTO users (
+    id,
+    nickname,
+    provider_type,
+    provider_user_id,
+    provider_email,
+    profile_image_url,
+    user_level,
+    user_role,
+    user_status,
+    push_enabled,
+    marketing_agreed,
+    privacy_agreed,
+    service_terms_agreed,
+    over_fourteen_agreed,
+    created_at,
+    updated_at
+) VALUES (
+    1,
+    'bouldertiger',
+    'KAKAO',
+    '123456789',
+    'bouldertiger@example.com',
+    null,
+    'V13',
+    'ROLE_USER',
+    'ACTIVE',
+    true,
+    false,
+    true,
+    true,
+    true,
+    '2025-01-01 09:00:00',
+    '2025-01-01 09:00:00'
+);
 
 INSERT INTO boulders (id, region_id, name, description, latitude, longitude, like_count, view_count, created_at, updated_at) VALUES
     (1, 1, 'Sunrise Crag', '해돋이 보기 좋은 바위, 초보자도 접근 용이', 37.579617, 126.977041, 0, 0, '2025-01-10 11:00:00', '2025-01-10 11:00:00'),

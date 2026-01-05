@@ -8,7 +8,13 @@ import java.util.List;
 
 public record ProjectRequest(
     Long routeId,
-    @NotNull Boolean completed,
-    @Size(max = 500) String memo,
-    @Valid List<SessionRequest> sessions
+
+    @NotNull(message = "완료 여부는 필수입니다.")
+    Boolean completed,
+
+    @Size(max = 500, message = "메모는 500자 이하여야 합니다.")
+    String memo,
+
+    @Valid
+    List<SessionRequest> sessions
 ) {}

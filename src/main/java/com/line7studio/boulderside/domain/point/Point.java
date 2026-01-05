@@ -27,14 +27,14 @@ public class Point extends BaseEntity {
 	private Integer orderIndex;
 
 	/** 포인트 이름 */
-	@Column(name = "name")
+	@Column(name = "name", length = 100)
 	private String name;
 
 	/** 포인트 설명 */
-	@Column(name = "description")
+	@Column(name = "description", length = 500)
 	private String description;
 
 	/** 추가 설명 */
-	@Column(name = "note")
+	@Column(name = "note", length = 500)
 	private String note;
 }

@@ -14,7 +14,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_status_history")
+@Table(name = "user_status_history", indexes = {
+    @Index(name = "idx_user_status_history_user_id", columnList = "user_id")
+})
 public class UserStatusHistory extends BaseEntity {
 
     @Id

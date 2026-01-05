@@ -6,6 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record SessionRequest(
-    @NotNull LocalDate sessionDate,
-    @NotNull @Min(0) Integer sessionCount
+    @NotNull(message = "세션 날짜는 필수입니다.")
+    LocalDate sessionDate,
+
+    @NotNull(message = "세션 횟수는 필수입니다.")
+    @Min(value = 0, message = "세션 횟수는 0 이상이어야 합니다.")
+    Integer sessionCount
 ) {}

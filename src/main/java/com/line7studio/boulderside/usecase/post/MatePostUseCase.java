@@ -33,25 +33,30 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class MatePostUseCase {
 
+    private static final int MAX_PAGE_SIZE = 50;
+
     private final MatePostService matePostService;
     private final UserService userService;
     private final CommentService commentService;
     private final UserBlockService userBlockService;
 
     public MatePostPageResponse getMatePostPage(Long cursor, String subCursor, int size, MatePostSortType sortType, Long userId) {
+        int pageSize = normalizeSize(size);
         List<Long> blockedUserIds = userBlockService.getBlockedOrBlockingUserIds(userId);
-        List<MatePost> posts = matePostService.getMatePostsWithCursor(cursor, subCursor, size + 1, sortType, blockedUserIds);
-        return buildCursorPageResponse(posts, size, sortType, userId);
+        List<MatePost> posts = matePostService.getMatePostsWithCursor(cursor, subCursor, pageSize + 1, sortType, blockedUserIds);
+        return buildCursorPageResponse(posts, pageSize, sortType, userId);
     }
 
     public MatePostPageResponse getMatePostPageForAdmin(Long cursor, String subCursor, int size, MatePostSortType sortType, Long adminUserId) {
-        List<MatePost> posts = matePostService.getMatePostsWithCursorForAdmin(cursor, subCursor, size + 1, sortType);
-        return buildCursorPageResponse(posts, size, sortType, adminUserId);
+        int pageSize = normalizeSize(size);
+        List<MatePost> posts = matePostService.getMatePostsWithCursorForAdmin(cursor, subCursor, pageSize + 1, sortType);
+        return buildCursorPageResponse(posts, pageSize, sortType, adminUserId);
     }
 
     public MatePostPageResponse getMyMatePosts(Long cursor, int size, Long userId) {
-        List<MatePost> posts = matePostService.getMatePostsByUser(userId, cursor, size + 1);
-        return buildMyPostPageResponse(posts, size, userId);
+        int pageSize = normalizeSize(size);
+        List<MatePost> posts = matePostService.getMatePostsByUser(userId, cursor, pageSize + 1);
+        return buildMyPostPageResponse(posts, pageSize, userId);
     }
 
     private MatePostPageResponse buildCursorPageResponse(List<MatePost> posts, int size, MatePostSortType sortType, Long userId) {
@@ -103,6 +108,13 @@ public class MatePostUseCase {
             case MOST_VIEWED -> post.getViewCount().toString();
             case NEAREST_MEETING_DATE -> post.getMeetingDate().toString();
         };
+    }
+
+    private int normalizeSize(int size) {
+        if (size <= 0) {
+            return 10;
+        }
+        return Math.min(size, MAX_PAGE_SIZE);
     }
 
     @Transactional

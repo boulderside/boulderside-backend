@@ -31,16 +31,16 @@ public class Comment extends BaseEntity {
 
     /** 도메인 대상 타입 */
     @Enumerated(EnumType.STRING)
-    @Column(name = "comment_domain_type", nullable = false)
+    @Column(name = "comment_domain_type", nullable = false, length = 20)
     private CommentDomainType commentDomainType;
 
     /** 댓글 내용 */
-    @Column(name = "content")
+    @Column(name = "content", length = 1000)
     private String content;
 
     /** 댓글 상태 */
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", nullable = false, length = 20)
     @Builder.Default
     private PostStatus status = PostStatus.ACTIVE;
 

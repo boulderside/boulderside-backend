@@ -19,17 +19,17 @@ public class Notice extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title")
+    @Column(name = "title", length = 150, nullable = false)
     private String title;
 
     @Lob
-    @Column(name = "content" , length = 2048)
+    @Column(name = "content", length = 10000, nullable = false)
     private String content;
 
-    @Column(name = "is_pinned")
+    @Column(name = "is_pinned", nullable = false)
     private boolean pinned;
 
-    @Column(name = "view_count")
+    @Column(name = "view_count", nullable = false)
     private long viewCount;
 
     @Builder(access = AccessLevel.PRIVATE)

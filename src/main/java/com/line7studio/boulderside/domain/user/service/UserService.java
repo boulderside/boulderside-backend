@@ -9,7 +9,6 @@ import com.line7studio.boulderside.domain.mate.service.MatePostService;
 import com.line7studio.boulderside.domain.user.User;
 import com.line7studio.boulderside.domain.user.UserConsentHistory;
 import com.line7studio.boulderside.domain.user.UserLoginHistory;
-import com.line7studio.boulderside.domain.user.UserMeta;
 import com.line7studio.boulderside.domain.user.UserStatusHistory;
 import com.line7studio.boulderside.domain.user.enums.AuthProviderType;
 import com.line7studio.boulderside.domain.user.enums.ConsentType;
@@ -18,7 +17,6 @@ import com.line7studio.boulderside.domain.user.enums.UserStatus;
 import com.line7studio.boulderside.domain.user.enums.UserStatusChangeReason;
 import com.line7studio.boulderside.domain.user.repository.UserConsentHistoryRepository;
 import com.line7studio.boulderside.domain.user.repository.UserLoginHistoryRepository;
-import com.line7studio.boulderside.domain.user.repository.UserMetaRepository;
 import com.line7studio.boulderside.domain.user.repository.UserRepository;
 import com.line7studio.boulderside.domain.user.repository.UserStatusHistoryRepository;
 import com.line7studio.boulderside.usecase.user.dto.response.CreateUserCommand;
@@ -39,7 +37,6 @@ import java.util.Optional;
 public class UserService {
 
 	private final UserRepository userRepository;
-	private final UserMetaRepository userMetaRepository;
 	private final UserConsentHistoryRepository userConsentHistoryRepository;
 	private final UserStatusHistoryRepository userStatusHistoryRepository;
 	private final UserLoginHistoryRepository userLoginHistoryRepository;
@@ -57,18 +54,15 @@ public class UserService {
 	}
 
 	@Transactional
-	public UserMeta updateConsent(Long userId, UpdateConsentRequest request) {
-		UserMeta userMeta = userMetaRepository.findByUserId(userId)
-			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
-		userMeta.updateConsent(request.consentType(), request.agreed());
+	public User updateConsent(Long userId, UpdateConsentRequest request) {
+		User user = getUserById(userId);
+		user.updateConsent(request.consentType(), request.agreed());
 		saveConsentHistory(userId, request.consentType(), request.agreed());
-		return userMeta;
+		return user;
 	}
 
-	public UserMeta getUserMeta(Long userId) {
-		return userMetaRepository.findByUserId(userId)
-			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+	public User getUserMeta(Long userId) {
+		return getUserById(userId);
 	}
 
 	@Transactional(readOnly = true)
@@ -93,7 +87,7 @@ public class UserService {
 	public User createUser(CreateUserCommand command) {
 		validateDuplicateNickname(command.nickname());
 
-		// 1. User 생성
+		// User 생성 (동의 정보 포함)
 		User user = User.builder()
 			.nickname(command.nickname())
 			.providerType(command.providerType())
@@ -101,36 +95,53 @@ public class UserService {
 			.providerEmail(command.providerEmail())
 			.userRole(command.userRole())
 			.userStatus(UserStatus.ACTIVE)
+			.pushEnabled(true) // 기본값 ON
+			.privacyAgreed(command.privacyAgreed())
+			.serviceTermsAgreed(command.serviceTermsAgreed())
+			.overFourteenAgreed(command.overFourteenAgreed())
+			.marketingAgreed(command.marketingAgreed())
 			.build();
 		User savedUser = userRepository.save(user);
 
-		// 2. UserMeta 생성
-		LocalDateTime now = LocalDateTime.now();
-		UserMeta userMeta = UserMeta.builder()
-			.userId(savedUser.getId())
-			.pushEnabled(true) // 기본값 ON
-			.privacyAgreed(command.privacyAgreed())
-			.privacyAgreedCreatedAt(now)
-			.serviceTermsAgreed(command.serviceTermsAgreed())
-			.serviceTermsAgreedCreatedAt(now)
-			.overFourteenAgreed(command.overFourteenAgreed())
-			.overFourteenAgreedCreatedAt(now)
-			.marketingAgreed(command.marketingAgreed())
-			.marketingAgreedCreatedAt(now)
-			.marketingAgreedUpdatedAt(now)
-			.build();
-		userMetaRepository.save(userMeta);
-
-		// 3. 약관 동의 이력 저장 (ConsentHistory)
+		// 약관 동의 이력 저장
 		saveConsentHistory(savedUser.getId(), ConsentType.PRIVACY, command.privacyAgreed());
 		saveConsentHistory(savedUser.getId(), ConsentType.SERVICE_TERMS, command.serviceTermsAgreed());
 		saveConsentHistory(savedUser.getId(), ConsentType.OVER_FOURTEEN, command.overFourteenAgreed());
 		saveConsentHistory(savedUser.getId(), ConsentType.MARKETING, command.marketingAgreed());
 
-		// 4. 상태 변경 이력 저장 (초기 가입 ACTIVE)
+		// 상태 변경 이력 저장 (초기 가입 ACTIVE)
 		saveStatusHistory(savedUser.getId(), null, UserStatus.ACTIVE, UserStatusChangeReason.SYSTEM_AUTO, "회원가입", null);
 
 		return savedUser;
+	}
+
+	@Transactional
+	public User reactivateUser(Long userId, String nickname, boolean privacyAgreed, boolean serviceTermsAgreed,
+							   boolean overFourteenAgreed, boolean marketingAgreed) {
+		User user = getUserById(userId);
+		UserStatus previousStatus = user.getUserStatus();
+		if (previousStatus != UserStatus.INACTIVE) {
+			return user;
+		}
+
+		if (!Objects.equals(user.getNickname(), nickname)) {
+			validateDuplicateNickname(nickname);
+			user.updateNickname(nickname);
+		}
+
+		user.updateConsent(ConsentType.PRIVACY, privacyAgreed);
+		user.updateConsent(ConsentType.SERVICE_TERMS, serviceTermsAgreed);
+		user.updateConsent(ConsentType.OVER_FOURTEEN, overFourteenAgreed);
+		user.updateConsent(ConsentType.MARKETING, marketingAgreed);
+
+		saveConsentHistory(userId, ConsentType.PRIVACY, privacyAgreed);
+		saveConsentHistory(userId, ConsentType.SERVICE_TERMS, serviceTermsAgreed);
+		saveConsentHistory(userId, ConsentType.OVER_FOURTEEN, overFourteenAgreed);
+		saveConsentHistory(userId, ConsentType.MARKETING, marketingAgreed);
+
+		user.updateStatus(UserStatus.ACTIVE);
+		saveStatusHistory(userId, previousStatus, UserStatus.ACTIVE, UserStatusChangeReason.USER_REQUEST, "재가입", userId);
+		return user;
 	}
 
 	@Transactional

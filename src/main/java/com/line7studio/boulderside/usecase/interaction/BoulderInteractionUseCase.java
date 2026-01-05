@@ -39,13 +39,8 @@ public class BoulderInteractionUseCase {
 			.build();
 
 		boolean liked = userBoulderLikeService.toggle(userBoulderLike);
-
-		if (liked) {
-			boulder.incrementLikeCount();
-		} else {
-			boulder.decrementLikeCount();
-		}
-		long likeCount = boulder.getLikeCount() != null ? boulder.getLikeCount() : 0L;
+		long likeCount = userBoulderLikeService.getCountByBoulderId(boulder.getId());
+		boulder.updateLikeCount(likeCount);
 
 		return BoulderLikeResponse.of(boulderId, liked, likeCount);
 	}

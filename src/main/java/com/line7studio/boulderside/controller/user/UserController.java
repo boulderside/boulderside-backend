@@ -1,6 +1,6 @@
 package com.line7studio.boulderside.controller.user;
 
-import com.line7studio.boulderside.domain.user.UserMeta;
+import com.line7studio.boulderside.domain.user.User;
 import com.line7studio.boulderside.domain.user.enums.ConsentType;
 import com.line7studio.boulderside.usecase.user.UserProfileUseCase;
 import org.springframework.http.MediaType;
@@ -46,8 +46,8 @@ public class UserController {
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestBody @Valid UpdateConsentRequest request
 	) {
-		UserMeta updatedMeta = userService.updateConsent(userDetails.userId(), request);
-		boolean updatedValue = resolveConsentValue(updatedMeta, request.consentType());
+		User updatedUser = userService.updateConsent(userDetails.userId(), request);
+		boolean updatedValue = resolveConsentValue(updatedUser, request.consentType());
 		UpdateConsentResponse response = UpdateConsentResponse.of(request.consentType(), updatedValue);
 		return ResponseEntity.ok(ApiResponse.of(response));
 	}
@@ -62,8 +62,8 @@ public class UserController {
 	public ResponseEntity<ApiResponse<UserMetaResponse>> getUserMetaInfo(
 		@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		UserMeta userMeta = userService.getUserMeta(userDetails.userId());
-		return ResponseEntity.ok(ApiResponse.of(UserMetaResponse.from(userMeta)));
+		User user = userService.getUserMeta(userDetails.userId());
+		return ResponseEntity.ok(ApiResponse.of(UserMetaResponse.from(user)));
 	}
 
 	@DeleteMapping("/me")
@@ -118,13 +118,13 @@ public class UserController {
 		return ResponseEntity.ok(ApiResponse.of(NicknameAvailabilityResponse.of(nickname, available)));
 	}
 
-	private boolean resolveConsentValue(UserMeta userMeta, ConsentType consentType) {
+	private boolean resolveConsentValue(User user, ConsentType consentType) {
 		return switch (consentType) {
-			case PUSH -> Boolean.TRUE.equals(userMeta.getPushEnabled());
-			case MARKETING -> Boolean.TRUE.equals(userMeta.getMarketingAgreed());
-			case PRIVACY -> Boolean.TRUE.equals(userMeta.getPrivacyAgreed());
-			case SERVICE_TERMS -> Boolean.TRUE.equals(userMeta.getServiceTermsAgreed());
-			case OVER_FOURTEEN -> Boolean.TRUE.equals(userMeta.getOverFourteenAgreed());
+			case PUSH -> Boolean.TRUE.equals(user.getPushEnabled());
+			case MARKETING -> Boolean.TRUE.equals(user.getMarketingAgreed());
+			case PRIVACY -> Boolean.TRUE.equals(user.getPrivacyAgreed());
+			case SERVICE_TERMS -> Boolean.TRUE.equals(user.getServiceTermsAgreed());
+			case OVER_FOURTEEN -> Boolean.TRUE.equals(user.getOverFourteenAgreed());
 		};
 	}
 }

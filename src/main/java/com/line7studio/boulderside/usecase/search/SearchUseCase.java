@@ -20,6 +20,7 @@ public class SearchUseCase {
     
     private final SearchService searchService;
     private static final int AUTOCOMPLETE_LIMIT = 10;
+    private static final int MAX_PAGE_SIZE = 50;
 
     public AutocompleteResponse getSuggestions(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
@@ -52,13 +53,20 @@ public class SearchUseCase {
                     .totalCount(0)
                     .build();
         }
-        
-        List<SearchItemResponse> items = searchService.searchByDomain(keyword, domain, size);
+        int pageSize = normalizeSize(size);
+        List<SearchItemResponse> items = searchService.searchByDomain(keyword, domain, pageSize);
         long totalCount = searchService.countByDomain(keyword, domain);
         
         return DomainSearchResponse.builder()
                 .items(items)
                 .totalCount(totalCount)
                 .build();
+    }
+
+    private int normalizeSize(int size) {
+        if (size <= 0) {
+            return 10;
+        }
+        return Math.min(size, MAX_PAGE_SIZE);
     }
 }

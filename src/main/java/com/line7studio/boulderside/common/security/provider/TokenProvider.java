@@ -18,7 +18,8 @@ import jakarta.annotation.PostConstruct;
 public class TokenProvider {
 	@Value("${jwt.secret}")
 	private String SECRET_KEY;
-	private final long TOKEN_EXPIRATION_MS = 864000000L; // 10일
+	private static final long ACCESS_TOKEN_EXPIRATION_MS = 864000000L; // 10일
+	private static final long REFRESH_TOKEN_EXPIRATION_MS = 864000000L; // 10일
 
 	private SecretKey secretKey;
 
@@ -29,12 +30,13 @@ public class TokenProvider {
 	}
 
 	public String create(String category, Long userId, UserRole role) {
+		long expirationMs = resolveExpirationMs(category);
 		return Jwts.builder()
 			.claim("category", category) // access or refresh
 			.claim("userId", userId)
 			.claim("role", role)
 			.issuedAt(new Date(System.currentTimeMillis())) // 발급 시간
-			.expiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_MS)) //토큰 만료시간 설정
+			.expiration(new Date(System.currentTimeMillis() + expirationMs)) //토큰 만료시간 설정
 			.signWith(secretKey)
 			.compact();
 	}
@@ -76,5 +78,15 @@ public class TokenProvider {
 			.getPayload()
 			.getExpiration()
 			.before(new Date());
+	}
+
+	private long resolveExpirationMs(String category) {
+		if ("access".equals(category)) {
+			return ACCESS_TOKEN_EXPIRATION_MS;
+		}
+		if ("refresh".equals(category)) {
+			return REFRESH_TOKEN_EXPIRATION_MS;
+		}
+		throw new IllegalArgumentException("지원하지 않는 토큰 카테고리입니다.");
 	}
 }

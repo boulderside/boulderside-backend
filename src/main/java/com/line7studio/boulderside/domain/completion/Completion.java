@@ -32,7 +32,7 @@ public class Completion extends BaseEntity {
 	private LocalDate completedDate;
 
 	/** 메모 */
-	@Column(name = "memo")
+	@Column(name = "memo", length = 500)
 	private String memo;
 
 	public void update(LocalDate completedDate, String memo) {

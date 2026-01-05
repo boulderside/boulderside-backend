@@ -4,19 +4,17 @@ import java.time.LocalDateTime;
 
 import com.line7studio.boulderside.common.enums.Level;
 import com.line7studio.boulderside.domain.user.User;
+import com.line7studio.boulderside.domain.user.enums.AuthProviderType;
 import com.line7studio.boulderside.domain.user.enums.UserRole;
-import com.line7studio.boulderside.domain.user.enums.UserSex;
 import com.line7studio.boulderside.domain.user.enums.UserStatus;
 
 public record AdminUserResponse(
     Long userId,
     String nickname,
-    String name,
-    String email,
-    String phone,
+    String providerEmail,
+    AuthProviderType providerType,
     UserRole userRole,
     UserStatus userStatus,
-    UserSex userSex,
     Level userLevel,
     String profileImageUrl,
     LocalDateTime createdAt,
@@ -26,12 +24,10 @@ public record AdminUserResponse(
         return new AdminUserResponse(
             user.getId(),
             user.getNickname(),
-            user.getName(),
-            user.getEmail(),
-            user.getPhone(),
+            user.getProviderEmail(),
+            user.getProviderType(),
             user.getUserRole(),
             user.getUserStatus(),
-            user.getUserSex(),
             user.getUserLevel(),
             user.getProfileImageUrl(),
             user.getCreatedAt(),

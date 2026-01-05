@@ -7,6 +7,7 @@ import com.line7studio.boulderside.common.security.filter.JWTFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -17,7 +18,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
@@ -27,6 +30,9 @@ public class SecurityConfig {
 	private final CustomEntryPoint customEntryPoint;
 
 	private final JWTFilter jwtFilter;
+
+	@Value("${cors.allowed-origins:*}")
+	private String corsAllowedOriginsRaw;
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -59,8 +65,14 @@ public class SecurityConfig {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowCredentials(true); // 자격 증명 포함 허용(Authorization 헤더, 쿠기 사용 가능)
-		configuration.setAllowedOriginPatterns(List.of("*")); // 모든 origin 허용 (개발 환경)
+		List<String> allowedOrigins = parseAllowedOrigins(corsAllowedOriginsRaw);
+		if (allowedOrigins.contains("*")) {
+			configuration.setAllowCredentials(false); // wildcard 사용 시 credentials 비활성화
+			configuration.setAllowedOriginPatterns(List.of("*"));
+		} else {
+			configuration.setAllowCredentials(true);
+			configuration.setAllowedOrigins(allowedOrigins);
+		}
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")); //허용 메소드
 		configuration.setAllowedHeaders(List.of("*"));
 		configuration.setExposedHeaders(List.of("*"));
@@ -69,6 +81,16 @@ public class SecurityConfig {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
+	}
+
+	private List<String> parseAllowedOrigins(String raw) {
+		if (raw == null || raw.isBlank()) {
+			return List.of("*");
+		}
+		return Arrays.stream(raw.split(","))
+			.map(String::trim)
+			.filter(value -> !value.isEmpty())
+			.collect(Collectors.toList());
 	}
 
 }

@@ -88,8 +88,38 @@ public class AuthUseCase {
 		OAuthUserProfile profile = client.fetchUserProfile(request.identityToken());
 		boolean isAdminProviderUserId = isAdminProviderUserId(profile.providerUserId());
 
-		userService.findByProvider(request.providerType(), profile.providerUserId())
-			.ifPresent(this::validateSignupAvailability);
+		User existingUser = userService.findByProvider(request.providerType(), profile.providerUserId()).orElse(null);
+		if (existingUser != null) {
+			if (existingUser.getUserStatus() == UserStatus.INACTIVE) {
+				if (userService.isWithdrawnWithinDays(existingUser.getId(), WITHDRAWAL_REJOIN_COOLDOWN_DAYS)) {
+					throw new BusinessException(ErrorCode.USER_WITHDRAWAL_COOLDOWN);
+				}
+				User reactivated = userService.reactivateUser(
+					existingUser.getId(),
+					request.nickname(),
+					request.privacyAgreed(),
+					request.serviceTermsAgreed(),
+					request.overFourteenAgreed(),
+					Boolean.TRUE.equals(request.marketingAgreed())
+				);
+				if (isAdminProviderUserId && reactivated.getUserRole() != UserRole.ROLE_ADMIN) {
+					reactivated = userService.updateUserRole(reactivated.getId(), UserRole.ROLE_ADMIN);
+				}
+				String accessToken = tokenProvider.create("access", reactivated.getId(), reactivated.getUserRole());
+				String refreshToken = tokenProvider.create("refresh", reactivated.getId(), reactivated.getUserRole());
+				userService.updateRefreshToken(reactivated.getId(), refreshToken);
+				saveLoginHistory(reactivated.getId(), ipAddress, userAgent);
+
+				return LoginResponse.builder()
+					.userId(reactivated.getId())
+					.nickname(reactivated.getNickname())
+					.accessToken(accessToken)
+					.refreshToken(refreshToken)
+					.isNew(false)
+					.build();
+			}
+			validateSignupAvailability(existingUser);
+		}
 
 		CreateUserCommand command = CreateUserCommand.builder()
 			.nickname(request.nickname())

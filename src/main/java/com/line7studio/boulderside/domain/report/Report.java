@@ -33,21 +33,21 @@ public class Report extends BaseEntity {
     private Long reporterId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "target_type", nullable = false)
+    @Column(name = "target_type", nullable = false, length = 20)
     private ReportTargetType targetType;
 
-    @Column(name = "target_id")
+    @Column(name = "target_id", nullable = false)
     private Long targetId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "category")
+    @Column(name = "category", nullable = false, length = 30)
     private ReportCategory category;
 
     @Column(name = "reason", length = 2000)
     private String reason;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status", nullable = false, length = 20)
     private ReportStatus status;
 
     @Builder(access = AccessLevel.PRIVATE)

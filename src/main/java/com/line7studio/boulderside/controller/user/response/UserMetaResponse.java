@@ -1,35 +1,24 @@
 package com.line7studio.boulderside.controller.user.response;
 
-import com.line7studio.boulderside.domain.user.UserMeta;
-import java.time.LocalDateTime;
+import com.line7studio.boulderside.domain.user.User;
 
 public record UserMetaResponse(
     Long userId,
     Boolean pushEnabled,
     Boolean marketingAgreed,
-    LocalDateTime marketingAgreedCreatedAt,
-    LocalDateTime marketingAgreedUpdatedAt,
     Boolean privacyAgreed,
-    LocalDateTime privacyAgreedCreatedAt,
     Boolean serviceTermsAgreed,
-    LocalDateTime serviceTermsAgreedCreatedAt,
-    Boolean overFourteenAgreed,
-    LocalDateTime overFourteenAgreedCreatedAt
+    Boolean overFourteenAgreed
 ) {
 
-    public static UserMetaResponse from(UserMeta userMeta) {
+    public static UserMetaResponse from(User user) {
         return new UserMetaResponse(
-            userMeta.getUserId(),
-            userMeta.getPushEnabled(),
-            userMeta.getMarketingAgreed(),
-            userMeta.getMarketingAgreedCreatedAt(),
-            userMeta.getMarketingAgreedUpdatedAt(),
-            userMeta.getPrivacyAgreed(),
-            userMeta.getPrivacyAgreedCreatedAt(),
-            userMeta.getServiceTermsAgreed(),
-            userMeta.getServiceTermsAgreedCreatedAt(),
-            userMeta.getOverFourteenAgreed(),
-            userMeta.getOverFourteenAgreedCreatedAt()
+            user.getId(),
+            user.getPushEnabled(),
+            user.getMarketingAgreed(),
+            user.getPrivacyAgreed(),
+            user.getServiceTermsAgreed(),
+            user.getOverFourteenAgreed()
         );
     }
 }
