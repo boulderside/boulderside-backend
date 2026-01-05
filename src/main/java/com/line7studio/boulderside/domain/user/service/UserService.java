@@ -116,6 +116,35 @@ public class UserService {
 	}
 
 	@Transactional
+	public User reactivateUser(Long userId, String nickname, boolean privacyAgreed, boolean serviceTermsAgreed,
+							   boolean overFourteenAgreed, boolean marketingAgreed) {
+		User user = getUserById(userId);
+		UserStatus previousStatus = user.getUserStatus();
+		if (previousStatus != UserStatus.INACTIVE) {
+			return user;
+		}
+
+		if (!Objects.equals(user.getNickname(), nickname)) {
+			validateDuplicateNickname(nickname);
+			user.updateNickname(nickname);
+		}
+
+		user.updateConsent(ConsentType.PRIVACY, privacyAgreed);
+		user.updateConsent(ConsentType.SERVICE_TERMS, serviceTermsAgreed);
+		user.updateConsent(ConsentType.OVER_FOURTEEN, overFourteenAgreed);
+		user.updateConsent(ConsentType.MARKETING, marketingAgreed);
+
+		saveConsentHistory(userId, ConsentType.PRIVACY, privacyAgreed);
+		saveConsentHistory(userId, ConsentType.SERVICE_TERMS, serviceTermsAgreed);
+		saveConsentHistory(userId, ConsentType.OVER_FOURTEEN, overFourteenAgreed);
+		saveConsentHistory(userId, ConsentType.MARKETING, marketingAgreed);
+
+		user.updateStatus(UserStatus.ACTIVE);
+		saveStatusHistory(userId, previousStatus, UserStatus.ACTIVE, UserStatusChangeReason.USER_REQUEST, "재가입", userId);
+		return user;
+	}
+
+	@Transactional
 	public void withdrawUser(Long userId, String reason) {
 		User user = getUserById(userId);
 		UserStatus previousStatus = user.getUserStatus();
