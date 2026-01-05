@@ -33,15 +33,15 @@ public class Approach extends BaseEntity {
 	private Integer orderIndex;
 
 	/** 대중교통 정보 */
-	@Column(name = "transport_info")
+	@Column(name = "transport_info", length = 500)
 	private String transportInfo;
 
 	/** 자차 정보 */
-	@Column(name = "parking_info")
+	@Column(name = "parking_info", length = 500)
 	private String parkingInfo;
 
     /** 팁 */
-    @Column(name = "tip")
+    @Column(name = "tip", length = 500)
     private String tip;
 
 	/** 이동 시간 (분) */

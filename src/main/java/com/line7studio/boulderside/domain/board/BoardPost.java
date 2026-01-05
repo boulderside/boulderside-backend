@@ -25,20 +25,20 @@ public class BoardPost extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "title")
+    @Column(name = "title", length = 100)
     private String title;
 
-    @Column(name = "content")
+    @Column(name = "content", length = 5000)
     private String content;
 
-    @Column(name = "view_count")
+    @Column(name = "view_count", nullable = false)
     private Long viewCount;
 
-    @Column(name = "comment_count")
+    @Column(name = "comment_count", nullable = false)
     private Long commentCount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", nullable = false, length = 20)
     private PostStatus status;
 
     @Builder(access = AccessLevel.PRIVATE)

@@ -23,19 +23,19 @@ public class Region {
 	private Long id;
 
 	/** 법정동코드 */
-	@Column(name = "official_district_code")
+	@Column(name = "official_district_code", length = 20)
 	private String officialDistrictCode;
 
 	/** 시/도 */
-	@Column(name = "province")
+	@Column(name = "province", nullable = false, length = 50)
 	private String province;
 
 	/** 시/군/구 */
-	@Column(name = "city")
+	@Column(name = "city", nullable = false, length = 50)
 	private String city;
 
 	/** 지역코드 */
-	@Column(name = "region_code")
+	@Column(name = "region_code", nullable = false, length = 20)
 	private String regionCode;
 
 	public void update(String officialDistrictCode, String province, String city, String regionCode) {

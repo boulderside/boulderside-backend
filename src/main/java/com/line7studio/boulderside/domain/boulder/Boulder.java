@@ -31,11 +31,11 @@ public class Boulder extends BaseEntity {
 	private Long regionId;
 
 	/** 바위 이름 */
-	@Column(name = "name")
+	@Column(name = "name", length = 100)
 	private String name;
 
 	/** 바위 설명 */
-	@Column(name = "description")
+	@Column(name = "description", length = 1000)
 	private String description;
 
 	/** 바위 위치 위도 */
@@ -47,11 +47,11 @@ public class Boulder extends BaseEntity {
 	private Double longitude;
 
 	/** 조회 수 */
-	@Column(name = "view_count")
+	@Column(name = "view_count", nullable = false)
 	private Long viewCount;
 
     /** 좋아요 수 */
-    @Column(name = "like_count")
+    @Column(name = "like_count", nullable = false)
     private Long likeCount;
 
 	@Builder(access = AccessLevel.PRIVATE)

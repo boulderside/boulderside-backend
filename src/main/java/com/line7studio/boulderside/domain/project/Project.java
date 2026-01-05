@@ -31,12 +31,12 @@ public class Project extends BaseEntity {
 	private Long userId;
 
 	/** 완료 여부 */
-	@Column(name = "is_completed")
+	@Column(name = "is_completed", nullable = false)
 	@Default
 	private Boolean completed = Boolean.FALSE;
 
 	/** 메모 */
-	@Column(name = "memo")
+	@Column(name = "memo", length = 500)
 	private String memo;
 
 	/** 프로젝트 시도 기록 */

@@ -30,32 +30,32 @@ public class User extends BaseEntity {
 	private Long id;
 
 	/** 사용자 닉네임 */
-	@Column(name = "nickname")
+	@Column(name = "nickname", length = 20)
 	private String nickname;
 
 	/** OAuth 제공자 정보 */
 	@Enumerated(EnumType.STRING)
-	@Column(name = "provider_type")
+	@Column(name = "provider_type", length = 20)
 	private AuthProviderType providerType;
 
-	@Column(name = "provider_user_id")
+	@Column(name = "provider_user_id", length = 255)
 	private String providerUserId;
 
-	@Column(name = "provider_email")
+	@Column(name = "provider_email", length = 255)
 	private String providerEmail;
 
 	/** 사용자 프로필 이미지 */
-	@Column(name = "profile_image_url")
+	@Column(name = "profile_image_url", length = 2000)
 	private String profileImageUrl;
 
 	/** 사용자 레벨 (공통 Level enum 사용) */
 	@Enumerated(EnumType.STRING)
-	@Column(name = "user_level")
+	@Column(name = "user_level", nullable = false, length = 10)
 	@Builder.Default
 	private Level userLevel = Level.V0;
 
 	/** Refresh Token */
-	@Column(name = "refresh_token")
+	@Column(name = "refresh_token", length = 512)
 	private String refreshToken;
 
 	/** FCM Token */
@@ -64,13 +64,13 @@ public class User extends BaseEntity {
 
     /** 사용자 역할 (예: ADMIN, USER 등) */
     @Enumerated(EnumType.STRING)
-    @Column(name = "user_role")
+    @Column(name = "user_role", nullable = false, length = 20)
     @Builder.Default
     private UserRole userRole = UserRole.ROLE_USER;
 
 	/** 사용자 상태 (예: ACTIVE, INACTIVE, BANNED 등) */
 	@Enumerated(EnumType.STRING)
-	@Column(name = "user_status")
+	@Column(name = "user_status", nullable = false, length = 20)
 	@Builder.Default
 	private UserStatus userStatus = UserStatus.ACTIVE;
 

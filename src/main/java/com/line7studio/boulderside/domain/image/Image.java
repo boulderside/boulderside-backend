@@ -33,11 +33,11 @@ public class Image extends BaseEntity {
 
 	/** 연관 대상 타입 */
 	@Enumerated(EnumType.STRING)
-	@Column(name = "image_domain_type", nullable = false)
+	@Column(name = "image_domain_type", nullable = false, length = 20)
 	private ImageDomainType imageDomainType;
 
 	/** 이미지 URL */
-	@Column(name = "image_url", length = 2048)
+	@Column(name = "image_url", nullable = false, length = 2000)
 	private String imageUrl;
 
 	/** 이미지 인덱스 (순서) */
@@ -45,7 +45,7 @@ public class Image extends BaseEntity {
 	private Integer orderIndex;
 
     /** 업로드된 원본 파일명 */
-    @Column(name = "original_filename")
+    @Column(name = "original_filename", length = 255)
     private String originalFileName;
 
 	public void update(Long domainId, ImageDomainType imageDomainType, String imageUrl, Integer orderIndex,

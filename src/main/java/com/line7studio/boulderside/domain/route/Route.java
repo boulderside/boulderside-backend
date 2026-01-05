@@ -27,36 +27,36 @@ public class Route extends BaseEntity {
 	private Long boulderId;
 
 	/** 루트 이름 */
-	@Column(name = "name")
+	@Column(name = "name", length = 100)
 	private String name;
 
 	/** 루트 설명 */
-	@Column(name = "description")
+	@Column(name = "description", length = 1000)
 	private String description;
 
 	/** 난이도 (route_level) */
     @Enumerated(value = EnumType.STRING)
-	@Column(name = "route_level")
+	@Column(name = "route_level", length = 10)
 	private Level routeLevel;
 
 	/** 첫 등반자 이름 (pioneer_name) */
-	@Column(name = "pioneer_name")
+	@Column(name = "pioneer_name", length = 100)
 	private String pioneerName;
 
 	/** 조회 수 */
-	@Column(name = "view_count")
+	@Column(name = "view_count", nullable = false)
 	private Long viewCount;
 
 	/** 좋아요 수 */
-	@Column(name = "like_count")
+	@Column(name = "like_count", nullable = false)
 	private Long likeCount;
 
 	/** 등반자 수 */
-	@Column(name = "climber_count")
+	@Column(name = "climber_count", nullable = false)
 	private Long climberCount;
 
 	/** 댓글 수 */
-	@Column(name = "comment_count")
+	@Column(name = "comment_count", nullable = false)
 	private Long commentCount;
 
 	@Builder(access = AccessLevel.PRIVATE)
