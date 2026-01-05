@@ -31,7 +31,7 @@ public class Region {
 	private String province;
 
 	/** 시/군/구 */
-	@Column(name = "city", nullable = false, length = 50)
+	@Column(name = "city", length = 50)
 	private String city;
 
 	/** 지역코드 */

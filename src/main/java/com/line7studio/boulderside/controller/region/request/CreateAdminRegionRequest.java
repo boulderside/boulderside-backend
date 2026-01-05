@@ -11,8 +11,6 @@ public record CreateAdminRegionRequest(
     @Size(min = 1, max = 50, message = "시/도는 1자 이상 50자 이하여야 합니다.")
     String province,
 
-    @NotBlank(message = "시/군/구는 필수입니다.")
-    @Size(min = 1, max = 50, message = "시/군/구는 1자 이상 50자 이하여야 합니다.")
     String city,
 
     @NotBlank(message = "지역 코드는 필수입니다.")
