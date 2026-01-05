@@ -6,9 +6,16 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record CreateReportRequest(
-    @NotNull ReportTargetType targetType,
-    @NotNull Long targetId,
-    @NotNull ReportCategory category,
-    @Size(max = 2000) String reason
+    @NotNull(message = "신고 대상 타입은 필수입니다.")
+    ReportTargetType targetType,
+
+    @NotNull(message = "신고 대상 ID는 필수입니다.")
+    Long targetId,
+
+    @NotNull(message = "신고 카테고리는 필수입니다.")
+    ReportCategory category,
+
+    @Size(max = 2000, message = "신고 사유는 2000자 이하여야 합니다.")
+    String reason
 ) {
 }
